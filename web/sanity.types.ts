@@ -344,7 +344,6 @@ export type SiteSettings = {
   description?: string
   headerMark?: ParkImage
   footerMark?: ParkImage
-  subscribeLink?: Link
   footerLinks?: Array<
     {
       _key: string
@@ -405,6 +404,7 @@ export type SiteSettings = {
   }
   sunsetLabel?: string
   cityRunLabel?: string
+  parkHoursLabel?: string
   navigation?: Array<{
     title?: string
     href?: string
@@ -668,7 +668,6 @@ export type SITE_QUERY_RESULT = {
     description?: string
     headerMark?: ParkImage
     footerMark?: ParkImage
-    subscribeLink?: Link
     footerLinks?: Array<
       {
         _key: string
@@ -729,6 +728,7 @@ export type SITE_QUERY_RESULT = {
     }
     sunsetLabel?: string
     cityRunLabel?: string
+    parkHoursLabel?: string
     navigation?: Array<{
       title?: string
       href?: string

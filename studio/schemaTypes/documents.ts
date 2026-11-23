@@ -46,7 +46,6 @@ export const siteSettings = defineType({
     defineField({name: 'description', type: 'text', rows: 3}),
     defineField({name: 'headerMark', title: 'Header wordmark', type: 'parkImage'}),
     defineField({name: 'footerMark', title: 'Footer wordmark', type: 'parkImage'}),
-    defineField({name: 'subscribeLink', type: 'link'}),
     defineField({name: 'footerLinks', type: 'array', of: [defineArrayMember({type: 'link'})]}),
     defineField({name: 'copyright', title: 'Copyright line', type: 'string'}),
     defineField({
@@ -78,6 +77,12 @@ export const siteSettings = defineType({
       title: 'Header city-run wording',
       type: 'string',
       initialValue: 'City-run since 1927',
+    }),
+    defineField({
+      name: 'parkHoursLabel',
+      title: 'Header park hours',
+      type: 'string',
+      initialValue: 'Open Until 10 PM',
     }),
     defineField({
       name: 'navigation',

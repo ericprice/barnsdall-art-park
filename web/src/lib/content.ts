@@ -73,12 +73,12 @@ export type SiteContent = {
     headerMark?: ImageSource
     footerMark?: ImageSource
     copyright?: string
-    subscribeLink?: {label?: string; href?: string}
     footerLinks?: {label?: string; href?: string; _key?: string}[]
     title: string
     description: string
     sunsetLabel?: string
     cityRunLabel?: string
+    parkHoursLabel?: string
     address: string
     navigation: NavItem[]
     donationLink?: {label?: string; href?: string} | null
@@ -212,12 +212,12 @@ function settingsFor(s: SiteSettings | null): SiteContent['settings'] {
     headerMark: s?.headerMark,
     footerMark: s?.footerMark,
     copyright: s?.copyright,
-    subscribeLink: s?.subscribeLink,
     footerLinks: s?.footerLinks,
     title: s?.title || '',
     description: s?.description || '',
     sunsetLabel: s?.sunsetLabel,
     cityRunLabel: s?.cityRunLabel,
+    parkHoursLabel: s?.parkHoursLabel,
     address: s?.address || '',
     donationLink: s?.donationLink,
     contactEmail: s?.contactEmail,

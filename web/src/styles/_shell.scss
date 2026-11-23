@@ -23,9 +23,6 @@
   &[data-expanded='true'] {
     background: var(--green);
 
-    .park-utility a::before {
-      opacity: 0;
-    }
     :focus-visible {
       outline-color: var(--paper);
     }
@@ -47,36 +44,14 @@
     gap: 0.15em 1em;
     padding-block: 0.3em;
 
-    time {
+    > span {
       white-space: nowrap;
     }
   }
-  &__actions {
-    margin-left: auto;
-    display: flex;
+  &__donate {
+    margin-inline-start: auto;
     flex: none;
-    gap: 1.25em;
-  }
-  a {
-    position: relative;
-    isolation: isolate;
-    padding: 0.35em 0;
-    &::before {
-      @include olive-dot(5);
-      content: '';
-      position: absolute;
-      z-index: -1;
-      top: 50%;
-      left: 50%;
-      width: 2.6em;
-      height: 2.85em;
-      background-color: var(--lavender);
-      transform: translate(-50%, -50%);
-    }
-    &.park-utility__subscribe::before {
-      --olive-dot: url('/identity/dots/14.svg');
-      background-color: var(--yellow);
-    }
+    padding-block: 0.35em;
   }
 }
 .park-masthead {
@@ -381,7 +356,8 @@
     width: 100%;
     @include type-size(display);
     block-size: 1cap;
-    border: calc(0.18 * var(--type-label)) solid var(--green);
+    padding: calc(0.18 * var(--type-label));
+    background: color-mix(in srgb, var(--green) 20%, var(--paper));
   }
   input,
   button {
@@ -394,14 +370,14 @@
     min-width: 0;
     width: 0;
     flex: 1;
-    background: var(--paper);
+    background: transparent;
     border: 0;
     // The native email control places the capital letters slightly above center.
     padding-block-start: 0.1em;
     text-transform: none;
     &::placeholder {
       color: var(--green);
-      opacity: 0.75;
+      opacity: 0.5;
       text-transform: uppercase;
     }
   }
@@ -443,9 +419,6 @@
   .park-utility {
     @include type-size(compact-label);
     padding-top: 0.25em;
-    &__actions {
-      align-self: flex-end;
-    }
   }
   .park-navigation {
     flex-wrap: wrap;

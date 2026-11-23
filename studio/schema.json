@@ -2123,14 +2123,6 @@
         },
         "optional": true
       },
-      "subscribeLink": {
-        "type": "objectAttribute",
-        "value": {
-          "type": "inline",
-          "name": "link"
-        },
-        "optional": true
-      },
       "footerLinks": {
         "type": "objectAttribute",
         "value": {
@@ -2527,6 +2519,13 @@
         "optional": true
       },
       "cityRunLabel": {
+        "type": "objectAttribute",
+        "value": {
+          "type": "string"
+        },
+        "optional": true
+      },
+      "parkHoursLabel": {
         "type": "objectAttribute",
         "value": {
           "type": "string"

@@ -157,24 +157,16 @@ function Navigation({pathname, settings, initialSunset}: HeaderProps & {pathname
           <div className="park-utility">
             <div className="park-utility__info">
               {settings.cityRunLabel && <span>{settings.cityRunLabel}</span>}
+              {settings.parkHoursLabel && <span>{settings.parkHoursLabel}</span>}
               {settings.sunsetLabel && (
                 <Sunset initialSunset={initialSunset} label={settings.sunsetLabel} />
               )}
             </div>
-            <div className="park-utility__actions">
-              {settings.donationLink?.href && (
-                <Link href={settings.donationLink.href}>{settings.donationLink.label}</Link>
-              )}
-              {settings.subscribeLink?.href && (
-                <a
-                  className="park-utility__subscribe"
-                  href={settings.subscribeLink.href}
-                  onClick={close}
-                >
-                  {settings.subscribeLink.label}
-                </a>
-              )}
-            </div>
+            {settings.donationLink?.href && (
+              <Link className="park-utility__donate" href={settings.donationLink.href}>
+                {settings.donationLink.label}
+              </Link>
+            )}
           </div>
           <Link href="/" className="park-masthead" aria-label={settings.title} onClick={close}>
             <ParkImage image={settings.headerMark} sizes="96vw" priority />
