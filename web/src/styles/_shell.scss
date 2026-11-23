@@ -180,9 +180,6 @@
   a:nth-child(4):nth-last-child(2) {
     grid-column: 2 / span 2;
   }
-  a:hover {
-    text-decoration: underline;
-  }
 }
 .header-search {
   padding: 0.75em 0 1.55em;
@@ -232,7 +229,6 @@
   li a {
     display: block;
     padding: 0.32em 0.52em;
-    &:hover,
     &:focus-visible {
       text-decoration: underline;
     }
@@ -326,9 +322,6 @@
     }
     a {
       text-decoration: none;
-    }
-    a:hover {
-      text-decoration: underline;
     }
   }
   &__connect > p,

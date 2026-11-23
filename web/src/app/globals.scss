@@ -36,9 +36,6 @@ a {
   color: inherit;
   text-underline-offset: 0.16em;
 }
-a:hover {
-  text-decoration-thickness: 0.1em;
-}
 :where(button, a, input, select, summary):focus-visible {
   outline: 0.16rem solid var(--green);
   outline-offset: 0.3rem;
@@ -94,9 +91,6 @@ strong {
   font-size: var(--type-label);
   line-height: 1.1;
   text-decoration: none;
-  &:hover {
-    text-decoration: underline;
-  }
 }
 .lead {
   font: 400 var(--type-title)/1.12 var(--lead);
@@ -148,10 +142,6 @@ figcaption {
 .content-card__link {
   display: block;
   text-decoration: none;
-  &:hover h2 {
-    text-decoration: underline;
-    text-decoration-thickness: 0.04em;
-  }
   &:hover .content-card__image {
     transform: rotate(-3deg);
   }
@@ -302,9 +292,6 @@ figcaption {
   margin-top: 1rem;
   a {
     text-decoration: none;
-    &:hover {
-      text-decoration: underline;
-    }
   }
 }
 .interior__intro {

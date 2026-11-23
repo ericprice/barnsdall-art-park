@@ -52,9 +52,6 @@
       background: var(--pink);
       border-radius: 44% 56% 39% 61% / 55% 36% 64% 45%;
     }
-    &:hover {
-      text-decoration: underline;
-    }
   }
 }
 .listing-filters {
@@ -103,9 +100,6 @@
 .listing-card__link {
   display: block;
   text-decoration: none;
-  &:hover h3 {
-    text-decoration: underline;
-  }
 }
 .listing-card__photo {
   position: relative;
@@ -158,9 +152,6 @@
   line-height: 1;
   a {
     text-decoration: none;
-    &:hover {
-      text-decoration: underline;
-    }
   }
   a:last-child:not(:first-child) {
     margin-left: auto;
@@ -238,9 +229,6 @@
     text-overflow: ellipsis;
     white-space: nowrap;
     text-decoration: none;
-    &:hover {
-      text-decoration: underline;
-    }
   }
   &__summary ul {
     list-style: none;
@@ -300,9 +288,6 @@
     font-size: var(--type-label);
     text-decoration: none;
     margin-top: 0.6em;
-  }
-  a:hover {
-    text-decoration: underline;
   }
 }
 .news-index > .listing-grid {
@@ -411,9 +396,6 @@
     @include display;
     font-size: var(--type-label);
     line-height: 0.95;
-  }
-  a:hover h2 {
-    text-decoration: underline;
   }
   .content-card__image {
     width: 51%;

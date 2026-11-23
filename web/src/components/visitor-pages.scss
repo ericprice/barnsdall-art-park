@@ -137,9 +137,6 @@
   h2 {
     margin: 0.7rem 0 1rem;
   }
-  article a:hover h2 {
-    text-decoration: underline;
-  }
   .visitor-photo {
     aspect-ratio: 2.3;
   }
@@ -297,9 +294,6 @@
 }
 .visitor-crumb a {
   text-decoration: none;
-}
-.visitor-crumb a:hover {
-  text-decoration: underline;
 }
 .visitor-arrival .subnav [aria-current='page'] {
   position: relative;
