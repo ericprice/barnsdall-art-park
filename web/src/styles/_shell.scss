@@ -76,7 +76,7 @@
 
     :is(a, .park-navigation__label button):focus-visible {
       outline: none;
-      text-decoration: underline;
+      text-decoration: none;
     }
     button:focus-visible {
       outline-color: currentColor;
