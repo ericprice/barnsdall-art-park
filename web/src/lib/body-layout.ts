@@ -58,7 +58,6 @@ const layoutPaths = new Set([
   '/visit',
   '/visit/policies',
   '/visit/rentals',
-  '/park/the-park',
   '/support',
   '/support/olive-grove',
   '/100',
@@ -69,9 +68,10 @@ const layoutPaths = new Set([
 // The CMS stores one ordered body. Designed visitor pages arrange its heading groups into
 // maps, columns, landscape spreads and disclosures. Stories render the body directly.
 export function bodyForLayout(body: RichText | undefined, path: string, template?: string) {
+  const parkLocation = path.startsWith('/park/')
   if (
     !body ||
-    !(layoutPaths.has(path) || ['visit', 'timeline', 'foundation'].includes(template ?? ''))
+    !(parkLocation || layoutPaths.has(path) || ['visit', 'timeline', 'foundation'].includes(template ?? ''))
   )
     return {body, sections: undefined}
   const intro: RichText = []
@@ -117,7 +117,7 @@ export function bodyForLayout(body: RichText | undefined, path: string, template
       section.entries.push(item)
       continue
     }
-    if (block._type === 'parkImage' && !item && !section.image && path === '/park/the-park') {
+    if (block._type === 'parkImage' && !item && !section.image && parkLocation) {
       section.image = block
       continue
     }
