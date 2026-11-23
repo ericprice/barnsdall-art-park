@@ -7,16 +7,8 @@
     object-fit: cover;
   }
 }
-.visitor-links {
-  list-style: none;
-  margin: 1rem 0 0;
-  padding: 0;
-  li + li {
-    margin-top: 0.4rem;
-  }
-  a:hover {
-    color: var(--green);
-  }
+.visitor-wire .action-links a:hover {
+  color: var(--green);
 }
 .visitor-wire {
   width: min(100%, 76rem);
@@ -41,7 +33,6 @@
 .visitor-wire__lead {
   margin: 1.5rem 0 2.5rem;
   max-width: 42rem;
-  @include publisher-type(publisher-lead);
 }
 .visitor-arrival {
   padding-block: 3rem;
@@ -56,9 +47,6 @@
     width: min(47%, 42rem);
     margin: 0 auto;
   }
-  .visitor-summary {
-    @include publisher-type(publisher-lead);
-  }
   .visitor-prose {
     @include publisher-type;
   }
@@ -70,9 +58,6 @@
     text-align: center;
     @include type-size(title);
   }
-  .visitor-links a {
-    color: inherit;
-  }
   .visitor-map {
     width: min(57%, 50rem);
     margin: 2.5rem auto;
@@ -80,26 +65,16 @@
   .visitor-map .visitor-photo {
     aspect-ratio: 0.92;
   }
-  .visitor-map .visitor-links {
+  .visitor-map .action-links {
     display: flex;
+    flex-wrap: wrap;
     justify-content: center;
     gap: 1rem;
     margin-top: 0.5rem;
-    font: 400 var(--type-label)/var(--leading-label) var(--display);
-    text-transform: uppercase;
-  }
-  .visitor-map li {
-    margin: 0;
-  }
-  .visitor-map a {
-    text-decoration: none;
   }
   > .quote-band {
     margin-top: 5rem;
   }
-}
-.visitor-policies .visitor-summary {
-  @include type-size(body);
 }
 .visitor-policies .visitor-prose > .rich-text {
   margin-top: 1rem;
@@ -126,9 +101,6 @@
   @include publisher-type;
   text-transform: uppercase;
   margin: 0 0 1rem;
-}
-.contact-page__columns .rich-text p + p {
-  margin-top: 0.25rem;
 }
 .contact-subscription {
   form {
@@ -174,9 +146,6 @@
     .visitor-prose,
     .visitor-map {
       width: calc(100% - 2 * var(--gutter));
-    }
-    .visitor-map .visitor-links {
-      @include type-size(label);
     }
   }
   .rentals-page__inquiries,
@@ -293,12 +262,8 @@
       text-wrap: balance;
       @include type-size(title);
     }
-    .visitor-links {
-      text-align: center;
-    }
   }
   &__quotation {
-    @include publisher-type(publisher-lead);
     footer {
       margin-block-start: 0.75em;
       @include publisher-type;

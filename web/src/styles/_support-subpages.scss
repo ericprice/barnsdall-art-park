@@ -1,5 +1,4 @@
 @use './tokens' as *;
-@use './dots' as *;
 
 .support-subpage {
   .page-heading {
@@ -16,19 +15,6 @@
   > .quote-band {
     margin-top: 4rem;
   }
-  .support-action {
-    display: inline-block;
-    @include publisher-type;
-    text-decoration: underline;
-    text-underline-offset: 0.18em;
-    &::before {
-      content: '';
-      @include olive-dot(6);
-      width: 0.6em;
-      height: 0.65em;
-      margin-inline-end: 0.7em;
-    }
-  }
   .support-label {
     @include display-type(label);
     margin: 0;
@@ -37,7 +23,6 @@
 
 .supporter-years,
 .support-initiatives,
-.volunteer-cards,
 .donation-sections {
   margin-inline: var(--gutter);
 }
@@ -138,8 +123,7 @@
   }
 }
 
-.support-initiatives,
-.volunteer-cards {
+.support-initiatives {
   margin-top: 3.5rem;
 }
 .support-card-grid,
@@ -156,9 +140,9 @@
     @include type-size(title);
   }
   article > p:not(.support-label) {
-    margin: 0.65em auto;
+    margin-block-end: 0.65em;
+    margin-inline: auto;
     max-width: 20em;
-    line-height: var(--leading-body);
   }
 }
 .initiative-shape {
@@ -198,15 +182,6 @@
   margin-block: 4rem;
   > .support-card-grid {
     margin-block-start: 2rem;
-  }
-}
-.volunteer-image {
-  width: 100%;
-  aspect-ratio: 4/3;
-  position: relative;
-  margin: 0 0 1rem;
-  img {
-    object-fit: cover;
   }
 }
 .donation-sections {
@@ -283,9 +258,6 @@
   .donation-level-grid h3 {
     @include type-size(label);
   }
-  .donation-level-grid .support-action {
-    margin-top: 0.6rem;
-  }
   .donation-section--ways {
     margin-top: 4rem;
   }
@@ -296,7 +268,7 @@
     margin-block: 1.5rem;
   }
   .giving-method p {
-    margin: 1em 0;
+    margin-block-end: 1em;
   }
 }
 @media (max-width: 44rem) {
@@ -311,8 +283,7 @@
     grid-template-columns: 1fr;
     gap: 2.5rem;
   }
-  .support-initiatives,
-  .volunteer-cards {
+  .support-initiatives {
     margin-top: 2rem;
   }
   .initiative-shape {

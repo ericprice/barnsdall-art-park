@@ -4,35 +4,6 @@ import {scheduleLabel} from '@/lib/event-filters'
 import {ParkImage} from './park-image'
 import type {ContentEntry} from '@/lib/content'
 
-export function ContentCard({entry, index = 0}: {entry: ContentEntry; index?: number}) {
-  const theme = themeForEntry(entry)
-  return (
-    <article style={themeStyle(theme)} className={`content-card content-card--${index % 6}`}>
-      <Link href={entry.href} className="content-card__link">
-        <div className="content-card__image">
-          <ParkImage orgTheme={theme} image={entry.image} />
-        </div>
-        {entry.organization && (
-          <p className="content-card__category">
-            <span className="small-seed" aria-hidden="true" />
-            {entry.organization}
-          </p>
-        )}
-        <h2>
-          {entry.title}
-          {entry.href.startsWith('https://') && (
-            <span className="external-arrow" aria-label=" (external website)">
-              {' '}
-              ↗
-            </span>
-          )}
-        </h2>
-        {entry.summary && <p className="content-card__summary">{entry.summary}</p>}
-      </Link>
-    </article>
-  )
-}
-
 export function HomeFeatureCard({entry, index}: {entry: ContentEntry; index: number}) {
   const event = entry.href.startsWith('/whats-on/')
   const image = entry.featureImage || entry.image
@@ -55,7 +26,7 @@ export function HomeFeatureCard({entry, index}: {entry: ContentEntry; index: num
           <ParkImage editorial={!event} orgTheme={theme} image={image} />
         </div>
         {entry.organization && <p className="home-feature__category">{entry.organization}</p>}
-        <h2>{entry.title}</h2>
+        <h2 className="card-heading">{entry.title}</h2>
         {event && entry.date ? (
           <time dateTime={entry.date}>{scheduleLabel(entry)}</time>
         ) : (

@@ -1,8 +1,8 @@
 import {drawDots} from '@/lib/identity-dots'
 import type {CSSProperties} from 'react'
 import {QuoteBand} from './quote-band'
-import Link from 'next/link'
 import type {SiteContent} from '@/lib/content'
+import {DisplayLink} from './action-links'
 import {HomeFeatureCard} from './content-card'
 import {ExplorePark} from './explore-park'
 
@@ -30,9 +30,7 @@ export function HomeSections({
           <div className="section-heading">
             <h2 id="history-heading">{labels.history}</h2>
             {home.historyLink?.href && (
-              <Link className="display-link" href={home.historyLink.href}>
-                {home.historyLink.label} <span aria-hidden="true">»</span>
-              </Link>
+              <DisplayLink href={home.historyLink.href}>{home.historyLink.label}</DisplayLink>
             )}
           </div>
           <ol>
@@ -50,9 +48,7 @@ export function HomeSections({
                 </h3>
                 <p>{item.summary}</p>
                 {item.link?.href && (
-                  <Link className="display-link" href={item.link.href}>
-                    {item.link.label} <span aria-hidden="true">»</span>
-                  </Link>
+                  <DisplayLink href={item.link.href}>{item.link.label}</DisplayLink>
                 )}
               </li>
             ))}

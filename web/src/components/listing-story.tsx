@@ -2,7 +2,8 @@ import {themeForEntry, themeStyle} from '@/lib/image-theme'
 import Link from 'next/link'
 import type {ContentEntry, SiteContent} from '@/lib/content'
 import {scheduleLabel} from '@/lib/event-filters'
-import {ListingGrid, ListingQuote, NewsCredit} from './listing-card'
+import {ListingGrid, NewsCredit} from './listing-card'
+import {QuoteBand} from './quote-band'
 import {RichText} from './rich-text'
 import {StoryGallery} from './story-gallery'
 
@@ -61,7 +62,11 @@ export function ListingStory({
             </aside>
           )}
           <div className="listing-story__body">
-            {entry.summary && <p className="lead">{entry.summary}</p>}
+            {entry.summary && (
+              <p className={event ? 'listing-story__summary lead' : 'listing-story__summary'}>
+                {entry.summary}
+              </p>
+            )}
             <RichText value={entry.body} orgTheme={event ? themeForEntry(entry) : undefined} />
             {!event && entry.link?.href && <Link href={entry.link.href}>{entry.link.label}</Link>}
           </div>
@@ -83,7 +88,7 @@ export function ListingStory({
           )}
         </nav>
       )}
-      <ListingQuote quote={site.home.quote} />
+      <QuoteBand quote={site.home.quote} />
     </main>
   )
 }

@@ -11,6 +11,6 @@ $site-width: 75rem;
 }
 
 @mixin publisher-type($step: body) {
-  font: 400 var(--type-#{$step})/var(--leading-#{$step}) var(--body);
+  font: 400 var(--type-#{$step})/var(--leading-body) var(--body);
   text-wrap: pretty;
 }

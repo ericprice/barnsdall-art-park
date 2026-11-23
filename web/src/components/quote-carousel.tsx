@@ -1,8 +1,8 @@
 'use client'
 
 import {useLayoutEffect, useRef, useState, type CSSProperties} from 'react'
-import Link from 'next/link'
 import type {SiteContent} from '@/lib/content'
+import {DotLink} from './action-links'
 import {CarouselChevron} from './carousel-chevron'
 
 type Quote = Pick<NonNullable<SiteContent['home']['quote']>, 'attribution' | 'link'> & {
@@ -28,10 +28,9 @@ function QuoteText({quote}: {quote: Quote}) {
             </span>
           )}
           {quote.link?.href && (
-            <Link href={quote.link.href}>
-              <i className="small-seed" style={dot(1)} aria-hidden="true" />
+            <DotLink href={quote.link.href} style={dot(1)}>
               {quote.link.label}
-            </Link>
+            </DotLink>
           )}
         </footer>
       )}
@@ -52,9 +51,16 @@ export function QuoteCarousel({quotes}: {quotes: Quote[]}) {
       frame.style.height = `${text.getBoundingClientRect().height}px`
     }
     measure()
-    const observer = new ResizeObserver(measure)
+    let resizeFrame = 0
+    const observer = new ResizeObserver(() => {
+      cancelAnimationFrame(resizeFrame)
+      resizeFrame = requestAnimationFrame(measure)
+    })
     observer.observe(text)
-    return () => observer.disconnect()
+    return () => {
+      observer.disconnect()
+      cancelAnimationFrame(resizeFrame)
+    }
   }, [slide.sequence])
 
   function advance(direction: number) {
@@ -70,7 +76,7 @@ export function QuoteCarousel({quotes}: {quotes: Quote[]}) {
     <section className="quote-band" aria-label="Quotations">
       {quotes.length > 1 && (
         <button type="button" aria-label="Previous quotation" onClick={() => advance(-1)}>
-          <CarouselChevron direction="previous" />
+          <CarouselChevron direction="previous" bold />
         </button>
       )}
       <div className="quote-band__content" ref={content} aria-live="polite" aria-atomic="true">
@@ -95,7 +101,7 @@ export function QuoteCarousel({quotes}: {quotes: Quote[]}) {
       </div>
       {quotes.length > 1 && (
         <button type="button" aria-label="Next quotation" onClick={() => advance(1)}>
-          <CarouselChevron direction="next" />
+          <CarouselChevron direction="next" bold />
         </button>
       )}
     </section>

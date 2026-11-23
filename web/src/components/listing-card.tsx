@@ -5,7 +5,7 @@ import type {CSSProperties} from 'react'
 import type {ContentEntry} from '@/lib/content'
 import {readableDate, scheduleLabel} from '@/lib/event-filters'
 import {ParkImage} from './park-image'
-import {DotLink} from './dot-link'
+import {DotLink} from './action-links'
 
 export function NewsCredit({entry}: {entry: ContentEntry}) {
   const {organization} = entry
@@ -52,7 +52,7 @@ function ListingCard({
       className="listing-card"
       style={themeStyle(themeForEntry(entry), news ? entry.image : undefined)}
     >
-      <Link href={entry.href} className="listing-card__link">
+      <Link href={entry.href} className="listing-card__link card-heading">
         <div
           className="listing-card__photo"
           style={{'--olive-dot': `url('/identity/dots/${dot}.svg')`} as CSSProperties}
@@ -65,9 +65,7 @@ function ListingCard({
         <>
           <NewsCredit entry={entry} />
           {entry.summary && <p className="listing-card__summary">{entry.summary}</p>}
-          <DotLink className="listing-card__read" href={entry.href}>
-            {readMore}
-          </DotLink>
+          <DotLink href={entry.href}>{readMore}</DotLink>
         </>
       ) : (
         <p className="listing-credit listing-credit--event">
@@ -78,5 +76,3 @@ function ListingCard({
     </article>
   )
 }
-
-export {QuoteBand as ListingQuote} from './quote-band'

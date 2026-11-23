@@ -1,4 +1,4 @@
-import {DotLink} from './dot-link'
+import {ActionLinks} from './action-links'
 import Link from 'next/link'
 import type {PageSection} from '@/lib/content'
 import {RichText} from './rich-text'
@@ -56,18 +56,7 @@ export function PageSections({sections}: {sections?: PageSection[]}) {
           </div>
         )
       ) : null}
-      {section.links?.length ? (
-        <ul className="section-links" role="list">
-          {section.links.map(
-            (link) =>
-              link.href && (
-                <li key={link._key}>
-                  <DotLink href={link.href}>{link.label}</DotLink>
-                </li>
-              ),
-          )}
-        </ul>
-      ) : null}
+      <ActionLinks links={section.links} />
     </section>
   ))
 }

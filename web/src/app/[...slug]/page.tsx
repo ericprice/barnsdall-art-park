@@ -4,7 +4,6 @@ import {SupportSubpage} from '@/components/support-subpage'
 import {FoundationDirectory} from '@/components/foundation-directory'
 import {foundationHeadings} from '../../../../shared/foundation'
 import type {Metadata} from 'next'
-import Link from 'next/link'
 import {notFound, redirect} from 'next/navigation'
 import {getEntry, getSite} from '@/lib/content'
 import {
@@ -19,7 +18,8 @@ import {EventsBrowser, type ListingParams} from '@/components/events-browser'
 import {ListingStory} from '@/components/listing-story'
 import {NewsListing} from '@/components/news-listing'
 import {PageSections} from '@/components/page-sections'
-import {SectionNavigation} from '@/components/section-navigation'
+import {DisplayLink} from '@/components/action-links'
+import {PageHeading} from '@/components/page-heading'
 import {HistoryTimeline} from '@/components/history-timeline'
 import {ParkImage} from '@/components/park-image'
 import {RichText} from '@/components/rich-text'
@@ -85,14 +85,7 @@ export default async function ContentPage({params, searchParams}: Props) {
   if (/^https?:\/\//.test(entry.href)) redirect(entry.href)
   if (path.startsWith('/whats-on/') || path.startsWith('/news/'))
     return <ListingStory entry={entry} site={site} event={path.startsWith('/whats-on/')} />
-  if (
-    [
-      '/support/initiatives',
-      '/support/supporters',
-      '/support/donate',
-      '/support/volunteer',
-    ].includes(path)
-  )
+  if (['/support/initiatives', '/support/supporters', '/support/donate'].includes(path))
     return <SupportSubpage entry={entry} site={site} path={path} />
   const foundation = entry.template === 'foundation' || path === '/support'
   return (
@@ -101,11 +94,11 @@ export default async function ContentPage({params, searchParams}: Props) {
       className={`interior detail-page ${foundation ? 'foundation-page' : ''}`}
     >
       <article>
-        <header className="page-heading">
-          <h1>{path.startsWith('/support/') ? 'Support the park' : entry.title}</h1>
-          <SectionNavigation path={path} settings={site.settings} />
-        </header>
-        {path.startsWith('/support/') && <h2 className="mission-heading">{entry.title}</h2>}
+        <PageHeading
+          title={path.startsWith('/support/') ? 'Support the park' : entry.title}
+          path={path}
+          settings={site.settings}
+        />
         {foundation && (
           <h2 className="mission-heading">
             {entry.foundationHeadings?.mission ?? foundationHeadings.mission}
@@ -133,9 +126,9 @@ export default async function ContentPage({params, searchParams}: Props) {
           <RichText value={entry.body} />
           {entry.link?.href && (
             <p className="entry-action">
-              <Link className="display-link" href={entry.link.href}>
-                {entry.link.label} <span aria-hidden="true">↗</span>
-              </Link>
+              <DisplayLink href={entry.link.href} arrow="↗">
+                {entry.link.label}
+              </DisplayLink>
             </p>
           )}
         </div>
@@ -153,26 +146,17 @@ export default async function ContentPage({params, searchParams}: Props) {
           <section className="giving-levels" aria-label="Annual giving levels">
             {entry.givingLevels.map((level) => (
               <div key={level._key}>
-                <h2>{level.title}</h2>
+                <h2 className="card-heading">{level.title}</h2>
                 <p>{level.summary}</p>
                 {level.link?.href && (
-                  <Link className="display-link" href={level.link.href}>
-                    {level.link.label} ↗
-                  </Link>
+                  <DisplayLink href={level.link.href} arrow="↗">
+                    {level.link.label}
+                  </DisplayLink>
                 )}
               </div>
             ))}
           </section>
         ) : null}
-        {path === '/support/donate' &&
-          site.settings.donationLink?.href &&
-          !site.settings.donationLink.href.startsWith('/support') && (
-            <p className="donation-action">
-              <a className="display-link" href={site.settings.donationLink.href}>
-                {site.settings.donationLink.label || 'Donate'} ↗
-              </a>
-            </p>
-          )}
       </article>
       <QuoteBand quote={site.home.quote} />
     </main>

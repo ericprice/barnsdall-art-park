@@ -1,33 +1,16 @@
 import Link from 'next/link'
 import type {ContentEntry, ImageSource, PageSection, SiteContent} from '@/lib/content'
 import {ParkImage} from './park-image'
-import {DotLink} from './dot-link'
+import {ActionLinks, DisplayLink} from './action-links'
 import {QuoteBand} from './quote-band'
 import {StoryGallery} from './story-gallery'
 import {RichText} from './rich-text'
 import {PageSections} from './page-sections'
-import {SectionNavigation} from './section-navigation'
+import {PageHeading} from './page-heading'
 import {ContactSignup, LegacyPoliciesLink} from './visitor-forms'
 import './visitor-pages.scss'
 
 type Props = {entry: ContentEntry; site: SiteContent}
-function Links({links}: {links?: PageSection['links']}) {
-  if (!links?.length) return null
-  return (
-    <ul className="visitor-links" role="list">
-      {links.map(
-        (link) =>
-          link.href && (
-            <li key={link._key}>
-              <DotLink href={link.href} download={link.href.endsWith('.pdf') || undefined}>
-                {link.label}
-              </DotLink>
-            </li>
-          ),
-      )}
-    </ul>
-  )
-}
 function Photo({
   image,
   orgTheme,
@@ -61,7 +44,7 @@ function Block({section}: {section: PageSection}) {
     <>
       <h2>{section.title}</h2>
       <RichText value={section.body} />
-      <Links links={section.links} />
+      <ActionLinks links={section.links} downloadPdf />
     </>
   )
 }
@@ -70,11 +53,8 @@ export function VisitPage({entry, site}: Props) {
   const map = entry.sections?.find((section) => section.anchor === 'map')
   return (
     <main id="main-content" className={'visitor-arrival' + (policies ? ' visitor-policies' : '')}>
-      <header className="page-heading">
-        <h1>{entry.title}</h1>
-        <SectionNavigation path={entry.href} settings={site.settings} />
-      </header>
-      {entry.summary && <p className="visitor-summary">{entry.summary}</p>}
+      <PageHeading title={entry.title} path={entry.href} settings={site.settings} />
+      {entry.summary && <p className={policies ? 'visitor-summary' : 'visitor-summary lead'}>{entry.summary}</p>}
       {!policies && (
         <>
           <LegacyPoliciesLink />
@@ -82,7 +62,7 @@ export function VisitPage({entry, site}: Props) {
             <div id="map" className="visitor-map">
               <Photo image={entry.image} priority />
               <RichText value={map?.body} />
-              <Links links={map?.links} />
+              <ActionLinks links={map?.links} variant="display" downloadPdf />
             </div>
           )}
         </>
@@ -117,15 +97,15 @@ export function ParkLandscape({entry, site}: Props) {
         {!!links?.length && (
           <nav className="park-landscape__links" aria-label={entry.title}>
             {links.map((link) => (
-              <Link className="display-link" key={link._key} href={link.href!}>
-                {link.label} <span aria-hidden="true">»</span>
-              </Link>
+              <DisplayLink key={link._key} href={link.href!}>
+                {link.label}
+              </DisplayLink>
             ))}
           </nav>
         )}
         <div className="park-landscape__body">
           {page?.quotation?.text && (
-            <blockquote className="park-landscape__quotation">
+            <blockquote className="park-landscape__quotation lead">
               <p>“{page.quotation.text}”</p>
               {page.quotation.attribution && <footer>{page.quotation.attribution}</footer>}
             </blockquote>
@@ -149,7 +129,7 @@ export function RentalsPage({entry}: Pick<Props, 'entry'>) {
   return (
     <main id="main-content" className="visitor-wire rentals-page">
       <h1>{entry.title}</h1>
-      {entry.summary && <p className="visitor-wire__lead">{entry.summary}</p>}
+      {entry.summary && <p className="visitor-wire__lead lead">{entry.summary}</p>}
       <RichText value={entry.body} />
       <div className="rentals-page__inquiries">
         <Photo image={entry.image} priority />
@@ -176,12 +156,12 @@ export function CentennialPage({entry}: Pick<Props, 'entry'>) {
     <main id="main-content" className="visitor-wire centennial-page">
       {campaign?.title && <p className="visitor-kicker">{campaign.title}</p>}
       <h1>{entry.title}</h1>
-      {entry.summary && <p className="visitor-wire__lead">{entry.summary}</p>}
+      {entry.summary && <p className="visitor-wire__lead lead">{entry.summary}</p>}
       <Photo image={entry.image} priority />
       <div className="centennial-copy" id={campaign?.anchor}>
         <RichText value={entry.body} />
         <RichText value={campaign?.body} />
-        <Links links={campaign?.links} />
+        <ActionLinks links={campaign?.links} downloadPdf />
         <PageSections sections={more} />
       </div>
     </main>
@@ -194,7 +174,7 @@ export function ContactPage({entry, site}: Props) {
   return (
     <main id="main-content" className="visitor-wire contact-page">
       <h1>{entry.title}</h1>
-      {entry.summary && <p className="visitor-wire__lead">{entry.summary}</p>}
+      {entry.summary && <p className="visitor-wire__lead lead">{entry.summary}</p>}
       <RichText value={entry.body} />
       <div className="contact-page__columns">
         {entry.sections?.map((section) => (
@@ -213,7 +193,7 @@ export function OliveGrovePage({entry}: Pick<Props, 'entry'>) {
   return (
     <main id="main-content" className="visitor-wire olive-restoration">
       <h1>{entry.title}</h1>
-      {entry.summary && <p className="visitor-wire__lead">{entry.summary}</p>}
+      {entry.summary && <p className="visitor-wire__lead lead">{entry.summary}</p>}
       <RichText value={entry.body} />
       <div className="rentals-page__inquiries">
         <Photo image={entry.image} priority showCaption />
@@ -229,7 +209,7 @@ export function OliveGrovePage({entry}: Pick<Props, 'entry'>) {
             <h2>{past.title}</h2>
           </summary>
           <RichText value={past.body} />
-          <Links links={past.links} />
+          <ActionLinks links={past.links} downloadPdf />
           {past.entries?.map((item) => (
             <article key={item._key} id={`past-${item._key}`}>
               <h3>{item.title}</h3>

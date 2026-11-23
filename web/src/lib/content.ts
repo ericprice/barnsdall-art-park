@@ -63,7 +63,6 @@ export type ContentEntry = {
   completedHeading?: Page['completedHeading']
   initiativeCards?: Page['initiativeCards']
   donationSections?: Page['donationSections']
-  volunteerOpportunities?: Page['volunteerOpportunities']
   givingLevels?: Page['givingLevels']
 }
 export type NavItem = {
@@ -210,8 +209,6 @@ function toEntry(doc: DocumentEntry): ContentEntry {
     completedHeading: 'completedHeading' in doc ? doc.completedHeading : undefined,
     initiativeCards: 'initiativeCards' in doc ? doc.initiativeCards : undefined,
     donationSections: 'donationSections' in doc ? doc.donationSections : undefined,
-    volunteerOpportunities:
-      'volunteerOpportunities' in doc ? doc.volunteerOpportunities : undefined,
     givingLevels: 'givingLevels' in doc ? doc.givingLevels : undefined,
   }
 }

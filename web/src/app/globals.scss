@@ -119,16 +119,11 @@ strong {
   text-decoration: none;
 }
 .lead {
-  font: 400 var(--type-title)/var(--leading-title) var(--lead);
-  text-transform: none;
+  @include publisher-type(publisher-lead);
 }
 .caption,
 figcaption {
   @include publisher-type;
-}
-.external-arrow {
-  font: 400 0.65em/1 var(--body);
-  white-space: nowrap;
 }
 .seed-dot {
   @include olive-dot;
@@ -144,6 +139,20 @@ figcaption {
   height: 0.64em;
   margin-inline-end: 0.6em;
 }
+.dot-link {
+  @include publisher-type;
+  display: flex;
+  align-items: baseline;
+  inline-size: fit-content;
+  max-inline-size: 100%;
+  text-align: start;
+  text-decoration: underline;
+  text-underline-offset: 0.16em;
+
+  > .small-seed {
+    flex: none;
+  }
+}
 
 .feature-grid {
   display: grid;
@@ -151,30 +160,8 @@ figcaption {
   gap: 3.2rem 2.5rem;
   padding: 1rem var(--gutter) 0;
 }
-.content-card {
-  min-width: 0;
-  text-align: center;
-  h2 {
-    @include display-type(title);
-    max-width: 24rem;
-    margin-inline: auto;
-  }
-}
-.content-card__link {
-  display: block;
-  text-decoration: none;
-  &:hover .content-card__image {
-    transform: rotate(-3deg);
-  }
-}
-.content-card__category {
-  @include publisher-type;
-  margin: 0.6rem 0 0.3rem;
-}
-.content-card__summary {
-  margin: 0.65rem auto 0;
-  max-width: 21rem;
-  @include type-size(body);
+.card-heading + * {
+  margin-block-start: 0.65em;
 }
 .content-card__image {
   position: relative;
@@ -211,32 +198,41 @@ figcaption {
   border-radius: 37% 63% 29% 71% / 42% 52% 48% 58%;
   transform: rotate(-12deg);
 }
+.hero,
+.quote-band {
+  --carousel-control-size: 2.75rem;
+  --carousel-control-inset: 3%;
+}
+:is(.hero__controls, .quote-band) > button {
+  position: absolute;
+  inset-block-start: 50%;
+  inset-inline-start: var(--carousel-control-inset);
+  translate: 0 -50%;
+  display: grid;
+  place-items: center;
+  inline-size: var(--carousel-control-size);
+  min-block-size: var(--carousel-control-size);
+  padding: 0;
+  .carousel-chevron {
+    height: max(1.375rem, site-size(4));
+  }
+  &:last-child {
+    inset-inline: auto var(--carousel-control-inset);
+  }
+}
 .carousel-chevron {
   display: block;
   width: auto;
 }
 .quote-band {
   margin: 3rem var(--gutter) 0;
-  padding: 3rem 5%;
+  padding-block: 3rem;
   background: var(--olive);
   text-align: center;
   position: relative;
-  > button {
-    position: absolute;
-    inset: 50% auto auto 2%;
-    translate: 0 -50%;
-    display: grid;
-    place-items: center;
-    min-width: 2.75rem;
-    min-height: 2.75rem;
-    .carousel-chevron {
-      height: max(0.875rem, #{site-size(1.8)});
-    }
-    &:last-child {
-      inset-inline: auto 2%;
-    }
-  }
   &__content {
+    // Match the space on either side of the visible arrow.
+    margin-inline: calc(2 * var(--carousel-control-inset) + var(--carousel-control-size));
     position: relative;
     display: grid;
     grid-template-rows: minmax(0, 1fr);
@@ -244,10 +240,6 @@ figcaption {
     overflow: clip;
     overflow-clip-margin: 0.5rem;
     transition: height 440ms ease-in-out;
-  }
-  blockquote {
-    width: 82%;
-    margin-inline: auto;
   }
   &__outgoing {
     position: absolute;
@@ -294,19 +286,22 @@ figcaption {
 }
 .history {
   padding: 4rem var(--gutter) 1rem;
+  .section-heading {
+    margin-block-end: 2.2rem;
+  }
   ol {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(min(9rem, 100%), 1fr));
     gap: 1.6rem;
     list-style: none;
-    margin: 2.2rem 0 0;
+    margin: 0;
     padding: 0;
   }
   h3 {
     @include type-size(title);
   }
   p {
-    margin: 0.8rem 0;
+    margin-block: 0.6rem 0.8rem;
     @include type-size(body);
   }
   .display-link {
@@ -342,11 +337,6 @@ figcaption {
 .page-heading {
   margin: 0 auto 2rem;
   padding-inline: var(--gutter);
-  > .lead {
-    max-width: 43rem;
-    margin: 1.5rem auto 0;
-    text-align: center;
-  }
 }
 .subnav {
   @include display-type(title);
@@ -365,10 +355,19 @@ figcaption {
     mix-blend-mode: multiply;
   }
 }
-.interior__intro {
+.interior__intro,
+.interior__body,
+.page-section {
   max-width: 35rem;
+  margin-inline: auto;
   padding-inline: var(--gutter);
-  margin: 0 auto 2rem;
+
+  @media (max-width: 48rem) {
+    max-width: none;
+  }
+}
+.interior__intro {
+  margin-block-end: calc(var(--leading-body) * 1em);
 }
 .interior__image {
   position: relative;
@@ -378,13 +377,6 @@ figcaption {
   img {
     object-fit: cover;
   }
-  &--map {
-    width: min(60%, 50rem);
-    aspect-ratio: 885.84 / 661.68;
-    img {
-      object-fit: contain;
-    }
-  }
   &--organic {
     width: min(43%, 36rem);
     aspect-ratio: 0.9;
@@ -393,17 +385,18 @@ figcaption {
   }
 }
 .interior__body {
-  max-width: 35rem;
-  margin: 0 auto;
-  padding-inline: var(--gutter);
   > p,
   .entry-action {
     margin-top: 1.2rem;
   }
 }
 .rich-text {
-  > * + * {
-    margin-top: 1rem;
+  > :not(p) + *,
+  > p + :not(p) {
+    margin-block-start: 1rem;
+  }
+  > p:has(+ p) {
+    margin-block-end: calc(var(--leading-body) * 2em / 3);
   }
   h2 {
     @include type-size(title);
@@ -466,16 +459,11 @@ figcaption {
   margin: 1rem 0 1.5rem;
 }
 .page-section {
-  max-width: 35rem;
-  margin: 3rem auto 0;
-  padding-inline: var(--gutter);
+  margin-block-start: 3rem;
   scroll-margin-top: 2rem;
   h2 {
     text-align: center;
     @include type-size(title);
-    margin-bottom: 1.3rem;
-  }
-  .lead {
     margin-bottom: 1.3rem;
   }
   &--wide {
@@ -493,13 +481,12 @@ figcaption {
     margin-bottom: 1rem;
   }
 }
-.section-links {
+.action-links {
+  display: grid;
+  gap: 0.4rem;
   list-style: none;
   padding: 0;
-  margin: 1.5rem 0 0;
-  li + li {
-    margin-top: 0.7rem;
-  }
+  margin: 1rem 0 0;
 }
 .section-image {
   position: relative;
@@ -551,14 +538,6 @@ figcaption {
     margin-top: 1rem;
   }
 }
-.map-links {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: center;
-  gap: 1.5rem;
-  padding-inline: var(--gutter);
-  margin: 1.25rem auto 2.5rem;
-}
 .giving-levels {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
@@ -574,12 +553,8 @@ figcaption {
     @include type-size(title);
   }
   p {
-    margin-block: 1rem;
+    margin-block-end: 1rem;
   }
-}
-.donation-action {
-  text-align: center;
-  padding-top: 2rem;
 }
 .detail-page > .quote-band {
   margin-top: 4.5rem;
@@ -605,30 +580,21 @@ figcaption {
     gap: 2rem 1.2rem;
     padding-top: 1rem;
   }
-  .content-card h2 {
-    @include type-size(title);
-  }
   .content-card__image {
     width: 78%;
-  }
-  .content-card__category {
-    @include type-size(body);
-  }
-  .content-card__summary {
-    @include type-size(body);
   }
   .content-card--3 .content-card__image {
     width: 90%;
     margin-block: 0.6rem 1.2rem;
   }
+  .hero,
   .quote-band {
-    padding: 2rem 1.3rem;
+    --carousel-control-inset: -0.25rem;
+  }
+  .quote-band {
+    padding-block: 2rem;
     margin-top: 2rem;
-    blockquote > p {
-      @include type-size(display);
-    }
     footer {
-      @include type-size(body);
       gap: 0.5rem;
     }
   }
@@ -641,40 +607,22 @@ figcaption {
   }
   .section-heading {
     justify-content: space-between;
-    h2 {
-      @include type-size(display);
-    }
     > a {
       position: static;
     }
   }
   .interior {
     padding-top: 2.5rem;
-    h1 {
-      @include type-size(display);
-    }
-  }
-  .page-heading {
-    > .lead {
-      @include type-size(title);
-    }
   }
   .subnav {
     gap: 0.7rem 1rem;
     @include type-size(label);
-  }
-  .interior__intro {
-    @include type-size(title);
   }
   .interior__image {
     width: calc(100% - 2rem);
     &--organic {
       width: 70%;
     }
-  }
-  .interior__body,
-  .page-section {
-    max-width: 34rem;
   }
   .page-section {
     margin-top: 2.5rem;
@@ -687,12 +635,6 @@ figcaption {
     gap: 2rem;
     h3 {
       text-align: left;
-    }
-  }
-  .map-links {
-    gap: 0.8rem 1.2rem;
-    .display-link {
-      @include type-size(label);
     }
   }
   .giving-levels {
@@ -732,16 +674,13 @@ figcaption {
     @include type-size(section);
   }
 
-  .interior__intro,
-  .interior__body {
-    width: min(100%, max(30rem, 47.3%));
-    max-width: none;
-    padding-inline: 0;
-  }
-
-  .interior__intro {
-    @include publisher-type(publisher-lead);
-    margin-bottom: 1em;
+  @media (width > 48rem) {
+    .interior__intro,
+    .interior__body {
+      width: min(100%, max(30rem, 47.3%));
+      max-width: none;
+      padding-inline: 0;
+    }
   }
 
   .page-section--wide {
@@ -750,13 +689,6 @@ figcaption {
 
   .section-columns {
     gap: var(--gutter);
-  }
-
-  @media (max-width: 44rem) {
-    .interior__intro,
-    .interior__body {
-      padding-inline: var(--gutter);
-    }
   }
 }
 @include meta.load-css('../styles/support-subpages');

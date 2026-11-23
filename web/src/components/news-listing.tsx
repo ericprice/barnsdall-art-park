@@ -2,7 +2,8 @@ import {isCutout, themeForEntry, themeStyle} from '@/lib/image-theme'
 import Link from 'next/link'
 import type {ContentEntry, SiteContent, InterfaceText} from '@/lib/content'
 import {listingUrl, type ListingParams} from './events-browser'
-import {ListingGrid, ListingQuote, NewsCredit} from './listing-card'
+import {ListingGrid, NewsCredit} from './listing-card'
+import {QuoteBand} from './quote-band'
 import {ParkImage} from './park-image'
 
 export function NewsListing({
@@ -67,7 +68,7 @@ export function NewsListing({
           )}
         </nav>
       )}
-      <ListingQuote quote={quote} />
+      <QuoteBand quote={quote} />
     </main>
   )
 }

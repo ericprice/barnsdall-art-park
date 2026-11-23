@@ -122,14 +122,26 @@ function Navigation({pathname, settings, initialSunset}: HeaderProps & {pathname
           : header.current?.querySelector<HTMLButtonElement>('.park-navigation__search')
       target?.focus()
     }
-    function onPointer(event: PointerEvent) {
-      if (!header.current?.contains(event.target as Node)) close()
+    function dismissFromOutside(event: MouseEvent) {
+      const target = event.target
+      if (!(target instanceof Element)) return
+      if (!header.current?.contains(target)) {
+        close()
+      } else if (
+        typeof open === 'number' &&
+        !target.closest(
+          '.park-navigation__label > [aria-controls], .park-navigation__group[data-open="true"] > .park-navigation__links',
+        )
+      ) {
+        setOpen(null)
+      }
     }
+    const outsideEvent = typeof open === 'number' ? 'click' : 'pointerdown'
     document.addEventListener('keydown', onKey)
-    document.addEventListener('pointerdown', onPointer)
+    document.addEventListener(outsideEvent, dismissFromOutside, true)
     return () => {
       document.removeEventListener('keydown', onKey)
-      document.removeEventListener('pointerdown', onPointer)
+      document.removeEventListener(outsideEvent, dismissFromOutside, true)
     }
   }, [open, mobile, close])
 
@@ -145,11 +157,14 @@ function Navigation({pathname, settings, initialSunset}: HeaderProps & {pathname
       ref={header}
       className={`park-header ${isHome ? 'park-header--home' : 'park-header--compact'}`}
       data-expanded={open !== null || mobile}
-      onPointerLeave={(event) => {
-        if (event.pointerType === 'mouse' && typeof open === 'number') close()
-      }}
       onBlur={(event) => {
-        if (event.relatedTarget && !event.currentTarget.contains(event.relatedTarget)) close()
+        if (
+          typeof open !== 'number' &&
+          event.relatedTarget &&
+          !event.currentTarget.contains(event.relatedTarget)
+        ) {
+          close()
+        }
       }}
     >
       {isHome && (
@@ -230,6 +245,11 @@ function Navigation({pathname, settings, initialSunset}: HeaderProps & {pathname
                   return pathname === target || pathname.startsWith(target + '/')
                 })
 
+            function toggleSubmenu(trigger: HTMLElement) {
+              opener.current = trigger
+              setOpen(open === index ? null : index)
+            }
+
             function focusSubmenu(event: ReactKeyboardEvent<HTMLElement>) {
               if (event.key !== 'ArrowDown' || !hasChildren) return
               event.preventDefault()
@@ -245,14 +265,6 @@ function Navigation({pathname, settings, initialSunset}: HeaderProps & {pathname
                 className="park-navigation__group"
                 data-open={open === index}
                 data-current={current}
-                onBlur={(event) => {
-                  if (
-                    open === index &&
-                    event.relatedTarget &&
-                    !event.currentTarget.contains(event.relatedTarget)
-                  )
-                    setOpen(null)
-                }}
               >
                 <span className="park-navigation__label">
                   {item.href ? (
@@ -263,10 +275,9 @@ function Navigation({pathname, settings, initialSunset}: HeaderProps & {pathname
                       aria-controls={hasChildren ? panelId : undefined}
                       onClick={(event) => {
                         if (event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return
-                        if (hasChildren && open !== index) {
+                        if (hasChildren) {
                           event.preventDefault()
-                          opener.current = event.currentTarget
-                          setOpen(index)
+                          toggleSubmenu(event.currentTarget)
                         } else {
                           close()
                         }
@@ -281,10 +292,7 @@ function Navigation({pathname, settings, initialSunset}: HeaderProps & {pathname
                       aria-current={current ? 'true' : undefined}
                       aria-expanded={open === index}
                       aria-controls={panelId}
-                      onClick={(event) => {
-                        opener.current = event.currentTarget
-                        setOpen(open === index ? null : index)
-                      }}
+                      onClick={(event) => toggleSubmenu(event.currentTarget)}
                       onKeyDown={focusSubmenu}
                     >
                       {item.title}

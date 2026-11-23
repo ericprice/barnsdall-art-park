@@ -89,35 +89,28 @@ $home-section-gap: max(2rem, site-size(4));
     text-wrap: balance;
   }
   p {
-    max-width: 21rem;
+    max-width: 21em;
     text-align: left;
     text-wrap: pretty;
   }
 }
 .hero__controls {
   position: absolute;
-  inset: 50% 3% auto;
-  translate: 0 -50%;
-  display: flex;
-  justify-content: space-between;
+  inset: 0;
   pointer-events: none;
   button {
-    display: grid;
-    place-items: center;
     pointer-events: auto;
-    min-width: 2.75rem;
-    min-height: 2.75rem;
-    padding: 0.65rem 0.8rem;
     color: var(--org-dark);
     transition: color var(--slide-fade) ease;
-  }
-  .carousel-chevron {
-    height: max(1.5rem, #{site-size(4.35)});
   }
 }
 .celebration {
   position: fixed;
   z-index: 2;
+  transition: opacity 360ms ease;
+  &[data-at-page-end='true'] {
+    opacity: 0;
+  }
   inset-inline-end: max(
     var(--gutter),
     calc((100% - var(--site-width)) / 2 + var(--gutter)),
@@ -175,15 +168,6 @@ $home-section-gap: max(2rem, site-size(4));
   }
   .hero__story {
     width: calc(100% - 3rem);
-    p {
-      max-width: 15rem;
-    }
-  }
-  .hero__controls {
-    inset-inline: -0.5rem;
-    button {
-      padding: 0.2rem 0.4rem;
-    }
   }
 }
 
@@ -194,7 +178,7 @@ $home-section-gap: max(2rem, site-size(4));
   padding: max(2rem, site-size(4)) 0;
   text-align: center;
   h2 {
-    @include type-size(display);
+    @include type-size(section);
   }
 }
 .explore__picture {
@@ -290,6 +274,7 @@ $home-section-gap: max(2rem, site-size(4));
 .explore__description {
   min-height: 1.4em;
   a {
+    margin-inline: auto;
     color: var(--ink);
     text-decoration: none;
   }
@@ -358,10 +343,12 @@ $home-section-gap: max(2rem, site-size(4));
     margin: 0.7em auto;
   }
   .history {
+    .section-heading {
+      margin-block-end: site-size(2.5);
+    }
     ol {
       grid-template-columns: repeat(6, minmax(0, 1fr));
       gap: var(--gutter);
-      margin-top: site-size(1.4);
     }
   }
 }

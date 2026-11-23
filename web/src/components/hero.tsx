@@ -1,9 +1,9 @@
 'use client'
 
-import {useEffect, useRef, useState} from 'react'
-import Link from 'next/link'
+import {useEffect, useState} from 'react'
 import type {SiteContent} from '@/lib/content'
 import {themeForEntry, themeStyle} from '@/lib/image-theme'
+import {DisplayLink, DotLink} from './action-links'
 import {ParkImage} from './park-image'
 import {CarouselChevron} from './carousel-chevron'
 
@@ -14,8 +14,7 @@ export function Hero({slides, celebration}: Pick<SiteContent['home'], 'slides' |
   const [index, setIndex] = useState(0)
   const [hovered, setHovered] = useState(false)
   const [focused, setFocused] = useState(false)
-  const heroRef = useRef<HTMLElement>(null)
-  const [heroInView, setHeroInView] = useState(true)
+  const [atPageEnd, setAtPageEnd] = useState(false)
   const stories = slides
   const active = stories.length ? index % stories.length : 0
   const slide = stories[active]
@@ -41,12 +40,27 @@ export function Hero({slides, celebration}: Pick<SiteContent['home'], 'slides' |
   }, [slides.length, hovered, focused])
 
   useEffect(() => {
-    const hero = heroRef.current
-    if (!hero || !celebration?.title) return
-    const observer = new IntersectionObserver(([entry]) => setHeroInView(entry.isIntersecting))
-    observer.observe(hero)
-    return () => observer.disconnect()
-  }, [celebration?.title, slides.length])
+    if (!celebration?.title) return
+
+    function updatePageEnd() {
+      const page = document.scrollingElement
+      if (!page) return
+
+      const scrollLimit = page.scrollHeight - page.clientHeight
+      setAtPageEnd(scrollLimit > 0 && scrollLimit - page.scrollTop <= 1)
+    }
+
+    updatePageEnd()
+    window.addEventListener('scroll', updatePageEnd, {passive: true})
+    window.addEventListener('resize', updatePageEnd)
+    const observer = new ResizeObserver(updatePageEnd)
+    observer.observe(document.body)
+    return () => {
+      window.removeEventListener('scroll', updatePageEnd)
+      window.removeEventListener('resize', updatePageEnd)
+      observer.disconnect()
+    }
+  }, [celebration?.title])
 
   function advance(direction: number) {
     setIndex((value) => (value + direction + stories.length) % stories.length)
@@ -55,7 +69,6 @@ export function Hero({slides, celebration}: Pick<SiteContent['home'], 'slides' |
   return (
     <>
       <section
-        ref={heroRef}
         className="hero"
         style={themeStyle(themeForEntry(slide), slide.image)}
         aria-roledescription="carousel"
@@ -97,33 +110,28 @@ export function Hero({slides, celebration}: Pick<SiteContent['home'], 'slides' |
           <h1>{slide.title}</h1>
           {slide.summary && <p>{slide.summary}</p>}
           {slide.link?.href && (
-            <Link className="display-link" href={slide.link.href}>
-              {slide.link.label} <span aria-hidden="true">»</span>
-            </Link>
+            <DisplayLink href={slide.link.href}>{slide.link.label}</DisplayLink>
           )}
         </div>
         {stories.length > 1 && (
           <div className="hero__controls">
             <button type="button" onClick={() => advance(-1)} aria-label="Previous featured story">
-              <CarouselChevron direction="previous" />
+              <CarouselChevron direction="previous" bold />
             </button>
             <span className="sr-only" aria-live={focused ? 'polite' : 'off'}>
               {active + 1} of {stories.length}
             </span>
             <button type="button" onClick={() => advance(1)} aria-label="Next featured story">
-              <CarouselChevron direction="next" />
+              <CarouselChevron direction="next" bold />
             </button>
           </div>
         )}
       </section>
-      {celebration?.title && heroInView && (
-        <aside className="celebration">
+      {celebration?.title && (
+        <aside className="celebration" data-at-page-end={atPageEnd} inert={atPageEnd}>
           <h2>{celebration.title}</h2>
           {celebration.link?.href && (
-            <Link href={celebration.link.href}>
-              <span className="small-seed" aria-hidden="true" />
-              {celebration.link.label}
-            </Link>
+            <DotLink href={celebration.link.href}>{celebration.link.label}</DotLink>
           )}
         </aside>
       )}

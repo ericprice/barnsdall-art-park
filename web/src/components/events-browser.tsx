@@ -1,7 +1,8 @@
 import Link from 'next/link'
 import type {ContentEntry, SiteContent, InterfaceText} from '@/lib/content'
 import {eventDay, eventMonths, readableMonth} from '@/lib/event-filters'
-import {ListingGrid, ListingQuote} from './listing-card'
+import {ListingGrid} from './listing-card'
+import {QuoteBand} from './quote-band'
 import {ListingFilter} from './listing-filter'
 
 export type ListingParams = {
@@ -76,7 +77,7 @@ export function EventsBrowser({
           </Link>
         )}
       </nav>
-      <ListingQuote quote={quote} />
+      <QuoteBand quote={quote} />
     </main>
   )
 }

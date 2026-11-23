@@ -4,6 +4,7 @@ import Link from 'next/link'
 import {useRef, useState, type CSSProperties} from 'react'
 import type {ContentEntry} from '@/lib/content'
 import {themeForEntry, themeStyle} from '@/lib/image-theme'
+import {DotLink} from './action-links'
 import {ParkImage} from './park-image'
 
 const dots = [1, 7, 9, 10, 11, 2, 5, 6, 8, 12, 3, 4, 13, 14]
@@ -83,14 +84,12 @@ export function ExplorePark({places, title}: {places: ContentEntry[]; title: str
         ))}
       </ul>
       <p className="explore__description" id="explore-description">
-        <Link href={selected.href}>
-          <span
-            className="small-seed"
-            style={{'--olive-dot': `url("/identity/dots/${descriptionDot}.svg")`} as CSSProperties}
-            aria-hidden="true"
-          />
+        <DotLink
+          href={selected.href}
+          style={{'--olive-dot': `url("/identity/dots/${descriptionDot}.svg")`} as CSSProperties}
+        >
           {selected.summary || selected.title}
-        </Link>
+        </DotLink>
       </p>
     </section>
   )
