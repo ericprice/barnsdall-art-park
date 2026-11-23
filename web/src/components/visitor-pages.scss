@@ -46,8 +46,11 @@
 .visitor-arrival {
   padding-block: 3rem;
   .page-heading {
-    margin-bottom: 3rem;
+    margin-bottom: 2rem;
     text-align: center;
+  }
+  .subnav {
+    margin-block-start: 0.65rem;
   }
   h1 {
     @include type-size(display);

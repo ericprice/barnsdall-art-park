@@ -57,7 +57,6 @@ export default async function ContentPage({params, searchParams}: Props) {
   if (path === '/whats-on')
     return (
       <EventsBrowser
-        resources={site.settings.calendarResources}
         text={site.settings.interfaceText}
         events={site.events}
         params={await searchParams}

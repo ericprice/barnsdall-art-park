@@ -68,7 +68,6 @@ export type NavItem = {
 export type SiteContent = {
   settings: {
     featuredNewsId?: string
-    calendarResources?: SiteSettings['calendarResources']
     interfaceText: InterfaceText
     headerMark?: ImageSource
     footerMark?: ImageSource
@@ -207,7 +206,6 @@ function toEntry(doc: DocumentEntry): ContentEntry {
 function settingsFor(s: SiteSettings | null): SiteContent['settings'] {
   return {
     featuredNewsId: s?.featuredNews?._ref,
-    calendarResources: s?.calendarResources,
     interfaceText: {...interfaceDefaults, ...s?.interfaceText},
     headerMark: s?.headerMark,
     footerMark: s?.footerMark,

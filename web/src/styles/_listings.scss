@@ -1,5 +1,4 @@
 @use 'tokens' as *;
-@use 'dots' as *;
 
 .listing,
 .listing-story {
@@ -76,8 +75,7 @@
 .programme-month {
   margin: site-size(3.5) var(--gutter) 0;
 }
-.programme-month > h2,
-.programme-calendar h2 {
+.programme-month > h2 {
   @include type-size(section);
   margin: 0 0 0.6em;
   text-align: center;
@@ -158,93 +156,7 @@
     margin-left: auto;
   }
 }
-.programme-calendar {
-  margin: max(2rem, site-size(4)) var(--gutter);
-  &__weekdays,
-  &__days,
-  &__bars {
-    display: grid;
-    grid-template-columns: repeat(7, minmax(0, 1fr));
-  }
-  &__controls {
-    display: flex;
-    align-items: baseline;
-    justify-content: center;
-    flex-wrap: wrap;
-    gap: 0.65em;
-    margin-bottom: 1em;
-    @include display-type(label);
-    h2 {
-      margin: 0;
-    }
-  }
-  &__weekdays {
-    text-align: center;
-    @include display-type(label);
-  }
-  &__weeks {
-    border-top: 0.065rem solid currentColor;
-    margin: 0.5em 0 2em;
-  }
-  &__week {
-    border-bottom: 0.065rem solid currentColor;
-    padding-block: 0.35em;
-  }
-  &__days {
-    list-style: none;
-    padding: 0;
-    margin: 0;
-    li {
-      min-width: 0;
-      min-height: 3.5em;
-      padding-inline: 0.35em;
-    }
-    time {
-      display: block;
-    }
-    time[aria-current] {
-      font-weight: 700;
-    }
-  }
-  &__point {
-    display: block;
-    @include type-size(body);
-    margin-block: 0.4em;
-    overflow-wrap: anywhere;
-    text-decoration-color: var(--org-dark);
-    text-decoration-thickness: 0.12em;
-  }
-  &__bars {
-    row-gap: 0.2em;
-  }
-  &__bar {
-    display: block;
-    min-width: 0;
-    min-height: 1.4em;
-    padding-inline: 0.5em;
-    background: var(--org-light, var(--lavender));
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-    text-decoration: none;
-  }
-  &__summary ul {
-    list-style: none;
-    padding: 0;
-    margin: 0;
-    li {
-      padding-block: 0.85em;
-      border-top: 0.065rem solid currentColor;
-    }
-    h3 {
-      @include type-size(title);
-      margin-bottom: 0.15em;
-    }
-    time {
-      white-space: pre-wrap;
-    }
-  }
-}
+
 .news-feature {
   isolation: isolate;
   position: relative;
@@ -449,34 +361,6 @@
     left: 1%;
     right: 1%;
   }
-  .programme-calendar__days li {
-    padding-inline: 0.25em;
-    min-height: 2.75em;
-  }
-  .programme-calendar__point {
-    display: inline-grid;
-    place-items: center;
-    width: 1.35em;
-    height: 1.35em;
-    margin: 0;
-    vertical-align: top;
-    span {
-      display: none;
-    }
-    &::after {
-      content: '';
-      @include olive-dot(6);
-      width: 1cap;
-      height: 1cap;
-      color: var(--org-dark, var(--green));
-    }
-  }
-  .programme-calendar__bar {
-    min-height: 0.65em;
-    span {
-      display: none;
-    }
-  }
 }
 @media (max-width: 32rem) {
   .listing-grid {
@@ -507,99 +391,5 @@
   margin: 1.2em -12%;
   @media (max-width: 44rem) {
     margin: 1.2em 0;
-  }
-}
-.programme-calendar {
-  display: grid;
-  grid-template-columns: minmax(0, 2.65fr) minmax(12rem, 1fr);
-  grid-template-areas: 'filters resources' 'grid resources' 'summary .';
-  align-items: start;
-  gap: 1.5rem var(--gutter);
-  &__filters {
-    grid-area: filters;
-  }
-  &__grid {
-    grid-area: grid;
-    min-width: 0;
-  }
-  &__resources {
-    grid-area: resources;
-    padding: var(--gutter);
-    background: var(--pale-green);
-    h2 {
-      @include type-size(label);
-      margin: 0;
-    }
-    h3 {
-      @include type-size(title);
-    }
-    section {
-      margin-top: 1em;
-    }
-    section + section {
-      padding-top: 1em;
-      border-top: 0.06rem solid;
-    }
-    p,
-    a {
-      margin-top: 0.5em;
-    }
-  }
-  &__summary {
-    grid-area: summary;
-  }
-  &__controls .calendar-month-select {
-    cursor: pointer;
-    position: relative;
-    @include type-size(title);
-    select {
-      position: absolute;
-      inset: 0;
-      width: 100%;
-      height: 100%;
-      opacity: 0;
-      cursor: pointer;
-    }
-    &:focus-within {
-      outline: 0.12rem solid;
-      outline-offset: 0.15em;
-    }
-  }
-  &__legend {
-    padding: 0;
-    list-style: none;
-    margin: 1em 0;
-  }
-  &__legend li::before {
-    content: '';
-    display: inline-block;
-    width: 1.5em;
-    height: 0.5em;
-    margin-right: 0.5em;
-    background: var(--org-dark);
-  }
-  &__week {
-    position: relative;
-    padding-block: 0 0.3em;
-    background: repeating-linear-gradient(
-      to right,
-      currentColor 0 0.045rem,
-      transparent 0.045rem calc(100% / 7)
-    );
-    border-right: 0.045rem solid;
-  }
-  &__days li {
-    padding-top: 0.4em;
-  }
-}
-@media (max-width: 44rem) {
-  .programme-calendar {
-    grid-template-columns: minmax(0, 1fr);
-    grid-template-areas: 'grid' 'filters' 'summary' 'resources';
-    .calendar-month-select {
-      order: -1;
-      width: 100%;
-      text-align: center;
-    }
   }
 }
