@@ -2,7 +2,7 @@ import {themeForEntry, themeStyle} from '@/lib/image-theme'
 import Link from 'next/link'
 import type {ContentEntry, SiteContent} from '@/lib/content'
 import {scheduleLabel} from '@/lib/event-filters'
-import {ListingCard, ListingQuote, NewsCredit} from './listing-card'
+import {ListingGrid, ListingQuote, NewsCredit} from './listing-card'
 import {RichText} from './rich-text'
 import {StoryGallery} from './story-gallery'
 
@@ -70,17 +70,17 @@ export function ListingStory({
       {!event && related.length > 0 && (
         <section className="related-stories">
           <h2>{text.seeAlso}</h2>
-          <div className="listing-grid">
-            {related.map((story) => (
-              <ListingCard key={story.id} entry={story} readMore={text.readMore} news />
-            ))}
-          </div>
+          <ListingGrid entries={related} readMore={text.readMore} news />
         </section>
       )}
       {!event && (previous || next) && (
         <nav className="listing-paging" aria-label="News stories">
           {previous && <Link href={previous.href}>‹‹ {text.previousStory}</Link>}
-          {next && <Link href={next.href}>{text.nextStory} »</Link>}
+          {next && (
+            <Link className="listing-paging__next" href={next.href}>
+              {text.nextStory} »
+            </Link>
+          )}
         </nav>
       )}
       <ListingQuote quote={site.home.quote} />

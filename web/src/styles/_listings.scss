@@ -1,4 +1,5 @@
 @use 'tokens' as *;
+@use 'dots' as *;
 
 .listing,
 .listing-story {
@@ -108,8 +109,8 @@
     position: absolute;
     content: '';
     inset: 10% 24%;
-    border-radius: 38% 62% 55% 45% / 39% 46% 54% 61%;
-    background: var(--org-light);
+    @include olive-dot;
+    background-color: var(--org-light);
   }
 }
 .listing-credit {
@@ -152,8 +153,9 @@
   a {
     text-decoration: none;
   }
-  a:last-child:not(:first-child) {
-    margin-left: auto;
+  &__next {
+    margin-inline-start: auto;
+    text-align: end;
   }
 }
 
@@ -187,6 +189,9 @@
     border-radius: 43% 57% 29% 71% / 42% 53% 47% 58%;
     img {
       object-fit: cover;
+    }
+    &[data-treatment='cutout'] img {
+      opacity: 0.65;
     }
   }
   &__copy {

@@ -1,5 +1,7 @@
 import {themeForEntry, themeStyle} from '@/lib/image-theme'
+import {drawDots} from '@/lib/identity-dots'
 import Link from 'next/link'
+import type {CSSProperties} from 'react'
 import type {ContentEntry} from '@/lib/content'
 import {readableDate, scheduleLabel} from '@/lib/event-filters'
 import {ParkImage} from './park-image'
@@ -15,13 +17,34 @@ export function NewsCredit({entry}: {entry: ContentEntry}) {
   )
 }
 
-export function ListingCard({
-  entry,
+export function ListingGrid({
+  entries,
   news = false,
   readMore,
 }: {
-  entry: ContentEntry
+  entries: ContentEntry[]
   news?: boolean
+  readMore?: string
+}) {
+  const dots = drawDots(entries.length)
+  return (
+    <div className="listing-grid">
+      {entries.map((entry, index) => (
+        <ListingCard key={entry.id} entry={entry} dot={dots[index]} news={news} readMore={readMore} />
+      ))}
+    </div>
+  )
+}
+
+function ListingCard({
+  entry,
+  dot,
+  news,
+  readMore,
+}: {
+  entry: ContentEntry
+  dot: number
+  news: boolean
   readMore?: string
 }) {
   return (
@@ -30,7 +53,10 @@ export function ListingCard({
       style={themeStyle(themeForEntry(entry), news ? entry.image : undefined)}
     >
       <Link href={entry.href} className="listing-card__link">
-        <div className="listing-card__photo">
+        <div
+          className="listing-card__photo"
+          style={{'--olive-dot': `url('/identity/dots/${dot}.svg')`} as CSSProperties}
+        >
           <ParkImage editorial={news} orgTheme={themeForEntry(entry)} image={entry.image} />
         </div>
         <h3>{entry.title}</h3>

@@ -1,8 +1,8 @@
-import {themeForEntry, themeStyle} from '@/lib/image-theme'
+import {isCutout, themeForEntry, themeStyle} from '@/lib/image-theme'
 import Link from 'next/link'
 import type {ContentEntry, SiteContent, InterfaceText} from '@/lib/content'
 import {listingUrl, type ListingParams} from './events-browser'
-import {ListingCard, ListingQuote, NewsCredit} from './listing-card'
+import {ListingGrid, ListingQuote, NewsCredit} from './listing-card'
 import {ParkImage} from './park-image'
 
 export function NewsListing({
@@ -21,6 +21,7 @@ export function NewsListing({
   const totalPages = Math.max(1, Math.ceil(otherArticles.length / pageSize))
   const page = Math.min(totalPages, Math.max(1, parseInt(params.page || '1') || 1))
   const featured = page === 1 ? lead : null
+  const featuredCutout = isCutout(featured?.image)
   const entries = otherArticles.slice((page - 1) * pageSize, page * pageSize)
   const pageHref = (n: number) => listingUrl('/news', {page: n > 1 ? String(n) : undefined})
   return (
@@ -31,11 +32,11 @@ export function NewsListing({
       {featured && (
         <article
           className="news-feature"
-          style={themeStyle(themeForEntry(featured), featured.image)}
+          style={themeStyle(themeForEntry(featured), featuredCutout ? undefined : featured.image)}
         >
-          <div className="news-feature__photo">
+          <div className="news-feature__photo" data-treatment={featuredCutout ? 'cutout' : undefined}>
             <ParkImage
-              editorial
+              editorial={!featuredCutout}
               orgTheme={themeForEntry(featured)}
               image={featured.image}
               sizes="(max-width: 44rem) 90vw, 45vw"
@@ -54,18 +55,16 @@ export function NewsListing({
           </div>
         </article>
       )}
-      {entries.length > 0 && (
-        <div className="listing-grid">
-          {entries.map((entry) => (
-            <ListingCard key={entry.id} entry={entry} readMore={text.readMore} news />
-          ))}
-        </div>
-      )}
+      {entries.length > 0 && <ListingGrid entries={entries} readMore={text.readMore} news />}
       {!articles.length && <p className="listing-empty">{text.noNews}</p>}
       {totalPages > 1 && (
         <nav className="listing-paging" aria-label="News pages">
           {page < totalPages && <Link href={pageHref(page + 1)}>‹‹ {text.previousNews}</Link>}
-          {page > 1 && <Link href={pageHref(page - 1)}>{text.nextNews} »</Link>}
+          {page > 1 && (
+            <Link className="listing-paging__next" href={pageHref(page - 1)}>
+              {text.nextNews} »
+            </Link>
+          )}
         </nav>
       )}
       <ListingQuote quote={quote} />

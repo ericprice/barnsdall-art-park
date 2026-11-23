@@ -1,7 +1,7 @@
 import Link from 'next/link'
 import type {ContentEntry, SiteContent, InterfaceText} from '@/lib/content'
 import {eventDay, eventMonths, readableMonth} from '@/lib/event-filters'
-import {ListingCard, ListingQuote} from './listing-card'
+import {ListingGrid, ListingQuote} from './listing-card'
 import {ListingFilter} from './listing-filter'
 
 export type ListingParams = {
@@ -64,18 +64,14 @@ export function EventsBrowser({
       {groups.slice(0, count).map(([key, entries]) => (
         <section key={key} className="programme-month">
           <h2>{readableMonth(key)}</h2>
-          <div className="listing-grid">
-            {entries.map((entry) => (
-              <ListingCard entry={entry} key={entry.id} />
-            ))}
-          </div>
+          <ListingGrid entries={entries} />
         </section>
       ))}
       {!groups.length && <p className="listing-empty">{text.noEvents}</p>}
       <nav className="listing-paging" aria-label="Event listings">
         {!archive && <Link href={href({period: 'archive'})}>‹‹ {text.previousEvents}</Link>}
         {groups.length > count && (
-          <Link href={href({page: String(count / 2 + 1)})} scroll={false}>
+          <Link className="listing-paging__next" href={href({page: String(count / 2 + 1)})} scroll={false}>
             {text.loadMore} »
           </Link>
         )}
