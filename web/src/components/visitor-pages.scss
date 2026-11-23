@@ -264,12 +264,6 @@
       @include type-size(title);
     }
   }
-  &__quotation {
-    footer {
-      margin-block-start: 0.75em;
-      @include publisher-type;
-    }
-  }
   > .quote-band {
     margin-inline: 0;
   }

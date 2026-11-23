@@ -419,7 +419,7 @@ figcaption {
     text-transform: none;
     margin-top: 1.75rem;
   }
-  blockquote {
+  blockquote:not(.attributed-quote) {
     font: 400 var(--type-title)/var(--leading-title) var(--lead);
     text-transform: none;
   }
@@ -429,6 +429,10 @@ figcaption {
   figcaption {
     margin-top: 0.5rem;
   }
+}
+.attributed-quote footer {
+  margin-block-start: 0.75em;
+  @include publisher-type;
 }
 .rich-text__bullets {
   --marker-indent: calc(var(--small-seed-width) + var(--small-seed-gap));

@@ -1,7 +1,7 @@
 import Link from 'next/link'
 import type {ContentEntry, ImageSource, PageSection, SiteContent} from '@/lib/content'
 import {ParkImage} from './park-image'
-import {ActionLinks, DisplayLink} from './action-links'
+import {ActionLinks, SidebarLinks} from './action-links'
 import {QuoteBand} from './quote-band'
 import {StoryGallery} from './story-gallery'
 import {RichText} from './rich-text'
@@ -84,33 +84,20 @@ export function VisitPage({entry, site}: Props) {
 }
 
 export function ParkLandscape({entry, site}: Props) {
-  const page = entry.parkPage
-  const photos = page?.photos?.length ? page.photos : entry.image ? [entry.image] : []
-  const links = page?.links?.filter((link) => link.href && link.label)
   return (
     <main id="main-content" className="visitor-wire park-landscape">
       <header className="page-heading">
         <h1>{entry.title}</h1>
-        {page?.subtitle && <p className="park-landscape__subtitle">{page.subtitle}</p>}
+        {entry.subtitle && <p className="park-landscape__subtitle">{entry.subtitle}</p>}
       </header>
-      <StoryGallery images={photos} text={interfaceText} showCaption chevrons />
+      <StoryGallery images={entry.gallery ?? []} text={interfaceText} showCaption chevrons />
       <div className="park-landscape__columns">
-        {!!links?.length && (
-          <nav className="park-landscape__links" aria-label={entry.title}>
-            {links.map((link) => (
-              <DisplayLink key={link._key} href={link.href!}>
-                {link.label}
-              </DisplayLink>
-            ))}
-          </nav>
-        )}
+        <SidebarLinks
+          links={entry.sidebarLinks}
+          label={entry.title}
+          className="park-landscape__links"
+        />
         <div className="park-landscape__body">
-          {page?.quotation?.text && (
-            <blockquote className="park-landscape__quotation lead">
-              <p>“{page.quotation.text}”</p>
-              {page.quotation.attribution && <footer>{page.quotation.attribution}</footer>}
-            </blockquote>
-          )}
           <RichText value={entry.body} />
           {entry.sections?.map((section) => (
             <section id={section.anchor} key={section._key}>

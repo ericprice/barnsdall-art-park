@@ -2,7 +2,7 @@ import {themeForEntry, themeStyle} from '@/lib/image-theme'
 import Link from 'next/link'
 import type {ContentEntry, SiteContent} from '@/lib/content'
 import {scheduleLabel} from '@/lib/event-filters'
-import {DisplayLink} from './action-links'
+import {SidebarLinks} from './action-links'
 import {ListingGrid, NewsCredit} from './listing-card'
 import {QuoteBand} from './quote-band'
 import {RichText} from './rich-text'
@@ -19,6 +19,9 @@ export function ListingStory({
   event: boolean
 }) {
   const images = [...(entry.image ? [entry.image] : []), ...(entry.gallery || [])]
+  const ticketLinks = entry.link?.href
+    ? [{_key: 'tickets', href: entry.link.href, label: entry.link.label || text.getTickets}]
+    : undefined
   const index = site.articles.findIndex((article) => article.id === entry.id)
   const related = (entry.relatedStoryIds || []).flatMap(
     (id) => site.articles.find((item) => item.id === id && id !== entry.id) || [],
@@ -55,11 +58,11 @@ export function ListingStory({
                   <time dateTime={entry.date}>{scheduleLabel(entry, true)}</time>
                 </p>
               )}
-              {entry.link?.href && (
-                <DisplayLink className="programme-story__tickets" href={entry.link.href}>
-                  {entry.link.label || text.getTickets}
-                </DisplayLink>
-              )}
+              <SidebarLinks
+                label={text.getTickets}
+                linkClassName="programme-story__tickets"
+                links={ticketLinks}
+              />
             </aside>
           )}
           <div className="listing-story__body">

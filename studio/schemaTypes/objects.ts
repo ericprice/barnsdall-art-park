@@ -114,6 +114,16 @@ export const richText = defineType({
         ],
       },
     }),
+    defineArrayMember({
+      name: 'quotation',
+      title: 'Attributed quote',
+      type: 'object',
+      fields: [
+        defineField({name: 'text', type: 'text', rows: 3, validation: (rule) => rule.required()}),
+        defineField({name: 'attribution', type: 'string'}),
+      ],
+      preview: {select: {title: 'text', subtitle: 'attribution'}},
+    }),
     defineArrayMember({type: 'parkImage'}),
   ],
 })

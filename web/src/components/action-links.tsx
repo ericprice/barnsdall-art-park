@@ -26,6 +26,30 @@ export function DisplayLink({
   )
 }
 
+export function SidebarLinks({
+  links,
+  label,
+  className,
+  linkClassName,
+}: {
+  links?: {_key: string; label?: string; href?: string}[]
+  label: string
+  className?: string
+  linkClassName?: string
+}) {
+  const items = links?.filter((link) => link.label && link.href)
+  if (!items?.length) return null
+  return (
+    <nav className={className} aria-label={label}>
+      {items.map((link) => (
+        <DisplayLink key={link._key} href={link.href!} className={linkClassName}>
+          {link.label}
+        </DisplayLink>
+      ))}
+    </nav>
+  )
+}
+
 export function ActionLinks({
   links,
   variant = 'body',

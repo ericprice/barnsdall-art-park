@@ -46,6 +46,13 @@ export function RichText({value, orgTheme}: {value?: RichTextValue; orgTheme?: O
             },
           },
           types: {
+            quotation: ({value}) =>
+              value.text ? (
+                <blockquote className="attributed-quote lead">
+                  <p>“{value.text}”</p>
+                  {value.attribution && <footer>{value.attribution}</footer>}
+                </blockquote>
+              ) : null,
             parkImage: ({value}: {value: ImageValue}) => (
               <figure>
                 <div className="rich-text__image">

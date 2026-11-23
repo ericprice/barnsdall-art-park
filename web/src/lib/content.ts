@@ -46,7 +46,8 @@ export type ContentEntry = {
   endsAt?: string | null
   link?: {label?: string; href?: string} | null
   kind?: string | null
-  parkPage?: Place['parkPage']
+  subtitle?: string
+  sidebarLinks?: Place['sidebarLinks']
   template?: Page['template']
   relatedStoryIds?: string[]
   sections?: PageSection[]
@@ -126,7 +127,7 @@ function hrefFor(type: string, slug?: string) {
 type DocumentEntry =
   | NonNullable<CONTENT_QUERY_RESULT>
   | NonNullable<NonNullable<NonNullable<SITE_QUERY_RESULT['home']>['featuredContent']>[number]>
-  | NonNullable<NonNullable<NonNullable<SITE_QUERY_RESULT['home']>['featuredPlaces']>[number]>
+  | NonNullable<NonNullable<NonNullable<SITE_QUERY_RESULT['home']>['exploreLocations']>[number]['location']>
   | SITE_QUERY_RESULT['events'][number]
   | SITE_QUERY_RESULT['articles'][number]
   | SEARCH_QUERY_RESULT[number]
@@ -145,11 +146,11 @@ function toEntry(doc: DocumentEntry): ContentEntry {
     href:
       'storyDestination' in doc && doc.storyDestination?.href
         ? doc.storyDestination.href
-        : 'website' in doc && doc.website?.href
-          ? doc.website.href
+        : 'externalUrl' in doc && doc.externalUrl
+          ? doc.externalUrl
           : hrefFor(doc._type, doc.slug?.current),
     summary: doc.summary,
-    image: doc.image,
+    image: 'image' in doc ? doc.image : undefined,
     ...bodyForLayout(
       'body' in doc ? doc.body : undefined,
       hrefFor(doc._type, doc.slug?.current),
@@ -175,11 +176,10 @@ function toEntry(doc: DocumentEntry): ContentEntry {
         ? doc.sourceLink
         : 'ticketLink' in doc
           ? doc.ticketLink
-          : 'website' in doc
-            ? doc.website
-            : null,
+          : null,
     kind: 'kind' in doc ? doc.kind : null,
-    parkPage: 'parkPage' in doc ? doc.parkPage : undefined,
+    subtitle: 'subtitle' in doc ? doc.subtitle || undefined : undefined,
+    sidebarLinks: 'sidebarLinks' in doc ? doc.sidebarLinks : undefined,
     template: 'template' in doc ? doc.template || undefined : undefined,
     relatedStoryIds:
       'relatedStories' in doc ? doc.relatedStories?.map((story) => story._ref) : undefined,
@@ -254,7 +254,9 @@ export const getSite = cache(async (): Promise<SiteContent> => {
       features: (data.home?.featuredContent || []).flatMap((doc) =>
         doc && hasStoryDestination(doc) ? [toEntry(doc)] : [],
       ),
-      places: (data.home?.featuredPlaces || []).flatMap((doc) => (doc ? [toEntry(doc)] : [])),
+      places: (data.home?.exploreLocations || []).flatMap(({location, image}) =>
+        location ? [{...toEntry(location), image}] : [],
+      ),
     },
   }
 })
