@@ -34,17 +34,7 @@ export const link = defineType({
   icon: LinkIcon,
   title: 'Link',
   type: 'object',
-  fields: [
-    linkLabel,
-    linkDestination,
-    defineField({
-      name: 'sectionLabel',
-      title: 'Section navigation label',
-      description: 'Use a shorter label below the page title.',
-      type: 'string',
-      hidden: ({path}) => !path.includes('navigation'),
-    }),
-  ],
+  fields: [linkLabel, linkDestination],
   preview: {select: {title: 'label', subtitle: 'href'}},
 })
 

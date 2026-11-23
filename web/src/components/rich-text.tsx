@@ -1,3 +1,5 @@
+import type {CSSProperties} from 'react'
+import {drawDots} from '@/lib/identity-dots'
 import {PortableText} from 'next-sanity'
 import {ParkImage} from './park-image'
 import {headingAnchor, linkDestination} from '@/lib/body-layout'
@@ -11,6 +13,21 @@ export function RichText({value, orgTheme}: {value?: RichTextValue; orgTheme?: O
       <PortableText
         value={value}
         components={{
+          list: {
+            bullet: ({value, children}) => {
+              const style = Object.fromEntries(
+                drawDots(Math.min(value.children.length, 14)).map((dot, index) => [
+                  `--list-dot-${index + 1}`,
+                  `url('/identity/dots/${dot}.svg')`,
+                ]),
+              ) as CSSProperties
+              return (
+                <ul className="rich-text__bullets" role="list" style={style}>
+                  {children}
+                </ul>
+              )
+            },
+          },
           block: {
             h2: ({value, children}) => <h2 id={headingAnchor(value)}>{children}</h2>,
             h3: ({value, children}) => <h3 id={headingAnchor(value)}>{children}</h3>,

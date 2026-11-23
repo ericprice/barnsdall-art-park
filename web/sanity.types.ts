@@ -98,7 +98,6 @@ export type Link = {
   _type: 'link'
   label?: string
   href?: string
-  sectionLabel?: string
 }
 
 export type SanityImageAssetReference = {
@@ -415,16 +414,6 @@ export type SiteSettings = {
       } & Link
     >
     _type: 'navigationItem'
-    _key: string
-  }>
-  sectionMenus?: Array<{
-    path?: string
-    links?: Array<
-      {
-        _key: string
-      } & Link
-    >
-    _type: 'sectionMenu'
     _key: string
   }>
   calendarResources?: Array<{
@@ -749,16 +738,6 @@ export type SITE_QUERY_RESULT = {
         } & Link
       >
       _type: 'navigationItem'
-      _key: string
-    }>
-    sectionMenus?: Array<{
-      path?: string
-      links?: Array<
-        {
-          _key: string
-        } & Link
-      >
-      _type: 'sectionMenu'
       _key: string
     }>
     calendarResources?: Array<{

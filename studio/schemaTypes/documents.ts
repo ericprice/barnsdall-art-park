@@ -81,6 +81,8 @@ export const siteSettings = defineType({
     }),
     defineField({
       name: 'navigation',
+      description:
+        'Child links and labels are shared by the header dropdown and section navigation.',
       type: 'array',
       of: [
         defineArrayMember({
@@ -92,27 +94,6 @@ export const siteSettings = defineType({
             defineField({name: 'children', type: 'array', of: [defineArrayMember({type: 'link'})]}),
           ],
           preview: {select: {title: 'title'}},
-        }),
-      ],
-    }),
-    defineField({
-      name: 'sectionMenus',
-      title: 'Section navigation',
-      type: 'array',
-      of: [
-        defineArrayMember({
-          name: 'sectionMenu',
-          type: 'object',
-          fields: [
-            defineField({
-              name: 'path',
-              title: 'Section path',
-              type: 'string',
-              validation: (r) => r.required(),
-            }),
-            defineField({name: 'links', type: 'array', of: [defineArrayMember({type: 'link'})]}),
-          ],
-          preview: {select: {title: 'path'}},
         }),
       ],
     }),

@@ -9,12 +9,7 @@ export function SectionNavigation({
   settings: SiteContent['settings']
 }) {
   const section = '/' + path.split('/')[1]
-  const submenu = settings.sectionMenus?.find((menu) => menu.path === section)
-  const links =
-    submenu?.links ??
-    (section === '/support'
-      ? settings.navigation.find((item) => item.href === section)?.children
-      : undefined)
+  const links = settings.navigation.find((item) => item.href === section)?.children
   if (!links?.length) return null
   const current =
     links.find((link) => link.href === path) ??
@@ -29,7 +24,7 @@ export function SectionNavigation({
               href={link.href}
               aria-current={link === current ? 'page' : undefined}
             >
-              {link.sectionLabel || link.label}
+              {link.label}
             </Link>
           ),
       )}

@@ -62,10 +62,7 @@ export function PageSections({sections}: {sections?: PageSection[]}) {
             (link) =>
               link.href && (
                 <li key={link._key}>
-                  <DotLink href={link.href}>
-                    {link.label}{' '}
-                    <span aria-hidden="true">{link.href.startsWith('https://') ? '↗' : '»'}</span>
-                  </DotLink>
+                  <DotLink href={link.href}>{link.label}</DotLink>
                 </li>
               ),
           )}

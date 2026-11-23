@@ -137,6 +137,9 @@
     color: var(--paper);
   }
 }
+.park-header--compact {
+  padding-block-start: 0.2rem;
+}
 .compact-home {
   display: grid;
   place-items: center;

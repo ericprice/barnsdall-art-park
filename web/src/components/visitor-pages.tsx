@@ -20,7 +20,6 @@ function Links({links}: {links?: PageSection['links']}) {
             <li key={link._key}>
               <DotLink href={link.href} download={link.href.endsWith('.pdf') || undefined}>
                 {link.label}
-                <span aria-hidden="true"> »</span>
               </DotLink>
             </li>
           ),

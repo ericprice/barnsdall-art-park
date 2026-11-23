@@ -27,7 +27,9 @@ function SupporterDirectory({entry}: {entry: ContentEntry}) {
           open={index === 0}
           id={'supporters-' + period._key}
         >
-          <summary>{period.title}</summary>
+          <summary>
+            <span>{period.title}</span>
+          </summary>
           <div className="supporter-groups">
             {period.groups?.map((group) => (
               <section key={group._key} aria-label={group.title}>

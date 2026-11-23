@@ -63,7 +63,7 @@ export type ContentEntry = {
 export type NavItem = {
   title: string
   href?: string
-  children?: {label: string; href: string; sectionLabel?: string}[]
+  children?: {label: string; href: string}[]
 }
 export type SiteContent = {
   settings: {
@@ -75,7 +75,6 @@ export type SiteContent = {
     copyright?: string
     subscribeLink?: {label?: string; href?: string}
     footerLinks?: {label?: string; href?: string; _key?: string}[]
-    sectionMenus?: SiteSettings['sectionMenus']
     title: string
     description: string
     sunsetLabel?: string
@@ -215,7 +214,6 @@ function settingsFor(s: SiteSettings | null): SiteContent['settings'] {
     copyright: s?.copyright,
     subscribeLink: s?.subscribeLink,
     footerLinks: s?.footerLinks,
-    sectionMenus: s?.sectionMenus,
     title: s?.title || '',
     description: s?.description || '',
     sunsetLabel: s?.sunsetLabel,
@@ -238,7 +236,7 @@ function settingsFor(s: SiteSettings | null): SiteContent['settings'] {
           href: n.href,
           children: n.children
             ?.filter((l) => l.label && l.href)
-            .map((l) => ({label: l.label!, href: l.href!, sectionLabel: l.sectionLabel})),
+            .map((l) => ({label: l.label!, href: l.href!})),
         }))
       : [],
   }

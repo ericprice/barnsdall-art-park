@@ -1,21 +1,10 @@
-import {randomInt} from 'node:crypto'
+import {drawDots} from '@/lib/identity-dots'
 import type {CSSProperties} from 'react'
 import {QuoteBand} from './quote-band'
 import Link from 'next/link'
 import type {SiteContent} from '@/lib/content'
 import {HomeFeatureCard} from './content-card'
 import {ExplorePark} from './explore-park'
-
-// Draw the full set without replacement before starting a new set.
-function drawTimelineDots(count: number) {
-  const available: number[] = []
-  return Array.from({length: count}, () => {
-    if (!available.length) {
-      for (let number = 1; number <= 14; number++) available.push(number)
-    }
-    return available.splice(randomInt(available.length), 1)[0]
-  })
-}
 
 export function HomeSections({
   home,
@@ -24,7 +13,7 @@ export function HomeSections({
   home: SiteContent['home']
   labels: SiteContent['settings']['interfaceText']
 }) {
-  const dots = drawTimelineDots(home.timeline.length)
+  const dots = drawDots(home.timeline.length)
   return (
     <>
       <ExplorePark places={home.places} title={labels.explore} />
