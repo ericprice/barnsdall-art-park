@@ -1,4 +1,5 @@
 @use 'tokens' as *;
+@use 'dots' as *;
 
 .park-header {
   position: relative;
@@ -33,7 +34,8 @@
   align-items: center;
   justify-content: space-between;
   gap: 1em;
-  min-height: 2.85em;
+  min-height: 2.5em;
+  padding-top: 0.8em;
   font-size: var(--type-label);
   line-height: 1;
 
@@ -57,15 +59,15 @@
   a {
     position: relative;
     isolation: isolate;
-    padding: 0.5em 0;
+    padding: 0.35em 0;
     &::before {
       content: '';
       position: absolute;
       z-index: -1;
       top: 50%;
       left: 50%;
-      width: 2.4em;
-      height: 2.55em;
+      width: 2.6em;
+      height: 2.85em;
       background: var(--lavender);
       border-radius: 61% 39% 56% 44% / 43% 61% 39% 57%;
       transform: translate(-50%, -50%) rotate(9deg);
@@ -119,8 +121,9 @@
     white-space: nowrap;
     gap: 0.08em;
   }
-  &__label button {
-    min-width: 0.5em;
+  // Center the magnifier on the lettering’s cap height.
+  &__search svg {
+    translate: 0 -0.035em;
   }
   &__group[data-open='true'] > &__label,
   &__search[aria-expanded='true'] {
@@ -241,18 +244,16 @@
 
 .header-search button i,
 .foundation-newsletter button i {
-  display: inline-block;
-  width: 0.78em;
-  height: 0.6em;
-  background: currentColor;
-  border-radius: 50% 60% 48% 57%;
-  transform: rotate(30deg);
+  @include olive-dot(14);
+  width: 0.7em;
+  height: 0.7em;
 }
 
 .park-footer {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
   column-gap: var(--gutter);
+  row-gap: 1.35em;
   margin: 5rem var(--gutter) 0;
   padding-bottom: 4rem;
   font-size: var(--type-body);
@@ -266,6 +267,17 @@
     padding: 0;
     list-style: none;
   }
+  &__foundation,
+  &__connect {
+    display: grid;
+    grid-template-rows: subgrid;
+    grid-row: span 2;
+    align-items: start;
+  }
+  &__foundation > p,
+  &__fineprint > p:first-child {
+    margin-top: 0;
+  }
   &__wordmark {
     display: block;
     width: 81%;
@@ -277,9 +289,6 @@
       height: auto;
     }
   }
-  &__wordmark + p {
-    margin-top: 1.35em;
-  }
   &__connect {
     color: var(--green);
   }
@@ -287,16 +296,21 @@
     display: flex;
     align-items: center;
     justify-content: space-between;
-    gap: 1em;
+    @include display;
+    font-size: var(--type-display);
+    line-height: 1;
+    gap: 0.15em;
     h2 {
-      font-size: var(--type-display);
-      line-height: 1;
+      font-size: inherit;
+      line-height: 1cap;
+      text-box-trim: trim-both;
+      text-box-edge: cap alphabetic;
     }
     ul {
       display: flex;
       align-items: center;
       justify-content: flex-end;
-      gap: 0.6em;
+      gap: 0.15em;
     }
     a,
     img {
@@ -304,7 +318,7 @@
     }
     a:has(img) {
       position: relative;
-      width: calc(var(--type-display) * 0.68);
+      width: 1cap;
       aspect-ratio: 1;
     }
   }
@@ -312,7 +326,7 @@
     display: grid;
     grid-template-columns: 1fr 1fr;
     gap: var(--gutter);
-    margin: 0.48em 0 0.8em;
+    margin: 0.48em 0 0;
     @include display;
     font-size: var(--type-label);
     line-height: 1;
@@ -324,8 +338,7 @@
       text-decoration: none;
     }
   }
-  &__connect > p,
-  &__legal {
+  &__fineprint {
     color: color-mix(in srgb, var(--green) 92%, black);
   }
   &__legal {
@@ -334,7 +347,7 @@
   }
 }
 .foundation-newsletter {
-  margin: 0.35em 0;
+  margin: 0.48em 0 0;
   @include display;
   font-size: var(--type-label);
   line-height: 1;
@@ -385,6 +398,13 @@
   }
 }
 @media (max-width: 48rem) {
+  .park-utility {
+    font-size: clamp(0.875rem, 4.4vw, var(--type-label));
+    padding-top: 0.25em;
+    &__actions {
+      align-self: flex-end;
+    }
+  }
   .park-navigation {
     flex-wrap: wrap;
     padding: 0.22em 0;
@@ -393,6 +413,9 @@
       align-items: center;
       flex: 1;
       justify-content: space-between;
+      svg {
+        translate: 0 -0.065em;
+      }
       button {
         min-height: 1.7em;
       }
@@ -440,8 +463,11 @@
     &__wordmark {
       max-width: 20rem;
     }
-    &__heading a:has(img) {
-      width: calc(var(--type-section) * 0.78);
+    &__foundation,
+    &__connect {
+      grid-row: auto;
+      grid-template-rows: auto auto;
+      gap: 1.35em;
     }
   }
 }

@@ -1,8 +1,21 @@
+import {randomInt} from 'node:crypto'
+import type {CSSProperties} from 'react'
 import {QuoteBand} from './quote-band'
 import Link from 'next/link'
 import type {SiteContent} from '@/lib/content'
 import {HomeFeatureCard} from './content-card'
 import {ExplorePark} from './explore-park'
+
+// Draw the full set without replacement before starting a new set.
+function drawTimelineDots(count: number) {
+  const available: number[] = []
+  return Array.from({length: count}, () => {
+    if (!available.length) {
+      for (let number = 1; number <= 14; number++) available.push(number)
+    }
+    return available.splice(randomInt(available.length), 1)[0]
+  })
+}
 
 export function HomeSections({
   home,
@@ -11,8 +24,10 @@ export function HomeSections({
   home: SiteContent['home']
   labels: SiteContent['settings']['interfaceText']
 }) {
+  const dots = drawTimelineDots(home.timeline.length)
   return (
     <>
+      <ExplorePark places={home.places} title={labels.explore} />
       {home.features.length > 0 && (
         <section className="feature-grid" aria-label="Around the park">
           {home.features.map((entry, i) => (
@@ -20,7 +35,6 @@ export function HomeSections({
           ))}
         </section>
       )}
-      <ExplorePark places={home.places} title={labels.explore} />
       <QuoteBand quote={home.quote} />
       {home.timeline.length > 0 && (
         <section className="history" aria-labelledby="history-heading">
@@ -33,10 +47,16 @@ export function HomeSections({
             )}
           </div>
           <ol>
-            {home.timeline.map((item) => (
+            {home.timeline.map((item, index) => (
               <li key={item.id}>
                 <h3>
-                  <span className="seed-dot" aria-hidden="true" />
+                  <span
+                    className="seed-dot"
+                    style={
+                      {'--olive-dot': `url('/identity/dots/${dots[index]}.svg')`} as CSSProperties
+                    }
+                    aria-hidden="true"
+                  />
                   {item.year}
                 </h3>
                 <p>{item.summary}</p>

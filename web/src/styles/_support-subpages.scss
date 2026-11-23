@@ -1,4 +1,5 @@
 @use './tokens' as *;
+@use './dots' as *;
 
 .support-subpage {
   .page-heading {
@@ -21,13 +22,10 @@
     text-underline-offset: 0.18em;
     &::before {
       content: '';
-      display: inline-block;
-      margin-right: 0.7em;
-      width: 0.5em;
+      @include olive-dot(6);
+      width: 0.6em;
       height: 0.65em;
-      border-radius: 60% 45% 58% 47%;
-      background: currentColor;
-      transform: rotate(22deg);
+      margin-inline-end: 0.7em;
     }
   }
   .support-label {

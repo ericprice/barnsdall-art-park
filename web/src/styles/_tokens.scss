@@ -7,9 +7,11 @@
   --lavender: #d4c3ff;
   --ink: #080808;
   --paper: #fff;
+  --site-width: 90rem;
+  --heading-tracking: -0.02em;
   --gutter: clamp(1rem, 2vw, 2rem);
-  --display: var(--font-board-display), var(--font-low), var(--font-publisher-sans), sans-serif;
-  --lead: var(--font-high), var(--font-publisher), serif;
+  --display: 'Barnsdall Low', var(--font-publisher-sans), sans-serif;
+  --lead: 'Barnsdall High', var(--font-publisher), serif;
   --body: var(--font-publisher), Georgia, serif;
   --caption: var(--font-publisher-sans), Arial, sans-serif;
 }
@@ -20,12 +22,12 @@
   text-transform: uppercase;
 }
 
-// The 1024-wide interface boards use 84, 54, 34, 24 and 15 point type.
+// Barnsdall Low is wider than the display face on the 1024-wide boards.
 :root {
-  --type-display: clamp(3rem, 8.203vw, 7.383rem);
-  --type-section: clamp(2.2rem, 5.273vw, 4.746rem);
-  --type-title: clamp(1.55rem, 3.32vw, 2.988rem);
-  --type-label: clamp(1.125rem, 2.344vw, 2.11rem);
+  --type-display: clamp(2.75rem, 7.15vw, 6.435rem);
+  --type-section: clamp(2rem, 4.7vw, 4.23rem);
+  --type-title: clamp(1.45rem, 3vw, 2.7rem);
+  --type-label: clamp(1.1rem, 2.15vw, 1.935rem);
   --type-body: clamp(1rem, 1.465vw, 1.318rem);
   --type-caption: var(--type-body);
 }

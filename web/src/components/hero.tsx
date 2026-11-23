@@ -1,6 +1,6 @@
 'use client'
 
-import {useEffect, useState} from 'react'
+import {useEffect, useRef, useState} from 'react'
 import Link from 'next/link'
 import type {SiteContent} from '@/lib/content'
 import {themeForEntry, themeStyle} from '@/lib/image-theme'
@@ -10,6 +10,8 @@ export function Hero({slides, celebration}: Pick<SiteContent['home'], 'slides' |
   const [index, setIndex] = useState(0)
   const [hovered, setHovered] = useState(false)
   const [focused, setFocused] = useState(false)
+  const heroRef = useRef<HTMLElement>(null)
+  const [heroInView, setHeroInView] = useState(true)
   const stories = slides
   const active = stories.length ? index % stories.length : 0
   const slide = stories[active]
@@ -34,13 +36,23 @@ export function Hero({slides, celebration}: Pick<SiteContent['home'], 'slides' |
     }
   }, [slides.length, hovered, focused])
 
+  useEffect(() => {
+    const hero = heroRef.current
+    if (!hero || !celebration?.title) return
+    const observer = new IntersectionObserver(([entry]) => setHeroInView(entry.isIntersecting))
+    observer.observe(hero)
+    return () => observer.disconnect()
+  }, [celebration?.title, slides.length])
+
   function advance(direction: number) {
     setIndex((value) => (value + direction + stories.length) % stories.length)
   }
   if (!slide) return null
   return (
     <section
+      ref={heroRef}
       className="hero"
+      data-has-celebration={celebration?.title ? true : undefined}
       style={themeStyle(themeForEntry(slide), slide.image)}
       aria-roledescription="carousel"
       aria-label="Featured stories"
@@ -93,7 +105,7 @@ export function Hero({slides, celebration}: Pick<SiteContent['home'], 'slides' |
           </button>
         </div>
       )}
-      {celebration?.title && (
+      {celebration?.title && heroInView && (
         <aside className="celebration">
           <h2>{celebration.title}</h2>
           {celebration.link?.href && (

@@ -63,12 +63,10 @@ function Navigation({pathname, settings, initialSunset}: HeaderProps & {pathname
   const [initialQuery, setInitialQuery] = useState('')
   const header = useRef<HTMLElement>(null)
   const opener = useRef<HTMLElement | null>(null)
-  const pinnedMenu = useRef<number | null>(null)
   const mobileButton = useRef<HTMLButtonElement>(null)
   const active = typeof open === 'number' ? settings.navigation[open] : undefined
 
   function close() {
-    pinnedMenu.current = null
     setOpen(null)
     setMobile(false)
     setInitialQuery('')
@@ -131,7 +129,6 @@ function Navigation({pathname, settings, initialSunset}: HeaderProps & {pathname
 
   function toggleSearch(trigger: HTMLButtonElement) {
     opener.current = trigger
-    pinnedMenu.current = null
     setMobile(false)
     setInitialQuery('')
     setOpen(open === 'search' ? null : 'search')
@@ -157,7 +154,6 @@ function Navigation({pathname, settings, initialSunset}: HeaderProps & {pathname
           event.pointerType === 'mouse' &&
           !mobile &&
           open !== 'search' &&
-          pinnedMenu.current === null &&
           !header.current?.contains(document.activeElement)
         )
           setOpen(null)
@@ -232,6 +228,14 @@ function Navigation({pathname, settings, initialSunset}: HeaderProps & {pathname
                 className="park-navigation__group"
                 data-open={open === index}
                 data-current={current}
+                onBlur={(event) => {
+                  if (
+                    open === index &&
+                    event.relatedTarget &&
+                    !event.currentTarget.contains(event.relatedTarget)
+                  )
+                    setOpen(null)
+                }}
                 onPointerEnter={(event) => {
                   if (
                     event.pointerType === 'mouse' &&
@@ -239,8 +243,8 @@ function Navigation({pathname, settings, initialSunset}: HeaderProps & {pathname
                     !mobileButton.current?.offsetParent &&
                     open !== 'search'
                   ) {
-                    if (pinnedMenu.current !== index) pinnedMenu.current = null
-                    setOpen(index)
+                    opener.current = event.currentTarget.querySelector('a')
+                    setOpen(item.children?.length ? index : null)
                   }
                 }}
               >
@@ -248,26 +252,34 @@ function Navigation({pathname, settings, initialSunset}: HeaderProps & {pathname
                   <Link
                     href={item.href || '/'}
                     aria-current={current ? 'page' : undefined}
-                    onClick={close}
+                    aria-expanded={item.children?.length ? open === index : undefined}
+                    aria-controls={
+                      item.children?.length && open === index ? 'navigation-panel' : undefined
+                    }
+                    onClick={(event) => {
+                      if (event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return
+                      if (item.children?.length && open !== index) {
+                        event.preventDefault()
+                        opener.current = event.currentTarget
+                        setOpen(index)
+                      } else {
+                        close()
+                      }
+                    }}
+                    onKeyDown={(event) => {
+                      if (event.key !== 'ArrowDown' || !item.children?.length) return
+                      event.preventDefault()
+                      opener.current = event.currentTarget
+                      setOpen(index)
+                      requestAnimationFrame(() => {
+                        header.current
+                          ?.querySelector<HTMLAnchorElement>('#navigation-panel a')
+                          ?.focus()
+                      })
+                    }}
                   >
                     {item.title}
                   </Link>
-                  {!!item.children?.length && (
-                    <button
-                      type="button"
-                      aria-label={`${item.title} submenu`}
-                      aria-expanded={open === index}
-                      aria-controls="navigation-panel"
-                      onClick={(event) => {
-                        opener.current = event.currentTarget
-                        const next = pinnedMenu.current === index ? null : index
-                        pinnedMenu.current = next
-                        setOpen(next)
-                      }}
-                    >
-                      +
-                    </button>
-                  )}
                 </span>
                 {open === index && submenu}
               </div>

@@ -1,5 +1,26 @@
 @use 'sass:meta';
 @use '../styles/tokens' as *;
+@use '../styles/dots' as *;
+
+@font-face {
+  font-family: 'Barnsdall Low';
+  src:
+    url('../fonts/barnsdall-low.woff2') format('woff2'),
+    url('../fonts/barnsdall-low.woff') format('woff');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Barnsdall High';
+  src:
+    url('../fonts/barnsdall-high.woff2') format('woff2'),
+    url('../fonts/barnsdall-high.woff') format('woff');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
 
 * {
   box-sizing: border-box;
@@ -57,13 +78,14 @@ h2,
 h3,
 h4 {
   @include display;
+  letter-spacing: var(--heading-tracking);
   line-height: 1;
 }
 strong {
   font-weight: 700;
 }
 .site-shell {
-  max-width: 90rem;
+  max-width: var(--site-width);
   margin-inline: auto;
 }
 .sr-only {
@@ -105,23 +127,18 @@ figcaption {
   white-space: nowrap;
 }
 .seed-dot {
-  display: inline-block;
-  width: 0.65em;
-  height: 0.85em;
-  margin-right: 0.08em;
-  vertical-align: -0.02em;
-  background: currentColor;
-  border-radius: 53% 47% 42% 58% / 60% 50% 50% 40%;
-  transform: rotate(-14deg);
+  @include olive-dot;
+  width: 1cap;
+  height: 1cap;
+  mask-position: right center;
+  margin-inline-end: 0.12em;
+  vertical-align: baseline;
 }
 .small-seed {
-  display: inline-block;
-  width: 0.45em;
-  height: 0.6em;
-  margin-right: 0.6em;
-  background: currentColor;
-  border-radius: 50% 45% 55% 40%;
-  transform: rotate(24deg);
+  @include olive-dot;
+  width: 0.5em;
+  height: 0.64em;
+  margin-inline-end: 0.6em;
 }
 
 .feature-grid {
@@ -209,9 +226,10 @@ figcaption {
     margin-inline: auto;
   }
   blockquote > p {
-    @include display;
-    font-size: var(--type-display);
-    line-height: 0.84;
+    font: 400 var(--type-display)/0.94 var(--lead);
+    text-transform: uppercase;
+    letter-spacing: var(--heading-tracking);
+    text-wrap: balance;
   }
   footer {
     display: flex;

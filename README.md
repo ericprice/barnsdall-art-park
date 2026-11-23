@@ -63,7 +63,7 @@ The dates and giving levels are staging content. When adding new references, pub
 
 ## Design and assets
 
-The supplied interface plates determine the desktop layout, header overlays, feature crops and type scale. Their oversized display lettering uses the supplied project’s Aline Gothic. Barnsdall High is available for leads and the supplied Barnsdall Low provides the display fallback. Publisher Rounded Slab and Publisher Sans provide the text and captions.
+The supplied interface plates determine the desktop layout, header overlays, feature crops and type scale. The site uses Barnsdall Low for display type and Barnsdall High for leads. Publisher Rounded Slab and Publisher Sans provide the text and captions.
 
 The licensed Publisher webfonts are included in `web/src/fonts/`.
 

@@ -1,0 +1,6 @@
+// Original olive silhouettes, in plate order, from page 10 of the 29 October identity presentation.
+@mixin olive-dot($number: 10) {
+  display: inline-block;
+  background-color: currentColor;
+  mask: var(--olive-dot, url('/identity/dots/#{$number}.svg')) center / contain no-repeat;
+}

@@ -8,30 +8,6 @@ import {SiteFooter} from '@/components/site-footer'
 import {SanityLive} from '@/sanity/live'
 import './globals.scss'
 
-const boardDisplay = localFont({
-  src: '../fonts/aline-gothic.woff2',
-  variable: '--font-board-display',
-  weight: '400',
-  display: 'swap',
-  fallback: [],
-  adjustFontFallback: false,
-})
-const high = localFont({
-  src: '../fonts/barnsdall-high.woff2',
-  variable: '--font-high',
-  display: 'swap',
-  weight: '400',
-  fallback: [],
-  adjustFontFallback: false,
-})
-const low = localFont({
-  src: '../fonts/barnsdall-low.woff2',
-  variable: '--font-low',
-  display: 'swap',
-  weight: '400',
-  fallback: [],
-  adjustFontFallback: false,
-})
 const publisher = localFont({
   src: [
     {path: '../fonts/publisher.woff2', style: 'normal', weight: '400'},
@@ -66,7 +42,7 @@ export default async function RootLayout({children}: {children: React.ReactNode}
     <html
       lang="en"
       data-scroll-behavior="smooth"
-      className={`${boardDisplay.variable} ${high.variable} ${low.variable} ${publisher.variable} ${publisherSans.variable}`}
+      className={`${publisher.variable} ${publisherSans.variable}`}
     >
       <body>
         <a href="#main-content" className="skip-link">

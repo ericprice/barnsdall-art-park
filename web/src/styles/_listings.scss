@@ -1,4 +1,5 @@
 @use 'tokens' as *;
+@use 'dots' as *;
 
 .listing,
 .listing-story {
@@ -472,10 +473,10 @@
     }
     &::after {
       content: '';
-      width: 0.55em;
-      height: 0.7em;
-      border-radius: 45% 52% 38% 62%;
-      background: var(--org-dark, var(--green));
+      @include olive-dot(6);
+      width: 1cap;
+      height: 1cap;
+      color: var(--org-dark, var(--green));
     }
   }
   .programme-calendar__bar {

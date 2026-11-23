@@ -10,6 +10,7 @@ test('park sunset matches USNO through both solstices and daylight saving transi
     '2026-06-21': '8:08 PM',
     '2026-11-01': '5:00 PM',
     '2026-11-19': '4:47 PM',
+    '2026-11-23': '4:45 PM',
     '2026-12-21': '4:48 PM',
   }
   for (const [date, time] of Object.entries(expectedTimes)) {

@@ -3,7 +3,10 @@
 .hero {
   position: relative;
   isolation: isolate;
-  height: min(57vw, 51.3rem);
+  z-index: 1;
+  display: grid;
+  place-items: center;
+  height: min(53vw, 47.7rem);
   margin: -0.3rem var(--gutter) 1.5rem;
 }
 .hero__shape {
@@ -20,31 +23,21 @@
 }
 .hero__story {
   position: relative;
-  width: 65%;
-  max-width: 58rem;
-  margin-inline: auto;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 0.6em;
-  height: 75%;
-  padding-top: 10.5%;
+  width: min(72%, 58rem);
+  display: grid;
+  justify-items: center;
+  gap: clamp(0.9rem, 1.7vw, 1.5rem);
   animation: story-in 0.8s ease both;
   text-align: center;
   h1 {
     font-size: var(--type-display);
     line-height: 0.88;
     white-space: pre-line;
+    text-wrap: balance;
   }
   p {
     max-width: 21rem;
-    margin: 0 auto;
     text-align: left;
-    font-size: var(--type-body);
-  }
-  .display-link {
-    display: inline-block;
-    margin-top: auto;
   }
 }
 .hero__controls {
@@ -66,34 +59,33 @@
   }
 }
 .celebration {
-  position: absolute;
-  right: 1%;
-  bottom: 4%;
-  width: 24%;
-  aspect-ratio: 1;
-  padding: 1.5rem 0.75rem;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
+  position: fixed;
+  z-index: 2;
+  inset-inline-start: max(
+    var(--gutter),
+    calc((100% - var(--site-width)) / 2 + var(--gutter)),
+    env(safe-area-inset-left)
+  );
+  inset-block-end: max(var(--gutter), env(safe-area-inset-bottom));
+  width: min(clamp(8rem, 20.5vw, 17rem), 38svh);
+  aspect-ratio: 0.95;
+  container-type: inline-size;
+  display: grid;
+  align-content: center;
+  justify-items: center;
+  gap: 0.45em;
   background: var(--green);
-  color: white;
-  border-radius: 43% 57% 47% 53% / 50% 43% 57% 50%;
+  color: var(--paper);
+  border-radius: 44% 56% 47% 53% / 43% 41% 59% 57%;
   text-align: center;
-  transform: rotate(8deg);
   h2 {
-    font-size: var(--type-title);
-    line-height: 0.95;
+    width: 90%;
+    font-size: 19cqi;
+    line-height: 0.88;
     white-space: pre-line;
   }
-  h2,
   a {
-    transform: rotate(-8deg);
-  }
-  a {
-    display: block;
-    margin-top: 0.8rem;
-    font-size: var(--type-body);
-    color: var(--ink);
+    font-size: clamp(0.75rem, 6.4cqi, var(--type-body));
   }
 }
 .hero__frame {
@@ -123,42 +115,32 @@
 
 @media (max-width: 44rem) {
   .hero {
-    height: clamp(25rem, 112vw, 36rem);
+    --slide-height: clamp(22rem, 124vw, 34rem);
+    height: var(--slide-height);
     margin-block: 0.5rem 1rem;
+    &[data-has-celebration] {
+      // Leave the pinned badge room before the next section on tall phones.
+      margin-block-end: max(1rem, calc(100svh - 6rem - var(--slide-height)));
+    }
   }
   .hero__shape {
-    inset: 0 5% 22%;
+    inset: 0 7%;
+    transform: rotate(-5deg);
+    img {
+      transform: rotate(5deg) scale(1.15);
+    }
   }
   .hero__story {
-    width: 97%;
-    height: 62%;
-    padding-top: 15%;
-    h1 {
-      text-wrap: balance;
-    }
+    width: calc(100% - 3rem);
     p {
       max-width: 15rem;
     }
   }
   .hero__controls {
-    inset: 28% -1rem auto;
+    inset: 42% -0.5rem auto;
     button {
       font-size: var(--type-display);
       padding: 0.2rem 0.4rem;
-    }
-  }
-  .celebration {
-    width: min(45%, 12rem);
-    right: 2%;
-    bottom: 0;
-    padding: 1.4rem 0.6rem;
-    transform: none;
-    h2,
-    a {
-      transform: none;
-    }
-    a {
-      margin-top: 0.5rem;
     }
   }
 }
@@ -307,21 +289,6 @@
   }
   .hero__shape {
     inset: -19% 14% 0;
-  }
-  .hero__story {
-    padding-top: 10.7%;
-  }
-  .celebration {
-    width: 24.5%;
-    right: 0;
-    bottom: -2%;
-    h2 {
-      font-size: var(--type-section);
-      line-height: 0.85;
-    }
-    a {
-      color: var(--paper);
-    }
   }
   .hero__controls {
     inset-inline: 3%;
