@@ -234,13 +234,13 @@
   }
   .donation-section--feature {
     width: min(72%, 65rem);
-    min-height: max(24rem, 58vw);
+    min-height: max(24rem, site-size(58));
     isolation: isolate;
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    margin-top: max(-10rem, -10vw);
+    margin-top: max(-10rem, calc(-1 * #{site-size(10)}));
     margin-bottom: 2rem;
     padding: 3rem var(--gutter);
     .donation-heading {

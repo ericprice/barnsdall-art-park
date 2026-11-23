@@ -64,15 +64,12 @@ function Navigation({pathname, settings, initialSunset}: HeaderProps & {pathname
   const header = useRef<HTMLElement>(null)
   const opener = useRef<HTMLElement | null>(null)
   const mobileButton = useRef<HTMLButtonElement>(null)
-  const hoverTimer = useRef<number | undefined>(undefined)
-  const cancelHover = useCallback(() => window.clearTimeout(hoverTimer.current), [])
 
   const close = useCallback(() => {
-    cancelHover()
     setOpen(null)
     setMobile(false)
     setInitialQuery('')
-  }, [cancelHover])
+  }, [])
 
   useEffect(() => {
     function openFromFooter(event: MouseEvent) {
@@ -81,7 +78,6 @@ function Navigation({pathname, settings, initialSunset}: HeaderProps & {pathname
         event.target.closest<HTMLAnchorElement>('a[href="#site-search"]')
       if (!link || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return
       event.preventDefault()
-      cancelHover()
       opener.current = link
       setOpen('search')
       setMobile(false)
@@ -90,7 +86,6 @@ function Navigation({pathname, settings, initialSunset}: HeaderProps & {pathname
     function openFromLocation() {
       const [fragment, params] = window.location.hash.slice(1).split('?')
       if (fragment !== 'site-search') return
-      cancelHover()
       setInitialQuery(new URLSearchParams(params).get('q')?.slice(0, 200) || '')
       setOpen('search')
       window.history.replaceState(
@@ -103,16 +98,14 @@ function Navigation({pathname, settings, initialSunset}: HeaderProps & {pathname
     document.addEventListener('click', openFromFooter)
     window.addEventListener('hashchange', openFromLocation)
     return () => {
-      cancelHover()
       document.removeEventListener('click', openFromFooter)
       window.removeEventListener('hashchange', openFromLocation)
     }
-  }, [cancelHover])
+  }, [])
 
   useEffect(() => {
     function onKey(event: KeyboardEvent) {
       if (event.key !== 'Escape') return
-      cancelHover()
       if (open === null && !mobile) return
       close()
       const target = mobile
@@ -131,10 +124,9 @@ function Navigation({pathname, settings, initialSunset}: HeaderProps & {pathname
       document.removeEventListener('keydown', onKey)
       document.removeEventListener('pointerdown', onPointer)
     }
-  }, [open, mobile, cancelHover, close])
+  }, [open, mobile, close])
 
   function toggleSearch(trigger: HTMLButtonElement) {
-    cancelHover()
     opener.current = trigger
     setMobile(false)
     setInitialQuery('')
@@ -147,14 +139,7 @@ function Navigation({pathname, settings, initialSunset}: HeaderProps & {pathname
       className={`park-header ${isHome ? 'park-header--home' : 'park-header--compact'}`}
       data-expanded={open !== null || mobile}
       onPointerLeave={(event) => {
-        cancelHover()
-        if (
-          event.pointerType === 'mouse' &&
-          !mobile &&
-          open !== 'search' &&
-          !header.current?.contains(document.activeElement)
-        )
-          setOpen(null)
+        if (event.pointerType === 'mouse' && typeof open === 'number') close()
       }}
       onBlur={(event) => {
         if (event.relatedTarget && !event.currentTarget.contains(event.relatedTarget)) close()
@@ -198,7 +183,6 @@ function Navigation({pathname, settings, initialSunset}: HeaderProps & {pathname
             aria-expanded={mobile}
             aria-controls="primary-navigation"
             onClick={(event) => {
-              cancelHover()
               opener.current = event.currentTarget
               setMobile(!mobile)
               setOpen(null)
@@ -236,22 +220,6 @@ function Navigation({pathname, settings, initialSunset}: HeaderProps & {pathname
                   )
                     setOpen(null)
                 }}
-                onPointerLeave={cancelHover}
-                onPointerEnter={(event) => {
-                  if (
-                    event.pointerType === 'mouse' &&
-                    !mobile &&
-                    !mobileButton.current?.offsetParent &&
-                    open !== 'search'
-                  ) {
-                    cancelHover()
-                    const trigger = event.currentTarget.querySelector('a')
-                    hoverTimer.current = window.setTimeout(() => {
-                      opener.current = trigger
-                      setOpen(item.children?.length ? index : null)
-                    }, 120)
-                  }
-                }}
               >
                 <span className="park-navigation__label">
                   <Link
@@ -261,7 +229,6 @@ function Navigation({pathname, settings, initialSunset}: HeaderProps & {pathname
                     aria-controls={item.children?.length ? panelId : undefined}
                     onClick={(event) => {
                       if (event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return
-                      cancelHover()
                       if (item.children?.length && open !== index) {
                         event.preventDefault()
                         opener.current = event.currentTarget
@@ -273,13 +240,10 @@ function Navigation({pathname, settings, initialSunset}: HeaderProps & {pathname
                     onKeyDown={(event) => {
                       if (event.key !== 'ArrowDown' || !item.children?.length) return
                       event.preventDefault()
-                      cancelHover()
                       opener.current = event.currentTarget
                       setOpen(index)
                       requestAnimationFrame(() => {
-                        header.current
-                          ?.querySelector<HTMLAnchorElement>(`#${panelId} a`)
-                          ?.focus()
+                        header.current?.querySelector<HTMLAnchorElement>(`#${panelId} a`)?.focus()
                       })
                     }}
                   >

@@ -46,6 +46,7 @@ export function NewsletterSignup({
         }
       >
         <input
+          id="newsletter-email"
           type="email"
           name={action ? emailField || 'email' : undefined}
           placeholder={labels.newsletterTitle}

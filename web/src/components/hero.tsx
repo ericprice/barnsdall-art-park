@@ -5,6 +5,10 @@ import Link from 'next/link'
 import type {SiteContent} from '@/lib/content'
 import {themeForEntry, themeStyle} from '@/lib/image-theme'
 import {ParkImage} from './park-image'
+import {CarouselChevron} from './carousel-chevron'
+
+// Studio allows five featured stories. Each uses a separate identity plate silhouette.
+const slideDots = [3, 13, 9, 11, 14]
 
 export function Hero({slides, celebration}: Pick<SiteContent['home'], 'slides' | 'celebration'>) {
   const [index, setIndex] = useState(0)
@@ -49,58 +53,69 @@ export function Hero({slides, celebration}: Pick<SiteContent['home'], 'slides' |
   }
   if (!slide) return null
   return (
-    <section
-      ref={heroRef}
-      className="hero"
-      data-has-celebration={celebration?.title ? true : undefined}
-      style={themeStyle(themeForEntry(slide), slide.image)}
-      aria-roledescription="carousel"
-      aria-label="Featured stories"
-      onPointerEnter={(event) => {
-        if (event.pointerType === 'mouse') setHovered(true)
-      }}
-      onPointerLeave={() => setHovered(false)}
-      onFocusCapture={() => setFocused(true)}
-      onBlurCapture={(event) => {
-        if (!event.currentTarget.contains(event.relatedTarget)) setFocused(false)
-      }}
-    >
-      <div className="hero__shape">
-        {stories.map((story, i) => (
-          <div
-            key={story.id}
-            className="hero__frame"
-            data-current={i === active}
-            aria-hidden={i !== active}
-          >
-            <ParkImage
-              editorial
-              orgTheme={themeForEntry(story)}
-              image={story.image}
-              priority={i === 0}
-              sizes="(max-width: 44rem) 95vw, 75vw"
-            />
-          </div>
-        ))}
-      </div>
-      <div className="hero__story" key={slide.id}>
-        <h1>{slide.title}</h1>
-        {slide.summary && <p>{slide.summary}</p>}
-        {slide.link?.href && (
-          <Link className="display-link" href={slide.link.href}>
-            {slide.link.label} <span aria-hidden="true">»</span>
-          </Link>
-        )}
-      </div>
-      {stories.length > 1 && (
-        <div className="hero__controls">
-          <button type="button" onClick={() => advance(-1)} aria-label="Previous featured story" />
-          <span className="sr-only" aria-live={focused ? 'polite' : 'off'}>
-            {active + 1} of {stories.length}
-          </span>
-          <button type="button" onClick={() => advance(1)} aria-label="Next featured story" />
+    <>
+      <section
+        ref={heroRef}
+        className="hero"
+        style={themeStyle(themeForEntry(slide), slide.image)}
+        aria-roledescription="carousel"
+        aria-label="Featured stories"
+        onPointerEnter={(event) => {
+          if (event.pointerType === 'mouse') setHovered(true)
+        }}
+        onPointerLeave={() => setHovered(false)}
+        onFocusCapture={() => setFocused(true)}
+        onBlurCapture={(event) => {
+          if (!event.currentTarget.contains(event.relatedTarget)) setFocused(false)
+        }}
+      >
+        <div className="hero__shape">
+          {stories.map((story, i) => (
+            <div
+              key={story.id}
+              className="hero__frame"
+              style={{
+                ...themeStyle(themeForEntry(story), story.image),
+                maskImage: `url('/identity/dots/${slideDots[i % slideDots.length]}.svg')`,
+              }}
+              data-current={i === active}
+              aria-hidden={i !== active}
+            >
+              <div className="hero__photo">
+                <ParkImage
+                  editorial
+                  orgTheme={themeForEntry(story)}
+                  image={story.image}
+                  priority={i === 0}
+                  sizes="(max-width: 44rem) 95vw, (max-width: 75rem) 75vw, 56.25rem"
+                />
+              </div>
+            </div>
+          ))}
         </div>
-      )}
+        <div className="hero__story" key={slide.id}>
+          <h1>{slide.title}</h1>
+          {slide.summary && <p>{slide.summary}</p>}
+          {slide.link?.href && (
+            <Link className="display-link" href={slide.link.href}>
+              {slide.link.label} <span aria-hidden="true">»</span>
+            </Link>
+          )}
+        </div>
+        {stories.length > 1 && (
+          <div className="hero__controls">
+            <button type="button" onClick={() => advance(-1)} aria-label="Previous featured story">
+              <CarouselChevron direction="previous" />
+            </button>
+            <span className="sr-only" aria-live={focused ? 'polite' : 'off'}>
+              {active + 1} of {stories.length}
+            </span>
+            <button type="button" onClick={() => advance(1)} aria-label="Next featured story">
+              <CarouselChevron direction="next" />
+            </button>
+          </div>
+        )}
+      </section>
       {celebration?.title && heroInView && (
         <aside className="celebration">
           <h2>{celebration.title}</h2>
@@ -112,6 +127,6 @@ export function Hero({slides, celebration}: Pick<SiteContent['home'], 'slides' |
           )}
         </aside>
       )}
-    </section>
+    </>
   )
 }

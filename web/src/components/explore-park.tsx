@@ -1,16 +1,25 @@
 'use client'
 
 import Link from 'next/link'
-import {useRef, useState} from 'react'
+import {useRef, useState, type CSSProperties} from 'react'
 import type {ContentEntry} from '@/lib/content'
 import {themeForEntry, themeStyle} from '@/lib/image-theme'
 import {ParkImage} from './park-image'
+
+const dots = [1, 7, 9, 10, 11, 2, 5, 6, 8, 12, 3, 4, 13, 14]
 
 export function ExplorePark({places, title}: {places: ContentEntry[]; title: string}) {
   const [selectedId, select] = useState(places[0]?.id)
   const previewTap = useRef(false)
   const selected = places.find((place) => place.id === selectedId) ?? places[0]
   if (!selected) return null
+
+  // A location keeps its silhouette when an editor reorders the list.
+  const ids = places.map((place) => place.id).sort()
+  const locations = places.map((place) => {
+    const index = ids.indexOf(place.id)
+    return {place, photoDot: dots[index % dots.length], labelDot: dots[(index + 5) % dots.length]}
+  })
 
   return (
     <section className="explore" aria-labelledby="explore-heading">
@@ -19,10 +28,13 @@ export function ExplorePark({places, title}: {places: ContentEntry[]; title: str
         data-position={places.indexOf(selected) % 5}
         aria-hidden="true"
       >
-        {places.map((place) => (
+        {locations.map(({place, photoDot}) => (
           <div
             key={place.id}
-            style={themeStyle(themeForEntry(place))}
+            style={{
+              ...themeStyle(themeForEntry(place)),
+              maskImage: `url("/identity/dots/${photoDot}.svg")`,
+            }}
             data-current={place.id === selected.id}
           >
             <ParkImage
@@ -35,10 +47,15 @@ export function ExplorePark({places, title}: {places: ContentEntry[]; title: str
       </div>
       <h2 id="explore-heading">{title}</h2>
       <ul className="explore__places">
-        {places.map((place) => (
+        {locations.map(({place, labelDot}) => (
           <li key={place.id}>
             <Link
               href={place.href}
+              style={
+                {
+                  '--label-dot': `url("/identity/dots/${labelDot}.svg#label")`,
+                } as CSSProperties
+              }
               data-current={selected.id === place.id}
               aria-describedby={selected.id === place.id ? 'explore-description' : undefined}
               onPointerEnter={(event) => {

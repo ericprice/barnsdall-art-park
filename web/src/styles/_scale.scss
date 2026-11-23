@@ -1,0 +1,6 @@
+$site-width: 75rem;
+
+// A percentage of the site width, including the gutters.
+@function site-size($percent) {
+  @return min($percent * 1vw, $site-width * $percent * 0.01);
+}

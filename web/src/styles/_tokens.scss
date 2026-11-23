@@ -1,3 +1,6 @@
+@forward 'scale';
+@use 'scale' as *;
+
 :root {
   --green: #458933;
   --pink: #e0a8b5;
@@ -7,9 +10,9 @@
   --lavender: #d4c3ff;
   --ink: #080808;
   --paper: #fff;
-  --site-width: 90rem;
+  --site-width: #{$site-width};
   --heading-tracking: -0.02em;
-  --gutter: clamp(1rem, 2vw, 2rem);
+  --gutter: max(1rem, #{site-size(2)});
   --display: 'Barnsdall Low', var(--font-publisher-sans), sans-serif;
   --lead: 'Barnsdall High', var(--font-publisher), serif;
   --body: var(--font-publisher), Georgia, serif;
@@ -22,14 +25,21 @@
   text-transform: uppercase;
 }
 
+@mixin display-type($step, $leading: 1) {
+  @include display;
+  font-size: var(--type-#{$step});
+  line-height: $leading;
+  letter-spacing: var(--heading-tracking);
+}
+
 // Barnsdall Low is wider than the display face on the 1024-wide boards.
 :root {
-  --type-display: clamp(2.75rem, 7.15vw, 6.435rem);
-  --type-section: clamp(2rem, 4.7vw, 4.23rem);
-  --type-title: clamp(1.45rem, 3vw, 2.7rem);
-  --type-label: clamp(1.1rem, 2.15vw, 1.935rem);
+  --type-display: max(2.75rem, #{site-size(7.15)});
+  --type-section: max(2rem, #{site-size(4.7)});
+  --type-title: max(1.45rem, #{site-size(3)});
+  --type-label: max(1.1rem, #{site-size(2.15)});
   --publisher-scale: 0.75;
-  --type-body: calc(clamp(1rem, 1.465vw, 1.318rem) * var(--publisher-scale));
+  --type-body: calc(max(1rem, #{site-size(1.465)}) * var(--publisher-scale));
   --type-publisher-lead: calc(var(--type-label) * var(--publisher-scale));
   --type-caption: var(--type-body);
 }

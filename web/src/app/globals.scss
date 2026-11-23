@@ -109,9 +109,7 @@ strong {
   }
 }
 .display-link {
-  @include display;
-  font-size: var(--type-label);
-  line-height: 1.1;
+  @include display-type(label, 1.1);
   text-decoration: none;
 }
 .lead {
@@ -151,7 +149,7 @@ figcaption {
   min-width: 0;
   text-align: center;
   h2 {
-    font-size: var(--type-title);
+    @include display-type(title);
     max-width: 24rem;
     margin-inline: auto;
   }
@@ -207,6 +205,10 @@ figcaption {
   border-radius: 37% 63% 29% 71% / 42% 52% 48% 58%;
   transform: rotate(-12deg);
 }
+.carousel-chevron {
+  display: block;
+  width: auto;
+}
 .quote-band {
   margin: 3rem var(--gutter) 0;
   padding: 3rem 5%;
@@ -215,10 +217,17 @@ figcaption {
   position: relative;
   > button {
     position: absolute;
-    inset: 42% auto auto 4%;
-    font: 700 var(--type-section)/0.75 var(--caption);
+    inset: 50% auto auto 2%;
+    translate: 0 -50%;
+    display: grid;
+    place-items: center;
+    min-width: 2.75rem;
+    min-height: 2.75rem;
+    .carousel-chevron {
+      height: max(0.875rem, #{site-size(1.8)});
+    }
     &:last-child {
-      inset-inline: auto 4%;
+      inset-inline: auto 2%;
     }
   }
   blockquote {
@@ -268,7 +277,7 @@ figcaption {
   align-items: center;
   position: relative;
   h2 {
-    font-size: var(--type-display);
+    @include display-type(display);
   }
   > a {
     position: absolute;

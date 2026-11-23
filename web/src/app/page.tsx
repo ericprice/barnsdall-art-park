@@ -8,7 +8,7 @@ export default async function Home() {
   await connection()
   const {home, settings} = await getSite()
   return (
-    <main id="main-content">
+    <main className="home-page" id="main-content">
       <Hero slides={home.slides} celebration={home.celebration} />
       <HomeSections home={home} labels={settings.interfaceText} />
     </main>

@@ -2,6 +2,7 @@
 
 import {useState} from 'react'
 import Link from 'next/link'
+import {CarouselChevron} from './carousel-chevron'
 import type {SiteContent} from '@/lib/content'
 
 export function QuoteBand({quote}: {quote: SiteContent['home']['quote']}) {
@@ -17,7 +18,7 @@ export function QuoteBand({quote}: {quote: SiteContent['home']['quote']}) {
           aria-label="Previous quotation"
           onClick={() => setIndex((index + quotes.length - 1) % quotes.length)}
         >
-          ‹
+          <CarouselChevron direction="previous" />
         </button>
       )}
       <blockquote aria-live="polite">
@@ -43,7 +44,7 @@ export function QuoteBand({quote}: {quote: SiteContent['home']['quote']}) {
           aria-label="Next quotation"
           onClick={() => setIndex((index + 1) % quotes.length)}
         >
-          ›
+          <CarouselChevron direction="next" />
         </button>
       )}
     </section>
