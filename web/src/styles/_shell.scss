@@ -310,6 +310,7 @@
     h2 {
       font-size: inherit;
       line-height: inherit;
+      letter-spacing: inherit;
       text-box-trim: trim-both;
       text-box-edge: cap alphabetic;
     }
@@ -359,6 +360,7 @@
     align-items: stretch;
     width: 100%;
     @include type-size(display);
+    letter-spacing: inherit;
     block-size: 1cap;
     padding: calc(0.18 * var(--type-label));
     background: color-mix(in srgb, var(--green) 20%, var(--paper));

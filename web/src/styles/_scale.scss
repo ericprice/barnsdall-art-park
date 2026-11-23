@@ -8,6 +8,9 @@ $site-width: 75rem;
 @mixin type-size($step) {
   font-size: var(--type-#{$step});
   line-height: var(--leading-#{$step});
+  @if $step == display {
+    letter-spacing: var(--display-tracking);
+  }
 }
 
 @mixin publisher-type($step: body) {

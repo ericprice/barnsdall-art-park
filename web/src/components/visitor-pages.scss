@@ -20,7 +20,7 @@
   }
   h2 {
     @include type-size(label);
-    margin-bottom: 0.8rem;
+    margin-block-end: var(--prose-heading-gap);
   }
   figcaption {
     margin-top: 0.4rem;
@@ -54,7 +54,7 @@
     margin-top: 2.5rem;
   }
   .visitor-prose h2 {
-    margin-bottom: 0.7rem;
+    margin-block-end: var(--prose-heading-gap);
     text-align: center;
     @include type-size(title);
   }
@@ -257,7 +257,8 @@
       margin-block-start: 2.1rem;
     }
     h2 {
-      margin: 0 auto 0.55em;
+      margin-block-start: 0;
+      margin-inline: auto;
       text-align: center;
       text-wrap: balance;
       @include type-size(title);

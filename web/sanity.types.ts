@@ -82,7 +82,7 @@ export type RichText = Array<
         _type: 'span'
         _key: string
       }>
-      style?: 'normal' | 'h2' | 'h3' | 'blockquote'
+      style?: 'normal' | 'dotLink' | 'h2' | 'h3' | 'blockquote'
       listItem?: 'bullet' | 'number'
       markDefs?: Array<
         | {

@@ -1,8 +1,9 @@
 import type {CSSProperties} from 'react'
 import {drawDots} from '@/lib/identity-dots'
 import {PortableText} from 'next-sanity'
+import {DotLink} from './action-links'
 import {ParkImage} from './park-image'
-import {headingAnchor, linkDestination} from '@/lib/body-layout'
+import {headingAnchor, linkDestination, standaloneLink} from '@/lib/body-layout'
 import type {OrganizationTheme} from '../../../shared/organizations'
 import type {ParkImage as ImageValue, RichText as RichTextValue} from '../../sanity.types'
 
@@ -10,7 +11,7 @@ export function RichText({value, orgTheme}: {value?: RichTextValue; orgTheme?: O
   if (!value?.length) return null
   return (
     <div className="rich-text">
-      <PortableText
+      <PortableText<RichTextValue[number]>
         value={value}
         components={{
           list: {
@@ -31,6 +32,18 @@ export function RichText({value, orgTheme}: {value?: RichTextValue; orgTheme?: O
           block: {
             h2: ({value, children}) => <h2 id={headingAnchor(value)}>{children}</h2>,
             h3: ({value, children}) => <h3 id={headingAnchor(value)}>{children}</h3>,
+            dotLink: ({value, children}) => {
+              const link = standaloneLink(value)
+              return (
+                <p>
+                  {link ? (
+                    <DotLink href={link.href} download={link.download || undefined}>
+                      {link.label}
+                    </DotLink>
+                  ) : children}
+                </p>
+              )
+            },
           },
           types: {
             parkImage: ({value}: {value: ImageValue}) => (
@@ -58,11 +71,7 @@ export function RichText({value, orgTheme}: {value?: RichTextValue; orgTheme?: O
               )
             },
             link: ({value, children}) => {
-              const href =
-                typeof value?.href === 'string' &&
-                /^(\/(?!\/)|#|https?:\/\/|mailto:|tel:)/.test(value.href)
-                  ? value.href
-                  : '#'
+              const href = (value && linkDestination(value)) || '#'
               return <a href={href}>{children}</a>
             },
           },

@@ -52,15 +52,15 @@ export function EventsBrowser({
             {text.archive}
           </Link>
         </nav>
-        <div className="listing-filters">
-          <ListingFilter
-            label={text.organization}
-            all={text.all}
-            value={org}
-            choices={organizations}
-            hrefs={['', ...organizations].map((value) => href({organization: value}))}
-          />
-        </div>
+        <ListingFilter
+          label={text.organization}
+          value={org}
+          choices={['', ...organizations].map((value) => ({
+            value,
+            label: value || text.all,
+            href: href({organization: value}),
+          }))}
+        />
       </header>
       {groups.slice(0, count).map(([key, entries]) => (
         <section key={key} className="programme-month">

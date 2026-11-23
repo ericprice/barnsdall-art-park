@@ -29,6 +29,7 @@ html {
   scroll-behavior: smooth;
   scroll-padding-top: 2rem;
   font-synthesis: none;
+  text-rendering: optimizeLegibility;
 }
 body {
   margin: 0;
@@ -43,6 +44,7 @@ select,
 textarea {
   font: inherit;
   color: inherit;
+  text-rendering: inherit;
 }
 button,
 a {
@@ -135,9 +137,9 @@ figcaption {
 }
 .small-seed {
   @include olive-dot;
-  width: 0.5em;
+  width: var(--small-seed-width);
   height: 0.64em;
-  margin-inline-end: 0.6em;
+  margin-inline-end: var(--small-seed-gap);
 }
 .dot-link {
   @include publisher-type;
@@ -255,7 +257,7 @@ figcaption {
   blockquote > p {
     font: 400 var(--type-display)/var(--leading-display) var(--lead);
     text-transform: none;
-    letter-spacing: var(--heading-tracking);
+    letter-spacing: var(--display-tracking);
     text-wrap: balance;
   }
   footer {
@@ -391,12 +393,22 @@ figcaption {
   }
 }
 .rich-text {
-  > :not(p) + *,
-  > p + :not(p) {
+  ul,
+  ol {
+    margin-block: 0;
+  }
+  ol {
+    padding-inline-start: 1.3rem;
+  }
+  > * + :not(p, ul, ol),
+  > :not(p, ul, ol, h2, h3) + * {
     margin-block-start: 1rem;
   }
-  > p:has(+ p) {
+  > :is(p, ul, ol):has(+ :is(p, ul, ol)) {
     margin-block-end: calc(var(--leading-body) * 2em / 3);
+  }
+  > :is(h2, h3):has(+ :is(p, ul, ol)) {
+    margin-block-end: var(--prose-heading-gap);
   }
   h2 {
     @include type-size(title);
@@ -411,13 +423,6 @@ figcaption {
     font: 400 var(--type-title)/var(--leading-title) var(--lead);
     text-transform: none;
   }
-  ul,
-  ol {
-    padding-left: 1.3rem;
-  }
-  li + li {
-    margin-top: 0.5rem;
-  }
   figure {
     margin-block: 2rem;
   }
@@ -426,17 +431,18 @@ figcaption {
   }
 }
 .rich-text__bullets {
+  --marker-indent: calc(var(--small-seed-width) + var(--small-seed-gap));
   list-style: none;
-  padding-inline-start: 1.1em;
+  padding-inline-start: var(--marker-indent);
   > li {
     position: relative;
     &::before {
       @include olive-dot;
       content: '';
       position: absolute;
-      inset-inline-start: -1.1em;
+      inset-inline-start: calc(-1 * var(--marker-indent));
       inset-block-start: 0.36em;
-      width: 0.5em;
+      width: var(--small-seed-width);
       height: 0.64em;
     }
   }
@@ -464,7 +470,7 @@ figcaption {
   h2 {
     text-align: center;
     @include type-size(title);
-    margin-bottom: 1.3rem;
+    margin-block-end: var(--prose-heading-gap);
   }
   &--wide {
     max-width: 80rem;
@@ -478,7 +484,7 @@ figcaption {
   h3 {
     @include type-size(title);
     text-align: center;
-    margin-bottom: 1rem;
+    margin-block-end: var(--prose-heading-gap);
   }
 }
 .action-links {

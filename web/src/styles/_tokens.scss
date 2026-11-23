@@ -12,10 +12,14 @@
   --paper: #fff;
   --site-width: #{$site-width};
   --heading-tracking: -0.02em;
+  --display-tracking: -0.03em;
   --gutter: max(1rem, #{site-size(2)});
   --display: 'Barnsdall Low', var(--body);
   --lead: 'Barnsdall High', var(--font-publisher), serif;
   --body: var(--font-publisher), Georgia, serif;
+  --prose-heading-gap: calc(2lh / 3);
+  --small-seed-width: 0.5em;
+  --small-seed-gap: 0.6em;
 }
 
 @mixin display {
@@ -37,7 +41,7 @@
   --type-title: max(1.45rem, #{site-size(3)});
   --type-label: max(1.1rem, #{site-size(2.15)});
   --publisher-scale: 0.75;
-  --type-body: calc(max(1rem, #{site-size(1.465)}) * var(--publisher-scale));
+  --type-body: calc(max(1rem, #{site-size(1.465)}) * var(--publisher-scale) + 0.125rem);
   --type-publisher-lead: calc(var(--type-label) * var(--publisher-scale));
   --type-compact-label: clamp(0.875rem, 4.4vw, var(--type-label));
 

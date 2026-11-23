@@ -2,7 +2,7 @@ import assert from 'node:assert/strict'
 import test from 'node:test'
 import {createHistoryPage} from '../../shared/history-timeline.ts'
 import {migrateSectionsToBody} from '../../shared/migrate-sections.ts'
-import {bodyForLayout} from '../src/lib/body-layout.ts'
+import {bodyForLayout, standaloneLink} from '../src/lib/body-layout.ts'
 
 const paragraph = (_key, text, style = 'normal') => ({
   _type: 'block',
@@ -105,6 +105,17 @@ test('paragraph order, inline links, numbered lists and duplicate heading fragme
     sections[0].links.map(({label}) => label),
     ['See more'],
   )
+})
+
+test('an explicitly dotted paragraph stays in the prose and resolves only a whole-paragraph link', () => {
+  const dotted = {...linkedParagraph('read-more', 'Read more', '/visit'), style: 'dotLink'}
+  const {sections} = bodyForLayout([paragraph('heading', 'Transit', 'h2'), dotted], '/visit')
+  assert.deepEqual(sections[0].body, [dotted])
+  assert.deepEqual(sections[0].links, [])
+  assert.deepEqual(standaloneLink(dotted), {href: '/visit', label: 'Read more', download: false})
+
+  const inline = {...dotted, children: [...paragraph('intro', 'For details, ').children, ...dotted.children]}
+  assert.equal(standaloneLink(inline), undefined)
 })
 
 test('the initial History template has editable heading blocks and individual dated milestones', () => {

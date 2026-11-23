@@ -2,6 +2,7 @@ import {themeForEntry, themeStyle} from '@/lib/image-theme'
 import Link from 'next/link'
 import type {ContentEntry, SiteContent} from '@/lib/content'
 import {scheduleLabel} from '@/lib/event-filters'
+import {DisplayLink} from './action-links'
 import {ListingGrid, NewsCredit} from './listing-card'
 import {QuoteBand} from './quote-band'
 import {RichText} from './rich-text'
@@ -55,9 +56,9 @@ export function ListingStory({
                 </p>
               )}
               {entry.link?.href && (
-                <Link className="programme-story__tickets" href={entry.link.href}>
-                  {entry.link.label || text.getTickets} »
-                </Link>
+                <DisplayLink className="programme-story__tickets" href={entry.link.href}>
+                  {entry.link.label || text.getTickets}
+                </DisplayLink>
               )}
             </aside>
           )}

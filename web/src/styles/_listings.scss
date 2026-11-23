@@ -21,9 +21,7 @@
     @include type-size(section);
     margin-top: 0.12em;
   }
-  a,
-  select,
-  label {
+  a {
     pointer-events: auto;
   }
 }
@@ -31,16 +29,15 @@
   margin-block-end: 2rem;
 }
 .listing-tabs,
-.listing-filters {
+.listing-filter__options:not([hidden]) {
   display: flex;
   flex-wrap: wrap;
   align-items: center;
   justify-content: center;
   gap: 0.35em 0.9em;
-  @include display;
 }
 .listing-tabs {
-  @include type-size(title);
+  @include display-type(title);
   margin-top: 0.4em;
   a {
     position: relative;
@@ -56,24 +53,30 @@
     }
   }
 }
-.listing-filters {
-  @include type-size(label);
-  margin-top: 0.55em;
-}
 .listing-filter {
-  display: inline-block;
-  position: relative;
-  select {
-    position: absolute;
-    inset: 0;
-    width: 100%;
-    opacity: 0;
-    cursor: pointer;
-    @include publisher-type;
+  @include display;
+  @include type-size(label);
+  width: fit-content;
+  max-width: 100%;
+  margin: 0.55em auto 0;
+  pointer-events: auto;
+
+  button {
+    padding: 0;
+    letter-spacing: inherit;
+    text-transform: inherit;
   }
-  &:focus-within {
-    outline: 0.125rem solid currentColor;
-    outline-offset: 0.18em;
+  &__options {
+    row-gap: 0.6em;
+
+    a {
+      text-decoration: none;
+      white-space: nowrap;
+    }
+    [aria-current='true'] {
+      @include active-nav-dot(var(--section-nav-dot), var(--section-nav-color));
+      mix-blend-mode: multiply;
+    }
   }
 }
 .programme-month {
@@ -282,6 +285,7 @@
     }
   }
   &__tickets {
+    @include type-size(title);
     display: block;
     margin-top: 1em;
   }
@@ -388,7 +392,7 @@
   }
 }
 .programme-story .listing-story__body .rich-text > h2 {
-  margin-block: 2rem 1.3rem;
+  margin-block-start: 2rem;
   text-align: center;
 }
 .news-story .listing-story__summary {

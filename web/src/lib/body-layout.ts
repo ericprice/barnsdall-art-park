@@ -17,7 +17,9 @@ export function linkDestination(mark: Mark) {
   if (mark._type === 'download') {
     return mark.asset && tryGetFileAsset(mark.asset, {projectId, dataset})?.url
   }
-  return mark.href
+  return typeof mark.href === 'string' && /^(\/(?!\/)|#|https?:\/\/|mailto:|tel:)/.test(mark.href)
+    ? mark.href
+    : undefined
 }
 
 type Heading = {_key?: string; children?: Array<{text?: string}>}
@@ -42,14 +44,14 @@ export function headingAnchor(block: Heading) {
   )
 }
 
-function standaloneLink(block: TextBlock): BodyLink | undefined {
-  if (block.style !== 'normal' || block.listItem || !block.children?.length) return
+export function standaloneLink(block: Pick<TextBlock, 'children' | 'markDefs' | 'listItem'>) {
+  if (block.listItem || !block.children?.length) return
   const mark = block.markDefs?.find((mark) =>
     block.children?.every((span) => span.marks?.includes(mark._key)),
   )
   if (!mark) return
   const href = linkDestination(mark)
-  if (href) return {_key: block._key, href, label: blockText(block)}
+  if (href) return {href, label: blockText(block), download: mark._type === 'download'}
 }
 
 const layoutPaths = new Set([
@@ -128,9 +130,9 @@ export function bodyForLayout(body: RichText | undefined, path: string, template
       // between two paragraphs stays exactly where the editor put it.
       while (group.body.length) {
         const last = group.body[group.body.length - 1]
-        const link = last._type === 'block' && standaloneLink(last)
+        const link = last._type === 'block' && last.style === 'normal' && standaloneLink(last)
         if (!link) break
-        group.links.unshift(link)
+        group.links.unshift({_key: last._key, href: link.href, label: link.label})
         group.body.pop()
       }
     }

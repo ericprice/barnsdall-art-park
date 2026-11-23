@@ -87,6 +87,7 @@ export const richText = defineType({
       type: 'block',
       styles: [
         {title: 'Paragraph', value: 'normal'},
+        {title: 'Dotted link', value: 'dotLink'},
         {title: 'Heading', value: 'h2'},
         {title: 'Subheading', value: 'h3'},
         {title: 'Quote', value: 'blockquote'},
