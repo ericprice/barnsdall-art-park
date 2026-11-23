@@ -50,8 +50,19 @@
     display: grid;
     place-items: center;
     pointer-events: auto;
-    padding: 0.3rem 0.8rem;
-    font: 400 4.5rem/1 var(--caption);
+    min-width: 2.75rem;
+    min-height: 2.75rem;
+    padding: 0.65rem 0.8rem;
+    &::before {
+      content: '';
+      height: clamp(1.5rem, 4.35vw, 3.915rem);
+      aspect-ratio: 29.4 / 44.52;
+      background: currentColor;
+      clip-path: polygon(71% 0, 100% 15%, 48% 50%, 100% 84%, 73% 100%, 0 50%);
+    }
+    &:last-child::before {
+      transform: scaleX(-1);
+    }
     color: var(--org-dark, var(--pink));
     &:hover {
       color: var(--ink);
@@ -85,7 +96,7 @@
     white-space: pre-line;
   }
   a {
-    font-size: clamp(0.75rem, 6.4cqi, var(--type-body));
+    font-size: min(calc(max(0.75rem, 6.4cqi) * var(--publisher-scale)), var(--type-body));
   }
 }
 .hero__frame {
@@ -139,7 +150,6 @@
   .hero__controls {
     inset: 42% -0.5rem auto;
     button {
-      font-size: var(--type-display);
       padding: 0.2rem 0.4rem;
     }
   }
@@ -232,7 +242,8 @@
       max-width: 9em;
     }
     &[data-current='true'] {
-      color: var(--org-light, white);
+      color: var(--paper);
+      mix-blend-mode: multiply;
     }
     &[data-current='true']::before {
       content: '';

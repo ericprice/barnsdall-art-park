@@ -227,7 +227,7 @@ figcaption {
   }
   blockquote > p {
     font: 400 var(--type-display)/0.94 var(--lead);
-    text-transform: uppercase;
+    text-transform: none;
     letter-spacing: var(--heading-tracking);
     text-wrap: balance;
   }

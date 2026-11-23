@@ -14,7 +14,7 @@ export const interfaceDefaults = {
   noResults: 'No results',
   searchError: 'Search is unavailable. Try again.',
   connect: 'Connect',
-  newsletterTitle: 'Foundation news',
+  newsletterTitle: 'Sign up for Foundation news',
   emailAddress: 'Email address',
   privacy: 'Privacy Policy',
   terms: 'Terms of Use',

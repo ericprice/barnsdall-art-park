@@ -59,7 +59,10 @@ export const siteSettings = defineType({
           name,
           type: 'string',
           initialValue,
-          title: name.replace(/([A-Z])/g, ' $1').replace(/^./, (c) => c.toUpperCase()),
+          title:
+            name === 'newsletterTitle'
+              ? 'Newsletter signup prompt'
+              : name.replace(/([A-Z])/g, ' $1').replace(/^./, (c) => c.toUpperCase()),
         }),
       ),
     }),

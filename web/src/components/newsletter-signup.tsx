@@ -45,18 +45,17 @@ export function NewsletterSignup({
             : undefined
         }
       >
-        <label htmlFor="newsletter-email">{labels.newsletterTitle}</label>
         <input
           type="email"
           name={action ? emailField || 'email' : undefined}
-          placeholder={labels.emailAddress}
+          placeholder={labels.newsletterTitle}
           autoComplete="email"
-          id="newsletter-email"
-          aria-label={labels.emailAddress}
+          aria-label={`${labels.newsletterTitle} — ${labels.emailAddress}`}
           required
         />
         <button type="submit">
-          {labels.subscribe} <i aria-hidden="true" />
+          <span>{labels.subscribe}</span>
+          <i aria-hidden="true" />
         </button>
       </form>
     </div>

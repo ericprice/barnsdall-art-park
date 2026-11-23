@@ -3,7 +3,7 @@
 import {ParkImage} from './park-image'
 import Link from 'next/link'
 import {usePathname} from 'next/navigation'
-import {useEffect, useRef, useState, useSyncExternalStore} from 'react'
+import {useCallback, useEffect, useRef, useState, useSyncExternalStore} from 'react'
 import type {SiteContent} from '@/lib/content'
 import {formatParkSunset, getParkSunset} from '@/lib/park-sunset'
 import {HeaderSearch} from './header-search'
@@ -64,13 +64,15 @@ function Navigation({pathname, settings, initialSunset}: HeaderProps & {pathname
   const header = useRef<HTMLElement>(null)
   const opener = useRef<HTMLElement | null>(null)
   const mobileButton = useRef<HTMLButtonElement>(null)
-  const active = typeof open === 'number' ? settings.navigation[open] : undefined
+  const hoverTimer = useRef<number | undefined>(undefined)
+  const cancelHover = useCallback(() => window.clearTimeout(hoverTimer.current), [])
 
-  function close() {
+  const close = useCallback(() => {
+    cancelHover()
     setOpen(null)
     setMobile(false)
     setInitialQuery('')
-  }
+  }, [cancelHover])
 
   useEffect(() => {
     function openFromFooter(event: MouseEvent) {
@@ -79,6 +81,7 @@ function Navigation({pathname, settings, initialSunset}: HeaderProps & {pathname
         event.target.closest<HTMLAnchorElement>('a[href="#site-search"]')
       if (!link || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return
       event.preventDefault()
+      cancelHover()
       opener.current = link
       setOpen('search')
       setMobile(false)
@@ -87,6 +90,7 @@ function Navigation({pathname, settings, initialSunset}: HeaderProps & {pathname
     function openFromLocation() {
       const [fragment, params] = window.location.hash.slice(1).split('?')
       if (fragment !== 'site-search') return
+      cancelHover()
       setInitialQuery(new URLSearchParams(params).get('q')?.slice(0, 200) || '')
       setOpen('search')
       window.history.replaceState(
@@ -99,15 +103,17 @@ function Navigation({pathname, settings, initialSunset}: HeaderProps & {pathname
     document.addEventListener('click', openFromFooter)
     window.addEventListener('hashchange', openFromLocation)
     return () => {
+      cancelHover()
       document.removeEventListener('click', openFromFooter)
       window.removeEventListener('hashchange', openFromLocation)
     }
-  }, [])
+  }, [cancelHover])
 
   useEffect(() => {
-    if (open === null && !mobile) return
     function onKey(event: KeyboardEvent) {
       if (event.key !== 'Escape') return
+      cancelHover()
+      if (open === null && !mobile) return
       close()
       const target = mobile
         ? mobileButton.current
@@ -125,24 +131,15 @@ function Navigation({pathname, settings, initialSunset}: HeaderProps & {pathname
       document.removeEventListener('keydown', onKey)
       document.removeEventListener('pointerdown', onPointer)
     }
-  }, [open, mobile])
+  }, [open, mobile, cancelHover, close])
 
   function toggleSearch(trigger: HTMLButtonElement) {
+    cancelHover()
     opener.current = trigger
     setMobile(false)
     setInitialQuery('')
     setOpen(open === 'search' ? null : 'search')
   }
-
-  const submenu = active?.children?.length ? (
-    <div className="park-navigation__links" id="navigation-panel">
-      {active.children.map((item) => (
-        <Link key={item.href} href={item.href} onClick={close}>
-          {item.label}
-        </Link>
-      ))}
-    </div>
-  ) : null
 
   return (
     <header
@@ -150,6 +147,7 @@ function Navigation({pathname, settings, initialSunset}: HeaderProps & {pathname
       className={`park-header ${isHome ? 'park-header--home' : 'park-header--compact'}`}
       data-expanded={open !== null || mobile}
       onPointerLeave={(event) => {
+        cancelHover()
         if (
           event.pointerType === 'mouse' &&
           !mobile &&
@@ -200,6 +198,7 @@ function Navigation({pathname, settings, initialSunset}: HeaderProps & {pathname
             aria-expanded={mobile}
             aria-controls="primary-navigation"
             onClick={(event) => {
+              cancelHover()
               opener.current = event.currentTarget
               setMobile(!mobile)
               setOpen(null)
@@ -219,6 +218,7 @@ function Navigation({pathname, settings, initialSunset}: HeaderProps & {pathname
         </div>
         <nav id="primary-navigation" aria-label="Main navigation" data-open={mobile}>
           {settings.navigation.map((item, index) => {
+            const panelId = `navigation-panel-${index}`
             const current = Boolean(
               item.href && (pathname === item.href || pathname.startsWith(item.href + '/')),
             )
@@ -236,6 +236,7 @@ function Navigation({pathname, settings, initialSunset}: HeaderProps & {pathname
                   )
                     setOpen(null)
                 }}
+                onPointerLeave={cancelHover}
                 onPointerEnter={(event) => {
                   if (
                     event.pointerType === 'mouse' &&
@@ -243,8 +244,12 @@ function Navigation({pathname, settings, initialSunset}: HeaderProps & {pathname
                     !mobileButton.current?.offsetParent &&
                     open !== 'search'
                   ) {
-                    opener.current = event.currentTarget.querySelector('a')
-                    setOpen(item.children?.length ? index : null)
+                    cancelHover()
+                    const trigger = event.currentTarget.querySelector('a')
+                    hoverTimer.current = window.setTimeout(() => {
+                      opener.current = trigger
+                      setOpen(item.children?.length ? index : null)
+                    }, 120)
                   }
                 }}
               >
@@ -253,11 +258,10 @@ function Navigation({pathname, settings, initialSunset}: HeaderProps & {pathname
                     href={item.href || '/'}
                     aria-current={current ? 'page' : undefined}
                     aria-expanded={item.children?.length ? open === index : undefined}
-                    aria-controls={
-                      item.children?.length && open === index ? 'navigation-panel' : undefined
-                    }
+                    aria-controls={item.children?.length ? panelId : undefined}
                     onClick={(event) => {
                       if (event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return
+                      cancelHover()
                       if (item.children?.length && open !== index) {
                         event.preventDefault()
                         opener.current = event.currentTarget
@@ -269,11 +273,12 @@ function Navigation({pathname, settings, initialSunset}: HeaderProps & {pathname
                     onKeyDown={(event) => {
                       if (event.key !== 'ArrowDown' || !item.children?.length) return
                       event.preventDefault()
+                      cancelHover()
                       opener.current = event.currentTarget
                       setOpen(index)
                       requestAnimationFrame(() => {
                         header.current
-                          ?.querySelector<HTMLAnchorElement>('#navigation-panel a')
+                          ?.querySelector<HTMLAnchorElement>(`#${panelId} a`)
                           ?.focus()
                       })
                     }}
@@ -281,7 +286,15 @@ function Navigation({pathname, settings, initialSunset}: HeaderProps & {pathname
                     {item.title}
                   </Link>
                 </span>
-                {open === index && submenu}
+                {!!item.children?.length && (
+                  <div className="park-navigation__links" id={panelId} inert={open !== index}>
+                    {item.children.map((child) => (
+                      <Link key={child.href} href={child.href} onClick={close}>
+                        {child.label}
+                      </Link>
+                    ))}
+                  </div>
+                )}
               </div>
             )
           })}

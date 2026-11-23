@@ -6,6 +6,8 @@
   z-index: 20;
   padding: 0 var(--gutter);
   container-type: inline-size;
+  --menu-fade: 150ms;
+  transition: background-color var(--menu-fade) ease-out;
   @include display;
 
   a,
@@ -158,6 +160,15 @@
 }
 
 .park-navigation__links {
+  transition: opacity var(--menu-fade) ease-out;
+  &[inert] {
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity var(--menu-fade) ease-out, visibility 0s var(--menu-fade);
+  }
+  &:not([inert]) {
+    z-index: 1;
+  }
   position: absolute;
   inset: 100% 0 auto;
   background: var(--green);
@@ -198,7 +209,13 @@
   form {
     display: flex;
     align-items: stretch;
-    border: 0.18em solid currentColor;
+    padding: 0.18em;
+    outline: 0.12em solid currentColor;
+    outline-offset: -0.12em;
+    &:focus-within {
+      outline-width: 0.18em;
+      outline-offset: -0.18em;
+    }
   }
   input,
   button {
@@ -208,6 +225,9 @@
     background: transparent;
     border: 0;
     padding: 0.58em 0.52em;
+    &:focus-visible {
+      outline: none;
+    }
   }
   input {
     flex: 1;
@@ -222,6 +242,10 @@
     display: flex;
     align-items: center;
     gap: 0.18em;
+    &:focus-visible {
+      color: var(--green);
+      background: var(--paper);
+    }
   }
   ul {
     list-style: none;
@@ -357,17 +381,10 @@
     width: 100%;
     border: 0.18em solid var(--green);
   }
-  label,
   input,
   button {
     padding: 0.52em 0.29em;
     letter-spacing: -0.034em;
-  }
-  label {
-    display: flex;
-    align-items: center;
-    background: var(--green);
-    color: var(--paper);
   }
   input {
     min-width: 0;
@@ -381,7 +398,7 @@
     &::placeholder {
       color: var(--green);
       opacity: 0.75;
-      text-transform: uppercase;
+      text-transform: none;
     }
   }
   button {
@@ -391,6 +408,11 @@
     gap: 0.15em;
     font: inherit;
     text-transform: uppercase;
+    span {
+      line-height: 1cap;
+      text-box-trim: trim-both;
+      text-box-edge: cap alphabetic;
+    }
   }
   [role='status'] {
     font: 400 var(--type-body)/1.3 var(--body);
@@ -436,6 +458,9 @@
     }
   }
   .park-navigation__links {
+    &[inert] {
+      display: none;
+    }
     position: static;
     display: flex;
     flex-direction: column;
@@ -468,15 +493,6 @@
       grid-row: auto;
       grid-template-rows: auto auto;
       gap: 1.35em;
-    }
-  }
-}
-
-@media (max-width: 22rem) {
-  .foundation-newsletter form {
-    flex-wrap: wrap;
-    label {
-      flex-basis: 100%;
     }
   }
 }

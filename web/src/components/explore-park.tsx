@@ -39,7 +39,6 @@ export function ExplorePark({places, title}: {places: ContentEntry[]; title: str
           <li key={place.id}>
             <Link
               href={place.href}
-              style={themeStyle(themeForEntry(place))}
               data-current={selected.id === place.id}
               aria-describedby={selected.id === place.id ? 'explore-description' : undefined}
               onPointerEnter={(event) => {

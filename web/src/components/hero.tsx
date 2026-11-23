@@ -94,15 +94,11 @@ export function Hero({slides, celebration}: Pick<SiteContent['home'], 'slides' |
       </div>
       {stories.length > 1 && (
         <div className="hero__controls">
-          <button type="button" onClick={() => advance(-1)} aria-label="Previous featured story">
-            ‹
-          </button>
+          <button type="button" onClick={() => advance(-1)} aria-label="Previous featured story" />
           <span className="sr-only" aria-live={focused ? 'polite' : 'off'}>
             {active + 1} of {stories.length}
           </span>
-          <button type="button" onClick={() => advance(1)} aria-label="Next featured story">
-            ›
-          </button>
+          <button type="button" onClick={() => advance(1)} aria-label="Next featured story" />
         </div>
       )}
       {celebration?.title && heroInView && (
