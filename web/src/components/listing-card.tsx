@@ -3,6 +3,7 @@ import Link from 'next/link'
 import type {ContentEntry} from '@/lib/content'
 import {readableDate, scheduleLabel} from '@/lib/event-filters'
 import {ParkImage} from './park-image'
+import {DotLink} from './dot-link'
 
 export function NewsCredit({entry}: {entry: ContentEntry}) {
   const {organization} = entry
@@ -40,10 +41,9 @@ export function ListingCard({
         <>
           <NewsCredit entry={entry} />
           {entry.summary && <p className="listing-card__summary">{entry.summary}</p>}
-          <Link className="listing-card__read" href={entry.href}>
-            <i className="small-seed" aria-hidden="true" />
+          <DotLink className="listing-card__read" href={entry.href}>
             {readMore}
-          </Link>
+          </DotLink>
         </>
       ) : (
         <p className="listing-credit listing-credit--event">

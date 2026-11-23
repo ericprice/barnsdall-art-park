@@ -1,3 +1,4 @@
+import {DotLink} from './dot-link'
 import Link from 'next/link'
 import type {PageSection} from '@/lib/content'
 import {RichText} from './rich-text'
@@ -56,16 +57,15 @@ export function PageSections({sections}: {sections?: PageSection[]}) {
         )
       ) : null}
       {section.links?.length ? (
-        <ul className="section-links">
+        <ul className="section-links" role="list">
           {section.links.map(
             (link) =>
               link.href && (
                 <li key={link._key}>
-                  <span className="small-seed" aria-hidden="true" />
-                  <Link href={link.href}>
+                  <DotLink href={link.href}>
                     {link.label}{' '}
                     <span aria-hidden="true">{link.href.startsWith('https://') ? '↗' : '»'}</span>
-                  </Link>
+                  </DotLink>
                 </li>
               ),
           )}

@@ -9,7 +9,6 @@ import {notFound, redirect} from 'next/navigation'
 import {getEntry, getSite} from '@/lib/content'
 import {
   VisitPage,
-  ParkDirectory,
   ParkLandscape,
   RentalsPage,
   CentennialPage,
@@ -77,16 +76,14 @@ export default async function ContentPage({params, searchParams}: Props) {
     )
   const entry = await getEntry(path)
   if (!entry) notFound()
-  if (path === '/park') return <ParkDirectory entry={entry} site={site} />
-  if (path === '/park/the-park') return <ParkLandscape entry={entry} site={site} />
-  if (path === '/visit/rentals') return <RentalsPage entry={entry} site={site} />
+  if (path === '/park/the-park') return <ParkLandscape entry={entry} />
+  if (path === '/visit/rentals') return <RentalsPage entry={entry} />
   if (path === '/contact') return <ContactPage entry={entry} site={site} />
-  if (path === '/support/olive-grove') return <OliveGrovePage entry={entry} site={site} />
-  if (path === '/100') return <CentennialPage entry={entry} site={site} />
+  if (path === '/support/olive-grove') return <OliveGrovePage entry={entry} />
+  if (path === '/100') return <CentennialPage entry={entry} />
   if (entry.template === 'visit' || path === '/visit' || path === '/visit/policies')
     return <VisitPage entry={entry} site={site} />
-  if (entry.template === 'timeline' || path === '/history')
-    return <HistoryTimeline entry={entry} settings={site.settings} />
+  if (entry.template === 'timeline' || path === '/history') return <HistoryTimeline entry={entry} />
   if (/^https?:\/\//.test(entry.href)) redirect(entry.href)
   if (path.startsWith('/whats-on/') || path.startsWith('/news/'))
     return <ListingStory entry={entry} site={site} event={path.startsWith('/whats-on/')} />

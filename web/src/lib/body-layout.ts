@@ -56,7 +56,6 @@ const layoutPaths = new Set([
   '/visit',
   '/visit/policies',
   '/visit/rentals',
-  '/park',
   '/park/the-park',
   '/support',
   '/support/olive-grove',

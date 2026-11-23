@@ -1,5 +1,4 @@
-import Link from 'next/link'
-import type {ContentEntry, ImageSource, SiteContent} from '@/lib/content'
+import type {ContentEntry, ImageSource} from '@/lib/content'
 import {PageSections} from './page-sections'
 import {ParkImage} from './park-image'
 import {RichText} from './rich-text'
@@ -21,19 +20,9 @@ function TimelinePhoto({image, wide = false}: {image: ImageSource; wide?: boolea
   )
 }
 
-export function HistoryTimeline({
-  entry,
-  settings,
-}: {
-  entry: ContentEntry
-  settings: SiteContent['settings']
-}) {
+export function HistoryTimeline({entry}: {entry: ContentEntry}) {
   return (
     <main id="main-content" className="timeline-page">
-      <nav className="timeline-crumbs" aria-label="Breadcrumb">
-        <Link href="/">{settings.interfaceText.home}</Link> /{' '}
-        <Link href="/park">{settings.navigation.find((item) => item.href === '/park')?.title}</Link>
-      </nav>
       <h1>{entry.title}</h1>
       {entry.summary && <p className="timeline-lead">{entry.summary}</p>}
       {Boolean(entry.image || entry.sections?.length || entry.body?.length) && (

@@ -4,3 +4,20 @@
   background-color: currentColor;
   mask: var(--olive-dot, url('/identity/dots/#{$number}.svg')) center / contain no-repeat;
 }
+
+@mixin active-nav-dot($mask, $color) {
+  position: relative;
+  isolation: isolate;
+  &::before {
+    content: '';
+    position: absolute;
+    z-index: -1;
+    width: 1.5em;
+    height: 1.5em;
+    inset: 50% auto auto 50%;
+    transform: translate(-50%, -50%);
+    mask: $mask center / contain no-repeat;
+    background: $color;
+    pointer-events: none;
+  }
+}

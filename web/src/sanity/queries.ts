@@ -7,10 +7,8 @@ export const SITE_QUERY = defineQuery(`{
     featuredContent[]->{_id, _type, title, slug, summary, image, "orgTheme": organizationRef->{title, light, dark}, storyDestination, featureImage, featureBackground, featureCaption, kind, startsAt, endsAt, repeatsUntil, allDay, publishedAt, website},
     featuredPlaces[]->{_id, _type, title, slug, summary, image, "orgTheme": organizationRef->{title, light, dark}, website}
   },
-  "places": *[_type == "place" && defined(slug.current)] | order(coalesce(directoryOrder, 9999) asc, title asc)[0...100]{_id, _type, title, slug, summary, image, "orgTheme": organizationRef->{title, light, dark}, website},
   "events": *[_type == "event" && defined(slug.current)] | order(startsAt asc){_id, _type, title, slug, summary, image, "orgTheme": organizationRef->{title, light, dark}, kind, startsAt, endsAt, repeatsUntil, allDay},
-  "articles": *[_type == "article" && defined(slug.current)] | order(coalesce(archiveEntry, false) asc, defined(publishedAt) desc, publishedAt desc, title asc){_id, _type, title, slug, summary, image, "orgTheme": organizationRef->{title, light, dark}, storyDestination, featureImage, featureBackground, featureCaption, publishedAt},
-  "pages": *[_type == "page" && defined(slug.current)] | order(title asc)[0...100]{_id, _type, title, slug, summary, image, "orgTheme": organizationRef->{title, light, dark}, template}
+  "articles": *[_type == "article" && defined(slug.current)] | order(coalesce(archiveEntry, false) asc, defined(publishedAt) desc, publishedAt desc, title asc){_id, _type, title, slug, summary, image, "orgTheme": organizationRef->{title, light, dark}, storyDestination, featureImage, featureBackground, featureCaption, publishedAt}
 }`)
 
 export const CONTENT_QUERY = defineQuery(

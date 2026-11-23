@@ -27,7 +27,6 @@ export type ContentEntry = {
   id: string
   title: string
   href: string
-  directoryOrder?: number
   summary?: string | null
   image?: ImageSource
   body?: RichText
@@ -127,10 +126,8 @@ export type SiteContent = {
     features: ContentEntry[]
     places: ContentEntry[]
   }
-  places: ContentEntry[]
   events: ContentEntry[]
   articles: ContentEntry[]
-  pages: ContentEntry[]
 }
 
 function hrefFor(type: string, slug?: string) {
@@ -142,10 +139,8 @@ function hrefFor(type: string, slug?: string) {
 type DocumentEntry =
   | NonNullable<CONTENT_QUERY_RESULT>
   | NonNullable<NonNullable<NonNullable<SITE_QUERY_RESULT['home']>['featuredContent']>[number]>
-  | SITE_QUERY_RESULT['places'][number]
   | SITE_QUERY_RESULT['events'][number]
   | SITE_QUERY_RESULT['articles'][number]
-  | SITE_QUERY_RESULT['pages'][number]
   | SEARCH_QUERY_RESULT[number]
 function toEntry(doc: DocumentEntry): ContentEntry {
   const owner = doc.orgTheme
@@ -253,10 +248,8 @@ export const getSite = cache(async (): Promise<SiteContent> => {
   const data = await readContent(SITE_QUERY)
   return {
     settings: settingsFor(data.settings),
-    places: data.places.map(toEntry),
     events: data.events.map(toEntry),
     articles: data.articles.map(toEntry),
-    pages: data.pages.map(toEntry),
     home: {
       historyLink: data.home?.historyLink || undefined,
       slides:

@@ -3,7 +3,14 @@
 import {ParkImage} from './park-image'
 import Link from 'next/link'
 import {usePathname} from 'next/navigation'
-import {useCallback, useEffect, useRef, useState, useSyncExternalStore} from 'react'
+import {
+  useCallback,
+  useEffect,
+  useRef,
+  useState,
+  useSyncExternalStore,
+  type KeyboardEvent as ReactKeyboardEvent,
+} from 'react'
 import type {SiteContent} from '@/lib/content'
 import {formatParkSunset, getParkSunset} from '@/lib/park-sunset'
 import {HeaderSearch} from './header-search'
@@ -176,7 +183,12 @@ function Navigation({pathname, settings, initialSunset}: HeaderProps & {pathname
       )}
       <div className="park-navigation">
         {!isHome && (
-          <Link href="/" className="compact-home" onClick={close} aria-label={settings.title}>
+          <Link
+            href="/"
+            className="compact-home compact-home--mobile"
+            onClick={close}
+            aria-label={settings.title}
+          >
             B
           </Link>
         )}
@@ -205,11 +217,36 @@ function Navigation({pathname, settings, initialSunset}: HeaderProps & {pathname
           </button>
         </div>
         <nav id="primary-navigation" aria-label="Main navigation" data-open={mobile}>
+          {!isHome && (
+            <Link
+              href="/"
+              className="compact-home compact-home--desktop"
+              onClick={close}
+              aria-label={settings.title}
+            >
+              B
+            </Link>
+          )}
           {settings.navigation.map((item, index) => {
             const panelId = `navigation-panel-${index}`
-            const current = Boolean(
-              item.href && (pathname === item.href || pathname.startsWith(item.href + '/')),
-            )
+            const hasChildren = Boolean(item.children?.length)
+            if (!item.href && !hasChildren) return null
+            const current = item.href
+              ? pathname === item.href || pathname.startsWith(item.href + '/')
+              : item.children?.some((child) => {
+                  const target = child.href.split(/[?#]/)[0]
+                  return pathname === target || pathname.startsWith(target + '/')
+                })
+
+            function focusSubmenu(event: ReactKeyboardEvent<HTMLElement>) {
+              if (event.key !== 'ArrowDown' || !hasChildren) return
+              event.preventDefault()
+              opener.current = event.currentTarget
+              setOpen(index)
+              requestAnimationFrame(() => {
+                header.current?.querySelector<HTMLAnchorElement>(`#${panelId} a`)?.focus()
+              })
+            }
             return (
               <div
                 key={item.title}
@@ -226,33 +263,41 @@ function Navigation({pathname, settings, initialSunset}: HeaderProps & {pathname
                 }}
               >
                 <span className="park-navigation__label">
-                  <Link
-                    href={item.href || '/'}
-                    aria-current={current ? 'page' : undefined}
-                    aria-expanded={item.children?.length ? open === index : undefined}
-                    aria-controls={item.children?.length ? panelId : undefined}
-                    onClick={(event) => {
-                      if (event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return
-                      if (item.children?.length && open !== index) {
-                        event.preventDefault()
+                  {item.href ? (
+                    <Link
+                      href={item.href}
+                      aria-current={current ? 'page' : undefined}
+                      aria-expanded={hasChildren ? open === index : undefined}
+                      aria-controls={hasChildren ? panelId : undefined}
+                      onClick={(event) => {
+                        if (event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return
+                        if (hasChildren && open !== index) {
+                          event.preventDefault()
+                          opener.current = event.currentTarget
+                          setOpen(index)
+                        } else {
+                          close()
+                        }
+                      }}
+                      onKeyDown={focusSubmenu}
+                    >
+                      {item.title}
+                    </Link>
+                  ) : (
+                    <button
+                      type="button"
+                      aria-current={current ? 'true' : undefined}
+                      aria-expanded={open === index}
+                      aria-controls={panelId}
+                      onClick={(event) => {
                         opener.current = event.currentTarget
-                        setOpen(index)
-                      } else {
-                        close()
-                      }
-                    }}
-                    onKeyDown={(event) => {
-                      if (event.key !== 'ArrowDown' || !item.children?.length) return
-                      event.preventDefault()
-                      opener.current = event.currentTarget
-                      setOpen(index)
-                      requestAnimationFrame(() => {
-                        header.current?.querySelector<HTMLAnchorElement>(`#${panelId} a`)?.focus()
-                      })
-                    }}
-                  >
-                    {item.title}
-                  </Link>
+                        setOpen(open === index ? null : index)
+                      }}
+                      onKeyDown={focusSubmenu}
+                    >
+                      {item.title}
+                    </button>
+                  )}
                 </span>
                 {!!item.children?.length && (
                   <div className="park-navigation__links" id={panelId} inert={open !== index}>

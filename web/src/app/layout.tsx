@@ -1,8 +1,10 @@
+import {randomInt} from 'node:crypto'
 import type {Metadata} from 'next'
 import localFont from 'next/font/local'
 import {Suspense} from 'react'
 import {getSite} from '@/lib/content'
 import {getParkSunset} from '@/lib/park-sunset'
+import {SiteShell} from '@/components/site-shell'
 import {SiteHeader} from '@/components/site-header'
 import {SiteFooter} from '@/components/site-footer'
 import {SanityLive} from '@/sanity/live'
@@ -38,11 +40,11 @@ export default async function RootLayout({children}: {children: React.ReactNode}
         <a href="#main-content" className="skip-link">
           {settings.interfaceText.skip}
         </a>
-        <div className="site-shell">
+        <SiteShell seed={randomInt(2 ** 32)}>
           <SiteHeader settings={settings} initialSunset={getParkSunset(new Date()).toISOString()} />
           {children}
           <SiteFooter settings={settings} />
-        </div>
+        </SiteShell>
         <Suspense>
           <SanityLive />
         </Suspense>

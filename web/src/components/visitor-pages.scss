@@ -95,11 +95,8 @@
   .visitor-map a {
     text-decoration: none;
   }
-  .visitor-prose ul {
+  .visitor-prose .rich-text ul {
     padding-left: 1em;
-  }
-  .visitor-prose .visitor-links {
-    list-style: disc;
   }
   > .quote-band {
     margin-top: 5rem;
@@ -111,15 +108,6 @@
 .visitor-policies .visitor-prose > .rich-text {
   margin-top: 1rem;
 }
-.park-directory > .visitor-links {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.6rem 1.4rem;
-  li {
-    margin: 0;
-  }
-}
-.park-directory__cards,
 .park-landscape__sections,
 .rentals-page__inquiries,
 .rentals-page__venues,
@@ -128,19 +116,6 @@
   grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 2.5rem 2rem;
   margin-top: 2.5rem;
-}
-.park-directory__cards {
-  article a {
-    display: block;
-    color: inherit;
-    text-decoration: none;
-  }
-  h2 {
-    margin: 0.7rem 0 1rem;
-  }
-  .visitor-photo {
-    aspect-ratio: 2.3;
-  }
 }
 .park-overview {
   margin-top: 3rem;
@@ -236,7 +211,6 @@
       @include type-size(label);
     }
   }
-  .park-directory__cards,
   .park-landscape__sections,
   .park-spread,
   .rentals-page__inquiries,
@@ -289,29 +263,8 @@
     grid-template-columns: 1fr;
   }
 }
-.visitor-crumb {
-  @include publisher-type;
-  margin-bottom: 1.5rem;
-}
-.visitor-crumb a {
-  text-decoration: none;
-}
-.visitor-arrival .subnav [aria-current='page'] {
-  position: relative;
-  isolation: isolate;
-  color: var(--ink);
-  &::before {
-    content: '';
-    position: absolute;
-    z-index: -1;
-    top: 50%;
-    left: 50%;
-    width: 1.1em;
-    aspect-ratio: 0.85;
-    transform: translate(-50%, -50%) rotate(-16deg);
-    border-radius: 59% 41% 54% 46%;
-    background: var(--pink);
-  }
+.park-landscape .page-heading {
+  text-align: center;
 }
 .contact-subscription .email-registration-form .section.contact {
   > h3,

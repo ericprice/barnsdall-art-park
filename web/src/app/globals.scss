@@ -230,9 +230,29 @@ figcaption {
       inset-inline: auto 2%;
     }
   }
+  &__content {
+    position: relative;
+    display: grid;
+    grid-template-rows: minmax(0, 1fr);
+    align-items: center;
+    overflow: clip;
+    overflow-clip-margin: 0.5rem;
+    transition: height 440ms ease-in-out;
+  }
   blockquote {
-    max-width: 82%;
+    width: 82%;
     margin-inline: auto;
+  }
+  &__outgoing {
+    position: absolute;
+    inset: 50% 0 auto;
+    translate: 0 -50%;
+    opacity: 0;
+    pointer-events: none;
+    animation: quote-out 160ms ease-out both;
+  }
+  &__incoming {
+    animation: quote-in 260ms ease-out 120ms both;
   }
   blockquote > p {
     font: 400 var(--type-display)/var(--leading-display) var(--lead);
@@ -248,6 +268,22 @@ figcaption {
     gap: 0.7rem;
     margin-top: 1.3rem;
     @include publisher-type;
+  }
+}
+@keyframes quote-out {
+  from {
+    opacity: 1;
+  }
+  to {
+    opacity: 0;
+  }
+}
+@keyframes quote-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
   }
 }
 .history {
@@ -291,7 +327,7 @@ figcaption {
     @include type-size(display);
     text-align: center;
   }
-  > p:not(.breadcrumbs) {
+  > p {
     margin: 1.5rem auto;
     max-width: 45rem;
     padding-inline: var(--gutter);
@@ -307,18 +343,19 @@ figcaption {
   }
 }
 .subnav {
-  [aria-current='page'] {
-    color: var(--green);
-  }
-  @include display;
+  @include display-type(title);
   display: flex;
   flex-wrap: wrap;
   justify-content: center;
   gap: 0.6rem 1.4rem;
-  @include type-size(label);
-  margin-top: 1rem;
+  width: min(100%, 65rem);
+  margin: 1rem auto 0;
   a {
+    color: inherit;
     text-decoration: none;
+  }
+  [aria-current='page'] {
+    @include active-nav-dot(var(--section-nav-dot), var(--section-nav-color));
   }
 }
 .interior__intro {
@@ -520,12 +557,6 @@ figcaption {
   margin-top: 4.5rem;
 }
 
-@media (min-width: 58rem) {
-  .foundation-page .subnav {
-    max-width: 65rem;
-    margin-inline: auto;
-  }
-}
 @media (max-width: 58rem) {
   .feature-grid {
     gap: 2.5rem 1.5rem;
@@ -682,27 +713,6 @@ figcaption {
     padding-inline: 0;
   }
 
-  .subnav {
-    @include type-size(title);
-    [aria-current='page'] {
-      position: relative;
-      isolation: isolate;
-      color: var(--ink);
-    }
-    [aria-current='page']::before {
-      content: '';
-      position: absolute;
-      z-index: -1;
-      width: 1.5em;
-      height: 1.5em;
-      left: 50%;
-      top: 50%;
-      transform: translate(-50%, -50%) rotate(-12deg);
-      border-radius: 43% 57% 52% 48% / 41% 50% 50% 59%;
-      background: var(--pink);
-    }
-  }
-
   .interior__intro {
     @include publisher-type(publisher-lead);
     margin-bottom: 1em;
@@ -717,9 +727,6 @@ figcaption {
   }
 
   @media (max-width: 44rem) {
-    .subnav {
-      @include type-size(label);
-    }
     .interior__intro,
     .interior__body {
       padding-inline: var(--gutter);

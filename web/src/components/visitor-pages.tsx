@@ -1,7 +1,7 @@
 import Link from 'next/link'
 import type {ContentEntry, ImageSource, PageSection, SiteContent} from '@/lib/content'
-import {themeForEntry} from '@/lib/image-theme'
 import {ParkImage} from './park-image'
+import {DotLink} from './dot-link'
 import {QuoteBand} from './quote-band'
 import {RichText} from './rich-text'
 import {PageSections} from './page-sections'
@@ -10,39 +10,18 @@ import {ContactSignup, LegacyPoliciesLink} from './visitor-forms'
 import './visitor-pages.scss'
 
 type Props = {entry: ContentEntry; site: SiteContent}
-function Breadcrumb({site, paths}: {site: SiteContent; paths: string[]}) {
-  return (
-    <nav aria-label="Breadcrumb" className="visitor-crumb">
-      <Link href="/">{site.settings.interfaceText.home}</Link>
-      {paths.map((path) => {
-        const page = site.pages.find((item) => item.href === path)
-        const item = site.settings.navigation.find((item) => item.href === path)
-        const footerLink = site.settings.footerLinks?.find((item) => item.href === path)
-        const label = item?.title || footerLink?.label || page?.title
-        return (
-          label && (
-            <span key={path}>
-              {' '}
-              / <Link href={path}>{path === '/100' ? '100' : label}</Link>
-            </span>
-          )
-        )
-      })}
-    </nav>
-  )
-}
 function Links({links}: {links?: PageSection['links']}) {
   if (!links?.length) return null
   return (
-    <ul className="visitor-links">
+    <ul className="visitor-links" role="list">
       {links.map(
         (link) =>
           link.href && (
             <li key={link._key}>
-              <Link href={link.href} download={link.href.endsWith('.pdf') || undefined}>
+              <DotLink href={link.href} download={link.href.endsWith('.pdf') || undefined}>
                 {link.label}
                 <span aria-hidden="true"> »</span>
-              </Link>
+              </DotLink>
             </li>
           ),
       )}
@@ -123,38 +102,14 @@ export function VisitPage({entry, site}: Props) {
   )
 }
 
-export function ParkDirectory({entry, site}: Props) {
-  return (
-    <main id="main-content" className="visitor-wire park-directory">
-      <Breadcrumb site={site} paths={['/park']} />
-      <h1>{entry.title}</h1>
-      {entry.summary && <p className="visitor-wire__lead">{entry.summary}</p>}
-      <RichText value={entry.body} />
-      <RichText value={entry.sections?.[0]?.body} />
-      <Links links={entry.sections?.[0]?.links} />
-      <PageSections sections={entry.sections?.slice(1)} />
-      <div className="park-directory__cards">
-        {site.places.map((place) => (
-          <article key={place.id}>
-            <Link href={place.href}>
-              <Photo image={place.image} orgTheme={themeForEntry(place)} />
-              <h2>{place.title}</h2>
-              {place.summary && <p>{place.summary}</p>}
-            </Link>
-          </article>
-        ))}
-      </div>
-    </main>
-  )
-}
-
-export function ParkLandscape({entry, site}: Props) {
+export function ParkLandscape({entry}: Pick<Props, 'entry'>) {
   const about = entry.sections?.find((section) => section.anchor === 'about') ?? entry.sections?.[0]
   const sections = entry.sections?.filter((section) => section !== about)
   return (
     <main id="main-content" className="visitor-wire park-landscape">
-      <Breadcrumb site={site} paths={['/park']} />
-      <h1>{entry.title}</h1>
+      <header className="page-heading">
+        <h1>{entry.title}</h1>
+      </header>
       <RichText value={entry.body} />
       {about && (
         <section className="park-overview" id={about.anchor}>
@@ -194,11 +149,10 @@ export function ParkLandscape({entry, site}: Props) {
   )
 }
 
-export function RentalsPage({entry, site}: Props) {
+export function RentalsPage({entry}: Pick<Props, 'entry'>) {
   const [inquiries, ...venues] = entry.sections ?? []
   return (
     <main id="main-content" className="visitor-wire rentals-page">
-      <Breadcrumb site={site} paths={['/visit']} />
       <h1>{entry.title}</h1>
       {entry.summary && <p className="visitor-wire__lead">{entry.summary}</p>}
       <RichText value={entry.body} />
@@ -221,11 +175,10 @@ export function RentalsPage({entry, site}: Props) {
   )
 }
 
-export function CentennialPage({entry, site}: Props) {
+export function CentennialPage({entry}: Pick<Props, 'entry'>) {
   const [campaign, ...more] = entry.sections ?? []
   return (
     <main id="main-content" className="visitor-wire centennial-page">
-      <Breadcrumb site={site} paths={['/100']} />
       {campaign?.title && <p className="visitor-kicker">{campaign.title}</p>}
       <h1>{entry.title}</h1>
       {entry.summary && <p className="visitor-wire__lead">{entry.summary}</p>}
@@ -245,7 +198,6 @@ export function ContactPage({entry, site}: Props) {
     entry.sections?.find((section) => section.anchor === 'subscribe') ?? entry.sections?.at(-1)
   return (
     <main id="main-content" className="visitor-wire contact-page">
-      <Breadcrumb site={site} paths={['/contact']} />
       <h1>{entry.title}</h1>
       {entry.summary && <p className="visitor-wire__lead">{entry.summary}</p>}
       <RichText value={entry.body} />
@@ -261,11 +213,10 @@ export function ContactPage({entry, site}: Props) {
   )
 }
 
-export function OliveGrovePage({entry, site}: Props) {
+export function OliveGrovePage({entry}: Pick<Props, 'entry'>) {
   const [plan, past, news, ...more] = entry.sections ?? []
   return (
     <main id="main-content" className="visitor-wire olive-restoration">
-      <Breadcrumb site={site} paths={['/support', '/support/initiatives']} />
       <h1>{entry.title}</h1>
       {entry.summary && <p className="visitor-wire__lead">{entry.summary}</p>}
       <RichText value={entry.body} />

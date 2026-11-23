@@ -49,7 +49,10 @@ export function ExplorePark({places, title}: {places: ContentEntry[]; title: str
       <h2 id="explore-heading">{title}</h2>
       <ul className="explore__places">
         {locations.map(({place, labelDot}) => (
-          <li key={place.id}>
+          <li
+            key={place.id}
+            data-wrap={/^hollyhock\s+house$/i.test(place.title.trim()) ? 'words' : undefined}
+          >
             <Link
               href={place.href}
               style={

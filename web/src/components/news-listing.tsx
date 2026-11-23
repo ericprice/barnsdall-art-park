@@ -65,10 +65,12 @@ export function NewsListing({
             <Link href={featured.href}>{featured.title}</Link>
           </h2>
           <NewsCredit entry={featured} />
-          {featured.summary && <p className="news-feature__summary">{featured.summary}</p>}
-          <Link className="news-feature__read" href={featured.href}>
-            {text.readMore} »
-          </Link>
+          <div className="news-feature__copy">
+            {featured.summary && <p className="news-feature__summary">{featured.summary}</p>}
+            <Link className="news-feature__read" href={featured.href}>
+              {text.readMore} <span aria-hidden="true">»</span>
+            </Link>
+          </div>
         </article>
       )}
       {entries.length > 0 && (

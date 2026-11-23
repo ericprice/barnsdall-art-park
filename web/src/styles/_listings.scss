@@ -131,6 +131,11 @@
   margin: 0.8em 0;
   text-align: left;
 }
+.listing-card__read {
+  display: block;
+  width: fit-content;
+  text-align: left;
+}
 .listing-card__read,
 .home-feature__caption {
   text-decoration: underline;
@@ -272,8 +277,9 @@
       object-fit: cover;
     }
   }
-  &__summary {
-    max-width: 20em;
+  &__copy {
+    width: min(100%, 20em);
+    text-align: left;
   }
   &__read {
     @include display-type(label);
@@ -422,7 +428,7 @@
   .news-feature__photo {
     width: min(90%, 23rem);
   }
-  .news-feature__summary {
+  .news-feature__copy {
     max-width: 17em;
   }
   .listing-story .listing-head {

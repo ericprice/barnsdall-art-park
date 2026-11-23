@@ -8,13 +8,6 @@
   h1 {
     @include type-size(display);
   }
-  .timeline-crumbs {
-    margin-bottom: 1.5rem;
-    @include publisher-type;
-  }
-  .timeline-crumbs a {
-    text-decoration: none;
-  }
   .timeline-lead {
     margin-block: 1.5rem 3rem;
     max-width: 32em;

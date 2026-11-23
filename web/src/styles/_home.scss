@@ -249,6 +249,9 @@ $home-section-gap: max(2rem, site-size(4));
     grid-column: span 2;
     max-width: 100%;
   }
+  [data-wrap='words'] a > span {
+    max-width: min-content;
+  }
   li:first-child a {
     max-width: 3.45em;
     min-height: 2.4em;

@@ -99,7 +99,7 @@
     gap: 0.08em;
     padding: 0.36em 0 0.45em;
 
-    a:focus-visible {
+    :is(a, .park-navigation__label button):focus-visible {
       outline: none;
       text-decoration: underline;
     }
@@ -146,18 +146,13 @@
   background: var(--ink);
   color: var(--paper) !important;
   border-radius: 48% 52% 57% 43% / 37% 42% 58% 63%;
+  mix-blend-mode: multiply;
 }
-.park-header--compact .park-navigation__group[data-current='true'] .park-navigation__label::before {
-  content: '';
-  position: absolute;
-  z-index: -1;
-  width: 1.35em;
-  height: 1.35em;
-  left: 45%;
-  top: 50%;
-  transform: translate(-50%, -50%) rotate(20deg);
-  background: var(--olive);
-  border-radius: 51% 49% 42% 58%;
+.compact-home--mobile {
+  display: none;
+}
+.park-header--compact .park-navigation__group[data-current='true'] .park-navigation__label {
+  @include active-nav-dot(var(--nav-dot), var(--nav-color));
 }
 .park-header[data-expanded='true'] .park-navigation__label::before {
   display: none;
@@ -429,7 +424,19 @@
     }
   }
 }
+@media (width > 48rem) {
+  .park-header--compact .park-navigation nav {
+    // The B mark is taller than the labels and now shares their flex row.
+    padding-block: 0.16em 0.23em;
+  }
+}
 @media (max-width: 48rem) {
+  .compact-home--desktop {
+    display: none;
+  }
+  .compact-home--mobile {
+    display: grid;
+  }
   .park-utility {
     @include type-size(compact-label);
     padding-top: 0.25em;

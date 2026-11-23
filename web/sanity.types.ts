@@ -666,7 +666,7 @@ export type AllSanitySchemaTypes =
 
 // Source: ../web/src/sanity/queries.ts
 // Variable: SITE_QUERY
-// Query: {  "settings": *[_type == "siteSettings" && _id == "siteSettings"][0],  "home": *[_type == "homePage" && _id == "homePage"][0]{    title, historyLink, heroSlides[]{..., "orgTheme": organizationRef->{title, light, dark}}, celebration, quote, timeline,    featuredContent[]->{_id, _type, title, slug, summary, image, "orgTheme": organizationRef->{title, light, dark}, storyDestination, featureImage, featureBackground, featureCaption, kind, startsAt, endsAt, repeatsUntil, allDay, publishedAt, website},    featuredPlaces[]->{_id, _type, title, slug, summary, image, "orgTheme": organizationRef->{title, light, dark}, website}  },  "places": *[_type == "place" && defined(slug.current)] | order(coalesce(directoryOrder, 9999) asc, title asc)[0...100]{_id, _type, title, slug, summary, image, "orgTheme": organizationRef->{title, light, dark}, website},  "events": *[_type == "event" && defined(slug.current)] | order(startsAt asc){_id, _type, title, slug, summary, image, "orgTheme": organizationRef->{title, light, dark}, kind, startsAt, endsAt, repeatsUntil, allDay},  "articles": *[_type == "article" && defined(slug.current)] | order(coalesce(archiveEntry, false) asc, defined(publishedAt) desc, publishedAt desc, title asc){_id, _type, title, slug, summary, image, "orgTheme": organizationRef->{title, light, dark}, storyDestination, featureImage, featureBackground, featureCaption, publishedAt},  "pages": *[_type == "page" && defined(slug.current)] | order(title asc)[0...100]{_id, _type, title, slug, summary, image, "orgTheme": organizationRef->{title, light, dark}, template}}
+// Query: {  "settings": *[_type == "siteSettings" && _id == "siteSettings"][0],  "home": *[_type == "homePage" && _id == "homePage"][0]{    title, historyLink, heroSlides[]{..., "orgTheme": organizationRef->{title, light, dark}}, celebration, quote, timeline,    featuredContent[]->{_id, _type, title, slug, summary, image, "orgTheme": organizationRef->{title, light, dark}, storyDestination, featureImage, featureBackground, featureCaption, kind, startsAt, endsAt, repeatsUntil, allDay, publishedAt, website},    featuredPlaces[]->{_id, _type, title, slug, summary, image, "orgTheme": organizationRef->{title, light, dark}, website}  },  "events": *[_type == "event" && defined(slug.current)] | order(startsAt asc){_id, _type, title, slug, summary, image, "orgTheme": organizationRef->{title, light, dark}, kind, startsAt, endsAt, repeatsUntil, allDay},  "articles": *[_type == "article" && defined(slug.current)] | order(coalesce(archiveEntry, false) asc, defined(publishedAt) desc, publishedAt desc, title asc){_id, _type, title, slug, summary, image, "orgTheme": organizationRef->{title, light, dark}, storyDestination, featureImage, featureBackground, featureCaption, publishedAt}}
 export type SITE_QUERY_RESULT = {
   settings: {
     _id: 'siteSettings'
@@ -946,20 +946,6 @@ export type SITE_QUERY_RESULT = {
       website: Link | null
     }> | null
   } | null
-  places: Array<{
-    _id: string
-    _type: 'place'
-    title: string | null
-    slug: Slug | null
-    summary: string | null
-    image: ParkImage | null
-    orgTheme: {
-      title: string | null
-      light: string | null
-      dark: string | null
-    } | null
-    website: Link | null
-  }>
   events: Array<{
     _id: string
     _type: 'event'
@@ -1003,20 +989,6 @@ export type SITE_QUERY_RESULT = {
     featureBackground: string | null
     featureCaption: string | null
     publishedAt: string | null
-  }>
-  pages: Array<{
-    _id: string
-    _type: 'page'
-    title: string | null
-    slug: Slug | null
-    summary: string | null
-    image: ParkImage | null
-    orgTheme: {
-      title: string | null
-      light: string | null
-      dark: string | null
-    } | null
-    template: 'foundation' | 'initiative' | 'standard' | 'timeline' | 'visit' | null
   }>
 }
 
@@ -1296,7 +1268,7 @@ export type SEARCH_QUERY_RESULT = Array<
 // Query TypeMap
 declare global {
   interface SanityQueries {
-    '{\n  "settings": *[_type == "siteSettings" && _id == "siteSettings"][0],\n  "home": *[_type == "homePage" && _id == "homePage"][0]{\n    title, historyLink, heroSlides[]{..., "orgTheme": organizationRef->{title, light, dark}}, celebration, quote, timeline,\n    featuredContent[]->{_id, _type, title, slug, summary, image, "orgTheme": organizationRef->{title, light, dark}, storyDestination, featureImage, featureBackground, featureCaption, kind, startsAt, endsAt, repeatsUntil, allDay, publishedAt, website},\n    featuredPlaces[]->{_id, _type, title, slug, summary, image, "orgTheme": organizationRef->{title, light, dark}, website}\n  },\n  "places": *[_type == "place" && defined(slug.current)] | order(coalesce(directoryOrder, 9999) asc, title asc)[0...100]{_id, _type, title, slug, summary, image, "orgTheme": organizationRef->{title, light, dark}, website},\n  "events": *[_type == "event" && defined(slug.current)] | order(startsAt asc){_id, _type, title, slug, summary, image, "orgTheme": organizationRef->{title, light, dark}, kind, startsAt, endsAt, repeatsUntil, allDay},\n  "articles": *[_type == "article" && defined(slug.current)] | order(coalesce(archiveEntry, false) asc, defined(publishedAt) desc, publishedAt desc, title asc){_id, _type, title, slug, summary, image, "orgTheme": organizationRef->{title, light, dark}, storyDestination, featureImage, featureBackground, featureCaption, publishedAt},\n  "pages": *[_type == "page" && defined(slug.current)] | order(title asc)[0...100]{_id, _type, title, slug, summary, image, "orgTheme": organizationRef->{title, light, dark}, template}\n}': SITE_QUERY_RESULT
+    '{\n  "settings": *[_type == "siteSettings" && _id == "siteSettings"][0],\n  "home": *[_type == "homePage" && _id == "homePage"][0]{\n    title, historyLink, heroSlides[]{..., "orgTheme": organizationRef->{title, light, dark}}, celebration, quote, timeline,\n    featuredContent[]->{_id, _type, title, slug, summary, image, "orgTheme": organizationRef->{title, light, dark}, storyDestination, featureImage, featureBackground, featureCaption, kind, startsAt, endsAt, repeatsUntil, allDay, publishedAt, website},\n    featuredPlaces[]->{_id, _type, title, slug, summary, image, "orgTheme": organizationRef->{title, light, dark}, website}\n  },\n  "events": *[_type == "event" && defined(slug.current)] | order(startsAt asc){_id, _type, title, slug, summary, image, "orgTheme": organizationRef->{title, light, dark}, kind, startsAt, endsAt, repeatsUntil, allDay},\n  "articles": *[_type == "article" && defined(slug.current)] | order(coalesce(archiveEntry, false) asc, defined(publishedAt) desc, publishedAt desc, title asc){_id, _type, title, slug, summary, image, "orgTheme": organizationRef->{title, light, dark}, storyDestination, featureImage, featureBackground, featureCaption, publishedAt}\n}': SITE_QUERY_RESULT
     '*[_type in ["page", "place", "event", "article"] && _type == $type && slug.current == $slug][0]{..., "orgTheme": organizationRef->{title, light, dark}}': CONTENT_QUERY_RESULT
     '*[_type in ["page", "place", "event", "article"] && defined(slug.current) && (title match $searchTerm || organizationRef->title match $searchTerm || summary match $searchTerm || pt::text(body) match $searchTerm || boardMembers[].name match $searchTerm || boardMembers[].role match $searchTerm || boardMembers[].affiliation match $searchTerm || boardMembers[].bio match $searchTerm || staffMembers[].name match $searchTerm || staffMembers[].role match $searchTerm || staffMembers[].affiliation match $searchTerm || staffMembers[].bio match $searchTerm || partners[].name match $searchTerm || supporterYears[].groups[].supporters[].name match $searchTerm || initiativeCards[].title match $searchTerm || volunteerOpportunities[].title match $searchTerm || donationSections[].title match $searchTerm || timelineEntries[].dateLabel match $searchTerm || timelineEntries[].description match $searchTerm)] | order(title asc)[0...100]{_id, _type, title, slug, summary, image, "orgTheme": organizationRef->{title, light, dark}, website}': SEARCH_QUERY_RESULT
   }
