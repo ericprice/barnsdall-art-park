@@ -1,0 +1,8 @@
+node_modules
+.next
+dist
+.sanity
+.agents
+package-lock.json
+studio/schema.json
+web/sanity.types.ts

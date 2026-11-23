@@ -1,0 +1,22 @@
+# Barnsdall editorial handoff
+
+The standalone Studio and website use project `i18fhbsv`, dataset `production`. The protected Vercel preview displays saved drafts when the page is refreshed.
+
+## Editing
+
+- **Site settings** holds the wordmarks, navigation and section menus, donation and signup links, footer, address, social marks, interface labels, featured news story and calendar resources.
+- **Homepage** holds the slides, anniversary callout, ordered story and location references, quotations and six overview milestones.
+- **History / Timeline** opens the chronology. Each milestone has a date or range, description and optional photo. Drag milestones to reorder them. The early history and preservation sections, archival captions and credits are editable.
+- **Support the park** includes the Foundation and its subpages. On the Foundation page, edit people under Board or Staff and edit partners’ names, logos and URLs individually. On Supporters, open a year, a recognition group, then an individual or organization. Donation amounts and benefits need Foundation approval.
+- **Organizations and colors** holds the color pairs used across park locations, events and stories. Set a photograph’s treatment to its organization colors, original color or cutout in Studio. The website applies the tint in the browser.
+- **Park locations** links to each facility’s own site. The Foundation maintains the park landscape page, map, directions, policies, rentals and initiative pages.
+- **What’s on** accepts a single event, an exhibition with an end date, or a weekly series with a final date. Times use Los Angeles local time. The design’s specimen dates are ready for editorial review.
+- **News** manages the story body, photography, captions, organization, related stories and optional link to an original source. The homepage selection and the featured story on the news index are independently editable.
+
+## Review and publication
+
+The website’s production configuration reads published documents. Review and publish the individual records before their referencing homepage and settings documents. Refresh the protected preview after saving a draft.
+
+The signup row leads to the Foundation’s registration form, which requires a first name, last name and email. A provider-supplied email-only form action can be entered in Site settings. The legal destinations, annual giving amounts and benefits, confirmed event dates and image permissions remain launch inputs.
+
+The roster and supporters’ acknowledgments follow the Foundation’s records. Historical dates follow the Foundation’s timeline and grove history. The six-organization color plate and desktop interface supply the colors, type sizes and spacing. The responsive layouts adapt those dimensions for narrower screens. [Leadership](https://www.barnsdall.org/leadership) · [Timeline](https://www.barnsdall.org/timeline) · [Grove history](https://www.barnsdall.org/grove-history)

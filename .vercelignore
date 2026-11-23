@@ -1,0 +1,15 @@
+.git
+.vercel
+.env*
+**/.env*
+.agents
+.playwright-cli
+work
+scripts
+output
+tmp
+**/node_modules
+**/.next
+**/dist
+**/.sanity
+*.tsbuildinfo

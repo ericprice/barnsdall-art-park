@@ -1,0 +1,74 @@
+'use client'
+
+import Link from 'next/link'
+import {useRef, useState} from 'react'
+import type {ContentEntry} from '@/lib/content'
+import {themeForEntry, themeStyle} from '@/lib/image-theme'
+import {ParkImage} from './park-image'
+
+export function ExplorePark({places, title}: {places: ContentEntry[]; title: string}) {
+  const [selectedId, select] = useState(places[0]?.id)
+  const previewTap = useRef(false)
+  const selected = places.find((place) => place.id === selectedId) ?? places[0]
+  if (!selected) return null
+
+  return (
+    <section className="explore" aria-labelledby="explore-heading">
+      <div
+        className="explore__picture"
+        data-position={places.indexOf(selected) % 5}
+        aria-hidden="true"
+      >
+        {places.map((place) => (
+          <div
+            key={place.id}
+            style={themeStyle(themeForEntry(place))}
+            data-current={place.id === selected.id}
+          >
+            <ParkImage
+              orgTheme={themeForEntry(place)}
+              image={place.image}
+              sizes="(max-width: 44rem) 70vw, 35vw"
+              alt=""
+            />
+          </div>
+        ))}
+      </div>
+      <h2 id="explore-heading">{title}</h2>
+      <ul className="explore__places">
+        {places.map((place) => (
+          <li key={place.id}>
+            <Link
+              href={place.href}
+              style={themeStyle(themeForEntry(place))}
+              data-current={selected.id === place.id}
+              aria-describedby={selected.id === place.id ? 'explore-description' : undefined}
+              onPointerEnter={(event) => {
+                if (event.pointerType === 'mouse') select(place.id)
+              }}
+              onPointerDown={(event) => {
+                previewTap.current = event.pointerType !== 'mouse' && place.id !== selected.id
+              }}
+              onFocus={() => select(place.id)}
+              onClick={(event) => {
+                if (event.detail > 0 && previewTap.current) {
+                  event.preventDefault()
+                  select(place.id)
+                }
+                previewTap.current = false
+              }}
+            >
+              <span>{place.title}</span>
+            </Link>
+          </li>
+        ))}
+      </ul>
+      <p className="explore__description" id="explore-description">
+        <Link href={selected.href}>
+          <span className="small-seed" aria-hidden="true" />
+          {selected.summary || selected.title}
+        </Link>
+      </p>
+    </section>
+  )
+}

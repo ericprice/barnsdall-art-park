@@ -1,0 +1,326 @@
+.visitor-photo {
+  position: relative;
+  aspect-ratio: 1.9;
+  img {
+    object-fit: cover;
+  }
+}
+.visitor-links {
+  list-style: none;
+  margin: 1rem 0 0;
+  padding: 0;
+  li + li {
+    margin-top: 0.4rem;
+  }
+  a:hover {
+    color: var(--green);
+  }
+}
+.visitor-wire {
+  width: min(100%, 76rem);
+  margin-inline: auto;
+  padding: 3rem var(--gutter) 6rem;
+  font: 400 var(--type-body)/1.35 var(--body);
+  h1 {
+    font-size: var(--type-display);
+  }
+  h2 {
+    font-size: var(--type-label);
+    margin-bottom: 0.8rem;
+  }
+  figcaption {
+    margin-top: 0.4rem;
+    font: 400 var(--type-caption)/1.3 var(--caption);
+  }
+  section {
+    scroll-margin-top: 2rem;
+  }
+}
+.visitor-wire__lead {
+  margin: 1.5rem 0 2.5rem;
+  max-width: 42rem;
+  font: 400 var(--type-label)/1.18 var(--body);
+}
+.visitor-arrival {
+  padding-block: 3rem;
+  .page-heading {
+    margin-bottom: 3rem;
+    text-align: center;
+  }
+  h1 {
+    font-size: var(--type-display);
+  }
+  .visitor-summary,
+  .visitor-prose {
+    width: min(47%, 42rem);
+    margin: 0 auto;
+  }
+  .visitor-summary {
+    font: 400 var(--type-label)/1.15 var(--body);
+  }
+  .visitor-prose {
+    font: 400 var(--type-body)/1.3 var(--body);
+  }
+  .visitor-prose section {
+    margin-top: 2.5rem;
+  }
+  .visitor-prose h2 {
+    margin-bottom: 0.7rem;
+    text-align: center;
+    font-size: var(--type-title);
+  }
+  .visitor-links a {
+    color: inherit;
+  }
+  .visitor-map {
+    width: min(57%, 50rem);
+    margin: 2.5rem auto;
+  }
+  .visitor-map .visitor-photo {
+    aspect-ratio: 0.92;
+  }
+  .visitor-map .visitor-links {
+    display: flex;
+    justify-content: center;
+    gap: 1rem;
+    margin-top: 0.5rem;
+    font: 400 var(--type-label)/1 var(--display);
+    text-transform: uppercase;
+  }
+  .visitor-map li {
+    margin: 0;
+  }
+  .visitor-map a {
+    text-decoration: none;
+  }
+  .visitor-prose ul {
+    padding-left: 1em;
+  }
+  .visitor-prose .visitor-links {
+    list-style: disc;
+  }
+  > .quote-band {
+    margin-top: 5rem;
+  }
+}
+.visitor-policies .visitor-summary {
+  font-size: var(--type-body);
+  line-height: 1.3;
+}
+.visitor-policies .visitor-prose > .rich-text {
+  margin-top: 1rem;
+}
+.park-directory > .visitor-links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.6rem 1.4rem;
+  li {
+    margin: 0;
+  }
+}
+.park-directory__cards,
+.park-landscape__sections,
+.rentals-page__inquiries,
+.rentals-page__venues,
+.contact-page__columns {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 2.5rem 2rem;
+  margin-top: 2.5rem;
+}
+.park-directory__cards {
+  article a {
+    display: block;
+    color: inherit;
+    text-decoration: none;
+  }
+  h2 {
+    margin: 0.7rem 0 1rem;
+  }
+  article a:hover h2 {
+    text-decoration: underline;
+  }
+  .visitor-photo {
+    aspect-ratio: 2.3;
+  }
+}
+.park-overview {
+  margin-top: 3rem;
+  .visitor-photo {
+    aspect-ratio: 3.65;
+    margin-top: 2rem;
+  }
+}
+.park-spread {
+  display: grid;
+  grid-column: 1 / -1;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 2rem;
+}
+.park-spread:nth-child(even) figure {
+  grid-column: 2;
+  grid-row: 1;
+}
+.park-spread:nth-child(even) > div {
+  grid-column: 1;
+  grid-row: 1;
+}
+.park-related {
+  align-self: start;
+}
+.park-archive {
+  grid-column: 1 / -1;
+}
+.rentals-page__inquiries {
+  grid-template-columns: minmax(0, 1.6fr) minmax(0, 1fr);
+}
+.centennial-page .visitor-photo {
+  aspect-ratio: 2.7;
+}
+.centennial-copy {
+  max-width: 46rem;
+  margin-top: 2rem;
+}
+.visitor-kicker {
+  font: 400 var(--type-caption)/1.2 var(--caption);
+  text-transform: uppercase;
+  margin: 0 0 1rem;
+}
+.contact-page__columns .rich-text p + p {
+  margin-top: 0.25rem;
+}
+.contact-subscription {
+  form {
+    font: inherit !important;
+  }
+  form fieldset {
+    border: 0;
+    margin: 0;
+    padding: 0;
+  }
+  .visitor-consent {
+    display: flex !important;
+    align-items: baseline;
+    gap: 0.6rem;
+    margin: 1rem 0;
+    font: inherit !important;
+  }
+  input:not([type='submit']):not([type='checkbox']):not([type='hidden']) {
+    max-width: 100%;
+    width: 100%;
+    border: 0.0625rem solid currentColor;
+    padding: 0.5em;
+    color: inherit;
+    background: white;
+    font: inherit;
+  }
+  form input[type='submit'] {
+    border: 0;
+    padding: 0.5em 0.8em;
+    background: var(--green);
+    color: white;
+    font: 400 var(--type-label)/1 var(--display);
+    text-transform: uppercase;
+  }
+}
+@media (max-width: 44rem) {
+  .visitor-wire {
+    padding-block: 2rem 3rem;
+  }
+  .visitor-arrival {
+    padding-block: 2rem;
+    .visitor-summary,
+    .visitor-prose,
+    .visitor-map {
+      width: calc(100% - 2 * var(--gutter));
+    }
+    .visitor-map .visitor-links {
+      font-size: var(--type-label);
+    }
+  }
+  .park-directory__cards,
+  .park-landscape__sections,
+  .park-spread,
+  .rentals-page__inquiries,
+  .rentals-page__venues,
+  .contact-page__columns {
+    grid-template-columns: 1fr;
+    gap: 1.5rem;
+  }
+  .park-spread:nth-child(even) figure,
+  .park-spread:nth-child(even) > div {
+    grid-column: auto;
+    grid-row: auto;
+  }
+  .park-overview .visitor-photo,
+  .centennial-page .visitor-photo {
+    aspect-ratio: 1.6;
+  }
+}
+.olive-restoration__past,
+.olive-restoration__news {
+  margin-top: 3rem;
+}
+.olive-restoration__past {
+  border-block: 0.0625rem solid currentColor;
+  summary {
+    padding-block: 1rem;
+    cursor: pointer;
+  }
+  summary h2 {
+    display: inline;
+    margin: 0;
+  }
+  article {
+    display: grid;
+    grid-template-columns: 1fr 2fr;
+    gap: 1rem;
+    padding-block: 1rem;
+    border-top: 0.0625rem solid currentColor;
+  }
+  h3 {
+    font-size: var(--type-label);
+  }
+  a {
+    display: inline-block;
+    margin-top: 0.5rem;
+  }
+}
+@media (max-width: 44rem) {
+  .olive-restoration__past article {
+    grid-template-columns: 1fr;
+  }
+}
+.visitor-crumb {
+  font: 400 var(--type-caption)/1.3 var(--caption);
+  margin-bottom: 1.5rem;
+}
+.visitor-crumb a {
+  text-decoration: none;
+}
+.visitor-crumb a:hover {
+  text-decoration: underline;
+}
+.visitor-arrival .subnav [aria-current='page'] {
+  position: relative;
+  isolation: isolate;
+  color: var(--ink);
+  &::before {
+    content: '';
+    position: absolute;
+    z-index: -1;
+    top: 50%;
+    left: 50%;
+    width: 1.1em;
+    aspect-ratio: 0.85;
+    transform: translate(-50%, -50%) rotate(-16deg);
+    border-radius: 59% 41% 54% 46%;
+    background: var(--pink);
+  }
+}
+.contact-subscription .email-registration-form .section.contact {
+  > h3,
+  > .consent {
+    display: none;
+  }
+}

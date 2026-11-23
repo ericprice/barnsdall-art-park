@@ -1,0 +1,17 @@
+node_modules/
+.next/
+dist/
+.sanity/
+.env*
+!.env.example
+!.env.local.example
+*.tsbuildinfo
+.DS_Store
+.playwright-cli/
+output/
+tmp/
+
+# Existing source-design archives, retained in place
+/work/
+/scripts/
+.vercel
