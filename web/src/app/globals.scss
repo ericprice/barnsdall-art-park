@@ -340,7 +340,7 @@ figcaption {
   }
 }
 .page-heading {
-  margin: 0 auto 3rem;
+  margin: 0 auto 2rem;
   padding-inline: var(--gutter);
   > .lead {
     max-width: 43rem;
@@ -355,7 +355,7 @@ figcaption {
   justify-content: center;
   gap: 0.6rem 1.4rem;
   width: min(100%, 65rem);
-  margin: 1rem auto 0;
+  margin: 0.65rem auto 0;
   a {
     color: inherit;
     text-decoration: none;
@@ -655,7 +655,6 @@ figcaption {
     }
   }
   .page-heading {
-    margin-bottom: 2rem;
     > .lead {
       @include type-size(title);
     }
@@ -663,7 +662,6 @@ figcaption {
   .subnav {
     gap: 0.7rem 1rem;
     @include type-size(label);
-    margin-top: 1rem;
   }
   .interior__intro {
     @include type-size(title);

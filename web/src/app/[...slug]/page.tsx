@@ -66,7 +66,6 @@ export default async function ContentPage({params, searchParams}: Props) {
   if (path === '/news')
     return (
       <NewsListing
-        featuredId={site.settings.featuredNewsId}
         text={site.settings.interfaceText}
         articles={site.articles}
         params={await searchParams}
@@ -75,7 +74,7 @@ export default async function ContentPage({params, searchParams}: Props) {
     )
   const entry = await getEntry(path)
   if (!entry) notFound()
-  if (path === '/park/the-park') return <ParkLandscape entry={entry} />
+  if (path === '/park/the-park') return <ParkLandscape entry={entry} site={site} />
   if (path === '/visit/rentals') return <RentalsPage entry={entry} />
   if (path === '/contact') return <ContactPage entry={entry} site={site} />
   if (path === '/support/olive-grove') return <OliveGrovePage entry={entry} />

@@ -13,6 +13,20 @@ export const organizationDocuments = [
   {_id: 'organization.foundation', title: 'The Foundation', light: '#99D289', dark: '#458933'},
 ].map((org) => ({...org, _type: 'organization' as const}))
 
+export function hostsNewsPage(organizationId?: string | null) {
+  return organizationId === 'organization.foundation' || organizationId === 'organization.park'
+}
+
+export function isExternalNewsLink(href?: string | null) {
+  if (!href || !/^https?:\/\//.test(href)) return false
+  try {
+    const url = new URL(href)
+    return url.protocol === 'https:' || url.protocol === 'http:'
+  } catch {
+    return false
+  }
+}
+
 export type OrganizationTheme = {title: string; light: string; dark: string}
 type ThemeProjection = {title?: string | null; light?: string | null; dark?: string | null}
 const aliases: Record<string, string> = {

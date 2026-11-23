@@ -46,11 +46,7 @@
 .visitor-arrival {
   padding-block: 3rem;
   .page-heading {
-    margin-bottom: 2rem;
     text-align: center;
-  }
-  .subnav {
-    margin-block-start: 0.65rem;
   }
   h1 {
     @include type-size(display);
@@ -108,7 +104,6 @@
 .visitor-policies .visitor-prose > .rich-text {
   margin-top: 1rem;
 }
-.park-landscape__sections,
 .rentals-page__inquiries,
 .rentals-page__venues,
 .contact-page__columns {
@@ -116,33 +111,6 @@
   grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 2.5rem 2rem;
   margin-top: 2.5rem;
-}
-.park-overview {
-  margin-top: 3rem;
-  .visitor-photo {
-    aspect-ratio: 3.65;
-    margin-top: 2rem;
-  }
-}
-.park-spread {
-  display: grid;
-  grid-column: 1 / -1;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 2rem;
-}
-.park-spread:nth-child(even) figure {
-  grid-column: 2;
-  grid-row: 1;
-}
-.park-spread:nth-child(even) > div {
-  grid-column: 1;
-  grid-row: 1;
-}
-.park-related {
-  align-self: start;
-}
-.park-archive {
-  grid-column: 1 / -1;
 }
 .rentals-page__inquiries {
   grid-template-columns: minmax(0, 1.6fr) minmax(0, 1fr);
@@ -211,20 +179,12 @@
       @include type-size(label);
     }
   }
-  .park-landscape__sections,
-  .park-spread,
   .rentals-page__inquiries,
   .rentals-page__venues,
   .contact-page__columns {
     grid-template-columns: 1fr;
     gap: 1.5rem;
   }
-  .park-spread:nth-child(even) figure,
-  .park-spread:nth-child(even) > div {
-    grid-column: auto;
-    grid-row: auto;
-  }
-  .park-overview .visitor-photo,
   .centennial-page .visitor-photo {
     aspect-ratio: 1.6;
   }
@@ -263,8 +223,118 @@
     grid-template-columns: 1fr;
   }
 }
-.park-landscape .page-heading {
-  text-align: center;
+.park-landscape {
+  .page-heading {
+    text-align: center;
+  }
+  &__subtitle {
+    font: 400 var(--type-section)/var(--leading-section) var(--display);
+    text-transform: uppercase;
+    margin-top: 0.12em;
+  }
+  .story-gallery {
+    position: relative;
+    margin: 0;
+  }
+  .story-gallery__photo {
+    position: relative;
+    width: 66%;
+    margin-inline: auto;
+    aspect-ratio: 1053 / 693;
+    img {
+      object-fit: contain;
+    }
+  }
+  .story-gallery__buttons {
+    position: absolute;
+    inset: 50% 3% auto;
+    translate: 0 -50%;
+    display: flex;
+    justify-content: space-between;
+    pointer-events: none;
+    button {
+      display: grid;
+      place-items: center;
+      min-width: 2.75rem;
+      min-height: 2.75rem;
+      color: var(--green);
+      pointer-events: auto;
+    }
+    svg {
+      height: 1.85rem;
+    }
+  }
+  .story-gallery figcaption {
+    width: 66%;
+    margin: 0.35em auto 0;
+  }
+  &__columns {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 49%) minmax(0, 1fr);
+    gap: var(--gutter);
+    margin: 2em 0 4rem;
+  }
+  &__links {
+    display: grid;
+    grid-column: 1;
+    justify-items: center;
+    align-content: start;
+    gap: 0.2em;
+    text-align: center;
+  }
+  &__body {
+    grid-column: 2;
+    section {
+      margin-block-start: 2.1rem;
+    }
+    h2 {
+      margin: 0 auto 0.55em;
+      text-align: center;
+      text-wrap: balance;
+      @include type-size(title);
+    }
+    .visitor-links {
+      text-align: center;
+    }
+  }
+  &__quotation {
+    @include publisher-type(publisher-lead);
+    footer {
+      margin-block-start: 0.75em;
+      @include publisher-type;
+    }
+  }
+  > .quote-band {
+    margin-inline: 0;
+  }
+}
+@media (max-width: 44rem) {
+  .park-landscape {
+    .story-gallery__photo,
+    .story-gallery figcaption {
+      width: 78%;
+    }
+    .story-gallery__buttons {
+      inset-inline: -0.5rem;
+      svg {
+        height: 1.25rem;
+      }
+    }
+    &__columns {
+      grid-template-columns: minmax(0, 1fr);
+    }
+    &__links {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 0.65em 1em;
+    }
+    &__body {
+      grid-column: 1;
+      width: min(100%, 28rem);
+      margin-inline: auto;
+    }
+  }
 }
 .contact-subscription .email-registration-form .section.contact {
   > h3,

@@ -272,6 +272,10 @@
     font: 400 var(--type-title)/var(--leading-title) var(--display);
     text-transform: uppercase;
     text-wrap: balance;
+    > p {
+      font-family: var(--lead);
+      text-transform: none;
+    }
   }
   &__tickets {
     display: block;
@@ -382,6 +386,10 @@
 }
 .programme-story .listing-story__body .rich-text > h2 {
   margin-block: 2rem 1.3rem;
+  text-align: center;
+}
+.news-story .listing-story__body > .lead {
+  @include display-type(title);
   text-align: center;
 }
 .news-story .listing-story__body .rich-text blockquote {

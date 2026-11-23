@@ -72,27 +72,33 @@ function Initiatives({entry}: {entry: ContentEntry}) {
   return [false, true].map((completed) => {
     const items = cards.filter((card) => !!card.completed === completed)
     if (!items.length) return null
-    return (
-      <section
-        className={'support-initiatives' + (completed ? ' is-completed' : '')}
-        key={String(completed)}
-      >
-        {completed && <h2>{entry.completedHeading}</h2>}
-        <div className="support-card-grid">
-          {items.map((card) => (
-            <article key={card._key}>
-              {!completed && (
-                <div className="initiative-shape" data-color={card.color || 'pale-green'}>
-                  <ParkImage image={card.image} />
-                </div>
-              )}
-              {card.label && <p className="support-label">{card.label}</p>}
-              <h3>{card.title}</h3>
-              {card.summary && <p>{card.summary}</p>}
-              <ActionLink action={card.link} />
-            </article>
-          ))}
-        </div>
+    const grid = (
+      <div className="support-card-grid">
+        {items.map((card) => (
+          <article key={card._key}>
+            {!completed && (
+              <div className="initiative-shape" data-color={card.color || 'pale-green'}>
+                <ParkImage image={card.image} />
+              </div>
+            )}
+            {card.label && <p className="support-label">{card.label}</p>}
+            <h3>{card.title}</h3>
+            {card.summary && <p>{card.summary}</p>}
+            <ActionLink action={card.link} />
+          </article>
+        ))}
+      </div>
+    )
+    return completed ? (
+      <details className="support-initiatives is-completed" key="past">
+        <summary>
+          <span>{entry.completedHeading || 'Past Initiatives'}</span>
+        </summary>
+        {grid}
+      </details>
+    ) : (
+      <section className="support-initiatives" key="current">
+        {grid}
       </section>
     )
   })

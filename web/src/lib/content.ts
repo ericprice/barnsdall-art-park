@@ -1,6 +1,11 @@
 import {bodyForLayout, type PageSection} from './body-layout'
 export type {PageSection} from './body-layout'
-import {organizationTheme, type OrganizationTheme} from '../../../shared/organizations'
+import {
+  hostsNewsPage,
+  isExternalNewsLink,
+  organizationTheme,
+  type OrganizationTheme,
+} from '../../../shared/organizations'
 import {interfaceDefaults, type InterfaceText} from '../../../shared/interface'
 export type {InterfaceText} from '../../../shared/interface'
 import 'server-only'
@@ -16,6 +21,7 @@ import type {
   RichText,
   SiteSettings,
   Page,
+  Place,
 } from '../../sanity.types'
 
 export type ImageSource = ParkImage | EditorialImage | string | null | undefined
@@ -42,8 +48,8 @@ export type ContentEntry = {
   endsAt?: string | null
   link?: {label?: string; href?: string} | null
   kind?: string | null
+  parkPage?: Place['parkPage']
   template?: Page['template']
-  archiveEntry?: boolean
   relatedStoryIds?: string[]
   sections?: PageSection[]
   foundationHeadings?: Page['foundationHeadings']
@@ -67,7 +73,6 @@ export type NavItem = {
 }
 export type SiteContent = {
   settings: {
-    featuredNewsId?: string
     interfaceText: InterfaceText
     headerMark?: ImageSource
     footerMark?: ImageSource
@@ -137,9 +142,17 @@ function hrefFor(type: string, slug?: string) {
 type DocumentEntry =
   | NonNullable<CONTENT_QUERY_RESULT>
   | NonNullable<NonNullable<NonNullable<SITE_QUERY_RESULT['home']>['featuredContent']>[number]>
+  | NonNullable<NonNullable<NonNullable<SITE_QUERY_RESULT['home']>['featuredPlaces']>[number]>
   | SITE_QUERY_RESULT['events'][number]
   | SITE_QUERY_RESULT['articles'][number]
   | SEARCH_QUERY_RESULT[number]
+function hasStoryDestination(doc: DocumentEntry) {
+  if (doc._type !== 'article') return true
+  const organization = 'organizationRef' in doc ? doc.organizationRef?._ref : undefined
+  const href = 'storyDestination' in doc ? doc.storyDestination?.href : undefined
+  return hostsNewsPage(organization) || isExternalNewsLink(href)
+}
+
 function toEntry(doc: DocumentEntry): ContentEntry {
   const owner = doc.orgTheme
   return {
@@ -182,8 +195,8 @@ function toEntry(doc: DocumentEntry): ContentEntry {
             ? doc.website
             : null,
     kind: 'kind' in doc ? doc.kind : null,
+    parkPage: 'parkPage' in doc ? doc.parkPage : undefined,
     template: 'template' in doc ? doc.template || undefined : undefined,
-    archiveEntry: 'archiveEntry' in doc ? doc.archiveEntry : undefined,
     relatedStoryIds:
       'relatedStories' in doc ? doc.relatedStories?.map((story) => story._ref) : undefined,
     foundationHeadings: 'foundationHeadings' in doc ? doc.foundationHeadings : undefined,
@@ -205,7 +218,6 @@ function toEntry(doc: DocumentEntry): ContentEntry {
 
 function settingsFor(s: SiteSettings | null): SiteContent['settings'] {
   return {
-    featuredNewsId: s?.featuredNews?._ref,
     interfaceText: {...interfaceDefaults, ...s?.interfaceText},
     headerMark: s?.headerMark,
     footerMark: s?.footerMark,
@@ -245,7 +257,7 @@ export const getSite = cache(async (): Promise<SiteContent> => {
   return {
     settings: settingsFor(data.settings),
     events: data.events.map(toEntry),
-    articles: data.articles.map(toEntry),
+    articles: data.articles.filter(hasStoryDestination).map(toEntry),
     home: {
       historyLink: data.home?.historyLink || undefined,
       slides:
@@ -266,7 +278,9 @@ export const getSite = cache(async (): Promise<SiteContent> => {
           summary: t.summary,
           link: t.link,
         })) || [],
-      features: (data.home?.featuredContent || []).flatMap((doc) => (doc ? [toEntry(doc)] : [])),
+      features: (data.home?.featuredContent || []).flatMap((doc) =>
+        doc && hasStoryDestination(doc) ? [toEntry(doc)] : [],
+      ),
       places: (data.home?.featuredPlaces || []).flatMap((doc) => (doc ? [toEntry(doc)] : [])),
     },
   }
@@ -280,10 +294,10 @@ export const getEntry = cache(async (path: string): Promise<ContentEntry | undef
   const data = await readContent(CONTENT_QUERY, {type, slug})
   if (!data && path === '/history')
     return (await getEntry('/timeline')) ?? getEntry('/grove-history')
-  return data ? toEntry(data) : undefined
+  return data && hasStoryDestination(data) ? toEntry(data) : undefined
 })
 
 export async function searchContent(query: string): Promise<ContentEntry[]> {
   const data = await readContent(SEARCH_QUERY, {searchTerm: `${query}*`})
-  return data.map(toEntry)
+  return data.filter(hasStoryDestination).map(toEntry)
 }

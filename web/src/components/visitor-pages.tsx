@@ -3,6 +3,7 @@ import type {ContentEntry, ImageSource, PageSection, SiteContent} from '@/lib/co
 import {ParkImage} from './park-image'
 import {DotLink} from './dot-link'
 import {QuoteBand} from './quote-band'
+import {StoryGallery} from './story-gallery'
 import {RichText} from './rich-text'
 import {PageSections} from './page-sections'
 import {SectionNavigation} from './section-navigation'
@@ -101,49 +102,44 @@ export function VisitPage({entry, site}: Props) {
   )
 }
 
-export function ParkLandscape({entry}: Pick<Props, 'entry'>) {
-  const about = entry.sections?.find((section) => section.anchor === 'about') ?? entry.sections?.[0]
-  const sections = entry.sections?.filter((section) => section !== about)
+export function ParkLandscape({entry, site}: Props) {
+  const page = entry.parkPage
+  const photos = page?.photos?.length ? page.photos : entry.image ? [entry.image] : []
+  const links = page?.links?.filter((link) => link.href && link.label)
   return (
     <main id="main-content" className="visitor-wire park-landscape">
       <header className="page-heading">
         <h1>{entry.title}</h1>
+        {page?.subtitle && <p className="park-landscape__subtitle">{page.subtitle}</p>}
       </header>
-      <RichText value={entry.body} />
-      {about && (
-        <section className="park-overview" id={about.anchor}>
-          <Block section={about} />
-          <Photo image={about.image ?? entry.image} priority />
-        </section>
-      )}
-      {!about && <Photo image={entry.image} priority />}
-      <div className="park-landscape__sections">
-        {sections?.map((section) => (
-          <section
-            id={section.anchor}
-            className={
-              section.anchor === 'archive'
-                ? 'park-archive'
-                : section.image
-                  ? 'park-spread'
-                  : 'park-related'
-            }
-            key={section._key}
-          >
-            {section.image && <Photo image={section.image} showCaption />}
-            <div>
-              {section.anchor === 'archive' ? (
-                <>
-                  <RichText value={section.body} />
-                  <Links links={section.links} />
-                </>
-              ) : (
-                <Block section={section} />
-              )}
-            </div>
-          </section>
-        ))}
+      <StoryGallery images={photos} text={site.settings.interfaceText} showCaption chevrons />
+      <div className="park-landscape__columns">
+        {!!links?.length && (
+          <nav className="park-landscape__links" aria-label={entry.title}>
+            {links.map((link) => (
+              <Link className="display-link" key={link._key} href={link.href!}>
+                {link.label} <span aria-hidden="true">»</span>
+              </Link>
+            ))}
+          </nav>
+        )}
+        <div className="park-landscape__body">
+          {page?.quotation?.text && (
+            <blockquote className="park-landscape__quotation">
+              <p>“{page.quotation.text}”</p>
+              {page.quotation.attribution && <footer>{page.quotation.attribution}</footer>}
+            </blockquote>
+          )}
+          <RichText value={entry.body} />
+          {entry.sections?.map((section) => (
+            <section id={section.anchor} key={section._key}>
+              <Block section={section} />
+              {section.image && <Photo image={section.image} showCaption />}
+            </section>
+          ))}
+        </div>
       </div>
+      <QuoteBand quote={site.home.quote} />
     </main>
   )
 }

@@ -92,7 +92,7 @@ export const supportPageFields = [
   }),
   defineField({
     name: 'completedHeading',
-    title: 'Completed initiatives heading',
+    title: 'Past initiatives heading',
     type: 'string',
     hidden: onlyOn('initiatives'),
   }),

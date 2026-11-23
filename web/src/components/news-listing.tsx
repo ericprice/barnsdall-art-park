@@ -3,49 +3,30 @@ import Link from 'next/link'
 import type {ContentEntry, SiteContent, InterfaceText} from '@/lib/content'
 import {listingUrl, type ListingParams} from './events-browser'
 import {ListingCard, ListingQuote, NewsCredit} from './listing-card'
-import {ListingFilter} from './listing-filter'
 import {ParkImage} from './park-image'
 
 export function NewsListing({
   articles,
-  featuredId,
   params,
   quote,
   text,
 }: {
   articles: ContentEntry[]
-  featuredId?: string
   params: ListingParams
   text: InterfaceText
   quote?: SiteContent['home']['quote']
 }) {
-  const organizations = [
-    ...new Set(articles.flatMap((article) => article.organization || [])),
-  ].sort()
-  const selected = organizations.includes(params.organization || '') ? params.organization! : ''
-  const filtered = articles.filter((a) => !selected || a.organization === selected)
-  const pageSize = 9
-  const lead = filtered.find((article) => article.id === featuredId) ?? filtered[0]
-  const otherArticles = filtered.filter((article) => article !== lead)
+  const pageSize = 6
+  const [lead, ...otherArticles] = articles
   const totalPages = Math.max(1, Math.ceil(otherArticles.length / pageSize))
   const page = Math.min(totalPages, Math.max(1, parseInt(params.page || '1') || 1))
   const featured = page === 1 ? lead : null
   const entries = otherArticles.slice((page - 1) * pageSize, page * pageSize)
-  const pageHref = (n: number) =>
-    listingUrl('/news', {organization: selected, page: n > 1 ? String(n) : undefined})
+  const pageHref = (n: number) => listingUrl('/news', {page: n > 1 ? String(n) : undefined})
   return (
     <main id="main-content" className="news-index listing">
       <header className="listing-head">
         <h1>{text.news}</h1>
-        <div className="listing-filters">
-          <ListingFilter
-            label={text.organization}
-            all={text.all}
-            value={selected}
-            choices={organizations}
-            hrefs={['', ...organizations].map((org) => listingUrl('/news', {organization: org}))}
-          />
-        </div>
       </header>
       {featured && (
         <article
@@ -80,7 +61,7 @@ export function NewsListing({
           ))}
         </div>
       )}
-      {!filtered.length && <p className="listing-empty">{text.noNews}</p>}
+      {!articles.length && <p className="listing-empty">{text.noNews}</p>}
       {totalPages > 1 && (
         <nav className="listing-paging" aria-label="News pages">
           {page < totalPages && <Link href={pageHref(page + 1)}>‹‹ {text.previousNews}</Link>}

@@ -9,9 +9,7 @@ export function NewsCredit({entry}: {entry: ContentEntry}) {
   const {organization} = entry
   return (
     <p className="listing-credit">
-      {organization && (
-        <Link href={'/news?organization=' + encodeURIComponent(organization)}>{organization}</Link>
-      )}
+      {organization && <span>{organization}</span>}
       {entry.date && <time dateTime={entry.date}>{readableDate(entry.date)}</time>}
     </p>
   )

@@ -1,4 +1,5 @@
 import {organizationReference} from './organization'
+import {hostsNewsPage, isExternalNewsLink} from '../../shared/organizations'
 import {interfaceDefaults} from '../../shared/interface'
 import {supportPageFields} from './support-subpages'
 import {directoryFields, foundationHeadingsField} from './foundation'
@@ -37,12 +38,6 @@ export const siteSettings = defineType({
   type: 'document',
   fields: [
     title,
-    defineField({
-      name: 'featuredNews',
-      title: 'Featured news story',
-      type: 'reference',
-      to: [{type: 'article'}],
-    }),
     defineField({name: 'description', type: 'text', rows: 3}),
     defineField({name: 'headerMark', title: 'Header wordmark', type: 'parkImage'}),
     defineField({name: 'footerMark', title: 'Footer wordmark', type: 'parkImage'}),
@@ -376,6 +371,35 @@ export const place = defineType({
     organizationReference,
     summary,
     image,
+    defineField({
+      name: 'parkPage',
+      title: 'The Park page',
+      type: 'object',
+      hidden: ({document}) => (document?.slug as {current?: string})?.current !== 'the-park',
+      fields: [
+        defineField({name: 'subtitle', type: 'string'}),
+        defineField({
+          name: 'photos',
+          title: 'Slideshow images',
+          type: 'array',
+          of: [defineArrayMember({type: 'parkImage'})],
+        }),
+        defineField({
+          name: 'links',
+          title: 'Links beside the quotation',
+          type: 'array',
+          of: [defineArrayMember({type: 'link'})],
+        }),
+        defineField({
+          name: 'quotation',
+          type: 'object',
+          fields: [
+            defineField({name: 'text', type: 'text', rows: 3}),
+            defineField({name: 'attribution', type: 'string'}),
+          ],
+        }),
+      ],
+    }),
     body,
     defineField({
       name: 'website',
@@ -414,9 +438,29 @@ export const article = defineType({
     }),
     defineField({
       name: 'storyDestination',
-      group: 'publishing',
-      title: 'Optional story destination',
+      group: 'content',
+      title: 'Article destination',
       type: 'link',
+      description:
+        'Enter the original article URL for partner news. The Foundation and The Park can leave this blank to use an on-site story.',
+      validation: (rule) =>
+        rule.custom((link, context) => {
+          const organization = context.document?.organizationRef as {_ref?: string} | undefined
+          if (!organization?._ref || hostsNewsPage(organization._ref)) return true
+          return (
+            isExternalNewsLink((link as {href?: string} | undefined)?.href) ||
+            'Enter an external article URL for this organization.'
+          )
+        }),
+    }),
+    defineField({
+      name: 'excludeFromNews',
+      group: 'publishing',
+      title: 'Use as a promotional card only',
+      type: 'boolean',
+      initialValue: false,
+      description:
+        'Keep this card available for features and omit it from the chronological News listing.',
     }),
     {...featureCaption, group: 'publishing'},
     defineField({
@@ -447,7 +491,7 @@ export const article = defineType({
       type: 'boolean',
       initialValue: false,
       description:
-        'Archived stories appear after current news. Leave the publication date blank when unknown.',
+        'Marks a story imported from the archive. Leave the publication date blank when unknown.',
     }),
     {...gallery, group: 'images'},
     {...summary, group: 'content'},

@@ -28,31 +28,43 @@ export type OrganizationReference = {
   [internalGroqTypeReferenceTo]?: 'organization'
 }
 
-export type Event = {
+export type ArticleReference = {
+  _ref: string
+  _type: 'reference'
+  _weak?: boolean
+  [internalGroqTypeReferenceTo]?: 'article'
+}
+
+export type Article = {
   _id: string
-  _type: 'event'
+  _type: 'article'
   _createdAt: string
   _updatedAt: string
   _rev: string
   title?: string
   slug?: Slug
   organizationRef?: OrganizationReference
-  kind?:
-    'Exhibition' | 'Performance' | 'Screening' | 'Tour' | 'Workshop' | 'Community' | 'Foundation'
-  summary?: string
-  image?: ParkImage
-  featureImage?: ParkImage
+  storyDestination?: Link
+  excludeFromNews?: boolean
+  featureCaption?: string
+  featureBackground?: string
+  featureImage?: EditorialImage
+  publishedAt?: string
+  sourceLink?: Link
+  archiveEntry?: boolean
   gallery?: Array<
     {
       _key: string
     } & ParkImage
   >
-  startsAt?: string
-  allDay?: boolean
-  endsAt?: string
-  repeatsUntil?: string
-  ticketLink?: Link
+  summary?: string
+  image?: EditorialImage
   body?: RichText
+  relatedStories?: Array<
+    {
+      _key: string
+    } & ArticleReference
+  >
 }
 
 export type SanityFileAssetReference = {
@@ -94,17 +106,60 @@ export type RichText = Array<
     } & ParkImage)
 >
 
+export type SanityImageAssetReference = {
+  _ref: string
+  _type: 'reference'
+  _weak?: boolean
+  [internalGroqTypeReferenceTo]?: 'sanity.imageAsset'
+}
+
+export type EditorialImage = {
+  _type: 'editorialImage'
+  asset?: SanityImageAssetReference
+  media?: unknown
+  hotspot?: SanityImageHotspot
+  crop?: SanityImageCrop
+  caption?: string
+  presentation?: 'organization' | 'rose' | 'roseCutout' | 'closeCutout'
+}
+
 export type Link = {
   _type: 'link'
   label?: string
   href?: string
 }
 
-export type SanityImageAssetReference = {
-  _ref: string
-  _type: 'reference'
-  _weak?: boolean
-  [internalGroqTypeReferenceTo]?: 'sanity.imageAsset'
+export type Slug = {
+  _type: 'slug'
+  current?: string
+  source?: string
+}
+
+export type Event = {
+  _id: string
+  _type: 'event'
+  _createdAt: string
+  _updatedAt: string
+  _rev: string
+  title?: string
+  slug?: Slug
+  organizationRef?: OrganizationReference
+  kind?:
+    'Exhibition' | 'Performance' | 'Screening' | 'Tour' | 'Workshop' | 'Community' | 'Foundation'
+  summary?: string
+  image?: ParkImage
+  featureImage?: ParkImage
+  gallery?: Array<
+    {
+      _key: string
+    } & ParkImage
+  >
+  startsAt?: string
+  allDay?: boolean
+  endsAt?: string
+  repeatsUntil?: string
+  ticketLink?: Link
+  body?: RichText
 }
 
 export type ParkImage = {
@@ -114,12 +169,6 @@ export type ParkImage = {
   hotspot?: SanityImageHotspot
   crop?: SanityImageCrop
   caption?: string
-}
-
-export type Slug = {
-  _type: 'slug'
-  current?: string
-  source?: string
 }
 
 export type Place = {
@@ -134,6 +183,23 @@ export type Place = {
   organizationRef?: OrganizationReference
   summary?: string
   image?: ParkImage
+  parkPage?: {
+    subtitle?: string
+    photos?: Array<
+      {
+        _key: string
+      } & ParkImage
+    >
+    links?: Array<
+      {
+        _key: string
+      } & Link
+    >
+    quotation?: {
+      text?: string
+      attribution?: string
+    }
+  }
   body?: RichText
   website?: Link
 }
@@ -254,13 +320,6 @@ export type EventReference = {
   [internalGroqTypeReferenceTo]?: 'event'
 }
 
-export type ArticleReference = {
-  _ref: string
-  _type: 'reference'
-  _weak?: boolean
-  [internalGroqTypeReferenceTo]?: 'article'
-}
-
 export type PlaceReference = {
   _ref: string
   _type: 'reference'
@@ -323,16 +382,6 @@ export type HomePage = {
   }>
 }
 
-export type EditorialImage = {
-  _type: 'editorialImage'
-  asset?: SanityImageAssetReference
-  media?: unknown
-  hotspot?: SanityImageHotspot
-  crop?: SanityImageCrop
-  caption?: string
-  presentation?: 'organization' | 'rose' | 'roseCutout' | 'closeCutout'
-}
-
 export type SiteSettings = {
   _id: string
   _type: 'siteSettings'
@@ -340,7 +389,6 @@ export type SiteSettings = {
   _updatedAt: string
   _rev: string
   title?: string
-  featuredNews?: ArticleReference
   description?: string
   headerMark?: ParkImage
   footerMark?: ParkImage
@@ -439,37 +487,6 @@ export type SiteSettings = {
   >
   footerText?: string
   landAcknowledgment?: string
-}
-
-export type Article = {
-  _id: string
-  _type: 'article'
-  _createdAt: string
-  _updatedAt: string
-  _rev: string
-  title?: string
-  slug?: Slug
-  organizationRef?: OrganizationReference
-  storyDestination?: Link
-  featureCaption?: string
-  featureBackground?: string
-  featureImage?: EditorialImage
-  publishedAt?: string
-  sourceLink?: Link
-  archiveEntry?: boolean
-  gallery?: Array<
-    {
-      _key: string
-    } & ParkImage
-  >
-  summary?: string
-  image?: EditorialImage
-  body?: RichText
-  relatedStories?: Array<
-    {
-      _key: string
-    } & ArticleReference
-  >
 }
 
 export type Organization = {
@@ -621,23 +638,23 @@ export type Geopoint = {
 
 export type AllSanitySchemaTypes =
   | OrganizationReference
-  | Event
+  | ArticleReference
+  | Article
   | SanityFileAssetReference
   | RichText
-  | Link
   | SanityImageAssetReference
-  | ParkImage
+  | EditorialImage
+  | Link
   | Slug
+  | Event
+  | ParkImage
   | Place
   | Page
   | EventReference
-  | ArticleReference
   | PlaceReference
   | PageReference
   | HomePage
-  | EditorialImage
   | SiteSettings
-  | Article
   | Organization
   | FoundationPartner
   | FoundationPerson
@@ -655,7 +672,7 @@ export type AllSanitySchemaTypes =
 
 // Source: ../web/src/sanity/queries.ts
 // Variable: SITE_QUERY
-// Query: {  "settings": *[_type == "siteSettings" && _id == "siteSettings"][0],  "home": *[_type == "homePage" && _id == "homePage"][0]{    title, historyLink, heroSlides[]{..., "orgTheme": organizationRef->{title, light, dark}}, celebration, quote, timeline,    featuredContent[]->{_id, _type, title, slug, summary, image, "orgTheme": organizationRef->{title, light, dark}, storyDestination, featureImage, featureBackground, featureCaption, kind, startsAt, endsAt, repeatsUntil, allDay, publishedAt, website},    featuredPlaces[]->{_id, _type, title, slug, summary, image, "orgTheme": organizationRef->{title, light, dark}, website}  },  "events": *[_type == "event" && defined(slug.current)] | order(startsAt asc){_id, _type, title, slug, summary, image, "orgTheme": organizationRef->{title, light, dark}, kind, startsAt, endsAt, repeatsUntil, allDay},  "articles": *[_type == "article" && defined(slug.current)] | order(coalesce(archiveEntry, false) asc, defined(publishedAt) desc, publishedAt desc, title asc){_id, _type, title, slug, summary, image, "orgTheme": organizationRef->{title, light, dark}, storyDestination, featureImage, featureBackground, featureCaption, publishedAt}}
+// Query: {  "settings": *[_type == "siteSettings" && _id == "siteSettings"][0],  "home": *[_type == "homePage" && _id == "homePage"][0]{    title, historyLink, heroSlides[]{..., "orgTheme": organizationRef->{title, light, dark}}, celebration, quote, timeline,    featuredContent[]->{_id, _type, title, slug, summary, image, organizationRef, "orgTheme": organizationRef->{title, light, dark}, storyDestination, featureImage, featureBackground, featureCaption, kind, startsAt, endsAt, repeatsUntil, allDay, publishedAt, website},    featuredPlaces[]->{_id, _type, title, slug, summary, image, "orgTheme": organizationRef->{title, light, dark}, website}  },  "events": *[_type == "event" && defined(slug.current)] | order(startsAt asc){_id, _type, title, slug, summary, image, "orgTheme": organizationRef->{title, light, dark}, kind, startsAt, endsAt, repeatsUntil, allDay},  "articles": *[_type == "article" && defined(slug.current) && excludeFromNews != true] | order(defined(publishedAt) desc, publishedAt desc, title asc){_id, _type, title, slug, summary, image, organizationRef, "orgTheme": organizationRef->{title, light, dark}, storyDestination, featureImage, featureBackground, featureCaption, publishedAt}}
 export type SITE_QUERY_RESULT = {
   settings: {
     _id: 'siteSettings'
@@ -664,7 +681,6 @@ export type SITE_QUERY_RESULT = {
     _updatedAt: string
     _rev: string
     title?: string
-    featuredNews?: ArticleReference
     description?: string
     headerMark?: ParkImage
     footerMark?: ParkImage
@@ -812,6 +828,7 @@ export type SITE_QUERY_RESULT = {
           slug: Slug | null
           summary: string | null
           image: EditorialImage | null
+          organizationRef: OrganizationReference | null
           orgTheme: {
             title: string | null
             light: string | null
@@ -836,6 +853,7 @@ export type SITE_QUERY_RESULT = {
           slug: Slug | null
           summary: string | null
           image: ParkImage | null
+          organizationRef: OrganizationReference | null
           orgTheme: {
             title: string | null
             light: string | null
@@ -868,6 +886,7 @@ export type SITE_QUERY_RESULT = {
           slug: Slug | null
           summary: string | null
           image: ParkImage | null
+          organizationRef: OrganizationReference | null
           orgTheme: {
             title: string | null
             light: string | null
@@ -892,6 +911,7 @@ export type SITE_QUERY_RESULT = {
           slug: Slug | null
           summary: string | null
           image: ParkImage | null
+          organizationRef: OrganizationReference | null
           orgTheme: {
             title: string | null
             light: string | null
@@ -958,6 +978,7 @@ export type SITE_QUERY_RESULT = {
     slug: Slug | null
     summary: string | null
     image: EditorialImage | null
+    organizationRef: OrganizationReference | null
     orgTheme: {
       title: string | null
       light: string | null
@@ -985,6 +1006,7 @@ export type CONTENT_QUERY_RESULT =
       slug?: Slug
       organizationRef?: OrganizationReference
       storyDestination?: Link
+      excludeFromNews?: boolean
       featureCaption?: string
       featureBackground?: string
       featureImage?: EditorialImage
@@ -1172,6 +1194,23 @@ export type CONTENT_QUERY_RESULT =
       organizationRef?: OrganizationReference
       summary?: string
       image?: ParkImage
+      parkPage?: {
+        subtitle?: string
+        photos?: Array<
+          {
+            _key: string
+          } & ParkImage
+        >
+        links?: Array<
+          {
+            _key: string
+          } & Link
+        >
+        quotation?: {
+          text?: string
+          attribution?: string
+        }
+      }
       body?: RichText
       website?: Link
       orgTheme: {
@@ -1184,7 +1223,7 @@ export type CONTENT_QUERY_RESULT =
 
 // Source: ../web/src/sanity/queries.ts
 // Variable: SEARCH_QUERY
-// Query: *[_type in ["page", "place", "event", "article"] && defined(slug.current) && (title match $searchTerm || organizationRef->title match $searchTerm || summary match $searchTerm || pt::text(body) match $searchTerm || boardMembers[].name match $searchTerm || boardMembers[].role match $searchTerm || boardMembers[].affiliation match $searchTerm || boardMembers[].bio match $searchTerm || staffMembers[].name match $searchTerm || staffMembers[].role match $searchTerm || staffMembers[].affiliation match $searchTerm || staffMembers[].bio match $searchTerm || partners[].name match $searchTerm || supporterYears[].groups[].supporters[].name match $searchTerm || initiativeCards[].title match $searchTerm || volunteerOpportunities[].title match $searchTerm || donationSections[].title match $searchTerm || timelineEntries[].dateLabel match $searchTerm || timelineEntries[].description match $searchTerm)] | order(title asc)[0...100]{_id, _type, title, slug, summary, image, "orgTheme": organizationRef->{title, light, dark}, website}
+// Query: *[_type in ["page", "place", "event", "article"] && defined(slug.current) && (title match $searchTerm || organizationRef->title match $searchTerm || summary match $searchTerm || pt::text(body) match $searchTerm || boardMembers[].name match $searchTerm || boardMembers[].role match $searchTerm || boardMembers[].affiliation match $searchTerm || boardMembers[].bio match $searchTerm || staffMembers[].name match $searchTerm || staffMembers[].role match $searchTerm || staffMembers[].affiliation match $searchTerm || staffMembers[].bio match $searchTerm || partners[].name match $searchTerm || supporterYears[].groups[].supporters[].name match $searchTerm || initiativeCards[].title match $searchTerm || volunteerOpportunities[].title match $searchTerm || donationSections[].title match $searchTerm || timelineEntries[].dateLabel match $searchTerm || timelineEntries[].description match $searchTerm)] | order(title asc)[0...100]{_id, _type, title, slug, summary, image, organizationRef, "orgTheme": organizationRef->{title, light, dark}, website, storyDestination}
 export type SEARCH_QUERY_RESULT = Array<
   | {
       _id: string
@@ -1193,12 +1232,14 @@ export type SEARCH_QUERY_RESULT = Array<
       slug: Slug | null
       summary: string | null
       image: EditorialImage | null
+      organizationRef: OrganizationReference | null
       orgTheme: {
         title: string | null
         light: string | null
         dark: string | null
       } | null
       website: null
+      storyDestination: Link | null
     }
   | {
       _id: string
@@ -1207,12 +1248,14 @@ export type SEARCH_QUERY_RESULT = Array<
       slug: Slug | null
       summary: string | null
       image: ParkImage | null
+      organizationRef: OrganizationReference | null
       orgTheme: {
         title: string | null
         light: string | null
         dark: string | null
       } | null
       website: null
+      storyDestination: null
     }
   | {
       _id: string
@@ -1221,12 +1264,14 @@ export type SEARCH_QUERY_RESULT = Array<
       slug: Slug | null
       summary: string | null
       image: ParkImage | null
+      organizationRef: OrganizationReference | null
       orgTheme: {
         title: string | null
         light: string | null
         dark: string | null
       } | null
       website: null
+      storyDestination: null
     }
   | {
       _id: string
@@ -1235,21 +1280,23 @@ export type SEARCH_QUERY_RESULT = Array<
       slug: Slug | null
       summary: string | null
       image: ParkImage | null
+      organizationRef: OrganizationReference | null
       orgTheme: {
         title: string | null
         light: string | null
         dark: string | null
       } | null
       website: Link | null
+      storyDestination: null
     }
 >
 
 // Query TypeMap
 declare global {
   interface SanityQueries {
-    '{\n  "settings": *[_type == "siteSettings" && _id == "siteSettings"][0],\n  "home": *[_type == "homePage" && _id == "homePage"][0]{\n    title, historyLink, heroSlides[]{..., "orgTheme": organizationRef->{title, light, dark}}, celebration, quote, timeline,\n    featuredContent[]->{_id, _type, title, slug, summary, image, "orgTheme": organizationRef->{title, light, dark}, storyDestination, featureImage, featureBackground, featureCaption, kind, startsAt, endsAt, repeatsUntil, allDay, publishedAt, website},\n    featuredPlaces[]->{_id, _type, title, slug, summary, image, "orgTheme": organizationRef->{title, light, dark}, website}\n  },\n  "events": *[_type == "event" && defined(slug.current)] | order(startsAt asc){_id, _type, title, slug, summary, image, "orgTheme": organizationRef->{title, light, dark}, kind, startsAt, endsAt, repeatsUntil, allDay},\n  "articles": *[_type == "article" && defined(slug.current)] | order(coalesce(archiveEntry, false) asc, defined(publishedAt) desc, publishedAt desc, title asc){_id, _type, title, slug, summary, image, "orgTheme": organizationRef->{title, light, dark}, storyDestination, featureImage, featureBackground, featureCaption, publishedAt}\n}': SITE_QUERY_RESULT
+    '{\n  "settings": *[_type == "siteSettings" && _id == "siteSettings"][0],\n  "home": *[_type == "homePage" && _id == "homePage"][0]{\n    title, historyLink, heroSlides[]{..., "orgTheme": organizationRef->{title, light, dark}}, celebration, quote, timeline,\n    featuredContent[]->{_id, _type, title, slug, summary, image, organizationRef, "orgTheme": organizationRef->{title, light, dark}, storyDestination, featureImage, featureBackground, featureCaption, kind, startsAt, endsAt, repeatsUntil, allDay, publishedAt, website},\n    featuredPlaces[]->{_id, _type, title, slug, summary, image, "orgTheme": organizationRef->{title, light, dark}, website}\n  },\n  "events": *[_type == "event" && defined(slug.current)] | order(startsAt asc){_id, _type, title, slug, summary, image, "orgTheme": organizationRef->{title, light, dark}, kind, startsAt, endsAt, repeatsUntil, allDay},\n  "articles": *[_type == "article" && defined(slug.current) && excludeFromNews != true] | order(defined(publishedAt) desc, publishedAt desc, title asc){_id, _type, title, slug, summary, image, organizationRef, "orgTheme": organizationRef->{title, light, dark}, storyDestination, featureImage, featureBackground, featureCaption, publishedAt}\n}': SITE_QUERY_RESULT
     '*[_type in ["page", "place", "event", "article"] && _type == $type && slug.current == $slug][0]{..., "orgTheme": organizationRef->{title, light, dark}}': CONTENT_QUERY_RESULT
-    '*[_type in ["page", "place", "event", "article"] && defined(slug.current) && (title match $searchTerm || organizationRef->title match $searchTerm || summary match $searchTerm || pt::text(body) match $searchTerm || boardMembers[].name match $searchTerm || boardMembers[].role match $searchTerm || boardMembers[].affiliation match $searchTerm || boardMembers[].bio match $searchTerm || staffMembers[].name match $searchTerm || staffMembers[].role match $searchTerm || staffMembers[].affiliation match $searchTerm || staffMembers[].bio match $searchTerm || partners[].name match $searchTerm || supporterYears[].groups[].supporters[].name match $searchTerm || initiativeCards[].title match $searchTerm || volunteerOpportunities[].title match $searchTerm || donationSections[].title match $searchTerm || timelineEntries[].dateLabel match $searchTerm || timelineEntries[].description match $searchTerm)] | order(title asc)[0...100]{_id, _type, title, slug, summary, image, "orgTheme": organizationRef->{title, light, dark}, website}': SEARCH_QUERY_RESULT
+    '*[_type in ["page", "place", "event", "article"] && defined(slug.current) && (title match $searchTerm || organizationRef->title match $searchTerm || summary match $searchTerm || pt::text(body) match $searchTerm || boardMembers[].name match $searchTerm || boardMembers[].role match $searchTerm || boardMembers[].affiliation match $searchTerm || boardMembers[].bio match $searchTerm || staffMembers[].name match $searchTerm || staffMembers[].role match $searchTerm || staffMembers[].affiliation match $searchTerm || staffMembers[].bio match $searchTerm || partners[].name match $searchTerm || supporterYears[].groups[].supporters[].name match $searchTerm || initiativeCards[].title match $searchTerm || volunteerOpportunities[].title match $searchTerm || donationSections[].title match $searchTerm || timelineEntries[].dateLabel match $searchTerm || timelineEntries[].description match $searchTerm)] | order(title asc)[0...100]{_id, _type, title, slug, summary, image, organizationRef, "orgTheme": organizationRef->{title, light, dark}, website, storyDestination}': SEARCH_QUERY_RESULT
   }
 }
 // Lets @sanity/client releases that predate the global registry read it too
