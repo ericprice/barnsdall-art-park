@@ -158,8 +158,18 @@ export const siteSettings = defineType({
       description:
         'Use the email field name specified by the provider (for example email or EMAIL). Defaults to email.',
     }),
-    defineField({name: 'privacyUrl', title: 'Privacy policy URL', type: 'url'}),
-    defineField({name: 'termsUrl', title: 'Terms of use URL', type: 'url'}),
+    defineField({
+      name: 'privacyUrl',
+      title: 'Privacy policy URL',
+      type: 'url',
+      validation: (r) => r.uri({allowRelative: true, scheme: ['http', 'https']}),
+    }),
+    defineField({
+      name: 'termsUrl',
+      title: 'Terms of use URL',
+      type: 'url',
+      validation: (r) => r.uri({allowRelative: true, scheme: ['http', 'https']}),
+    }),
     defineField({name: 'address', type: 'text', rows: 2}),
     defineField({name: 'contactEmail', type: 'string', validation: (r) => r.email()}),
     defineField({

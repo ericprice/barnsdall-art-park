@@ -273,12 +273,12 @@ $home-section-gap: max(2rem, site-size(4));
     }
     &[data-current='true'] {
       color: var(--paper);
+      mix-blend-mode: multiply;
     }
     &[data-current='true']::before {
       content: '';
       position: absolute;
-      inset: -0.55em -0.12em;
-      mix-blend-mode: multiply;
+      inset: -0.55em 4%;
       mask: var(--label-dot) center / 100% 100% no-repeat;
       background: var(--ink);
     }
@@ -364,5 +364,5 @@ $home-section-gap: max(2rem, site-size(4));
 }
 
 .explore__places li:first-child a[data-current='true']::before {
-  inset: -0.85em -0.15em;
+  inset-block: -0.85em;
 }

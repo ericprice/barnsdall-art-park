@@ -58,12 +58,12 @@ export function SiteFooter({settings}: {settings: SiteContent['settings']}) {
           {(settings.interfaceText.privacy || settings.interfaceText.terms) && (
             <div className="park-footer__legal">
               {settings.privacyUrl ? (
-                <a href={settings.privacyUrl}>{settings.interfaceText.privacy}</a>
+                <Link href={settings.privacyUrl}>{settings.interfaceText.privacy}</Link>
               ) : (
                 <span>{settings.interfaceText.privacy}</span>
               )}
               {settings.termsUrl ? (
-                <a href={settings.termsUrl}>{settings.interfaceText.terms}</a>
+                <Link href={settings.termsUrl}>{settings.interfaceText.terms}</Link>
               ) : (
                 <span>{settings.interfaceText.terms}</span>
               )}

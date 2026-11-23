@@ -98,6 +98,14 @@
     min-width: 0;
     gap: 0.08em;
     padding: 0.36em 0 0.45em;
+
+    a:focus-visible {
+      outline: none;
+      text-decoration: underline;
+    }
+    button:focus-visible {
+      outline-color: currentColor;
+    }
   }
   button {
     line-height: inherit;
@@ -390,6 +398,8 @@
     flex: 1;
     background: var(--paper);
     border: 0;
+    // The native email control places the capital letters slightly above center.
+    padding-block-start: 0.1em;
     text-transform: none;
     &::placeholder {
       color: var(--green);

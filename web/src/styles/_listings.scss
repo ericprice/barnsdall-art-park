@@ -382,6 +382,7 @@
   }
   &__category {
     @include display-type(label);
+    margin-block-end: 0.1em;
   }
   .content-card__image {
     width: 51%;

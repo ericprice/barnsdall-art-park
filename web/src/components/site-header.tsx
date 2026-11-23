@@ -149,10 +149,10 @@ function Navigation({pathname, settings, initialSunset}: HeaderProps & {pathname
         <>
           <div className="park-utility">
             <div className="park-utility__info">
+              {settings.cityRunLabel && <span>{settings.cityRunLabel}</span>}
               {settings.sunsetLabel && (
                 <Sunset initialSunset={initialSunset} label={settings.sunsetLabel} />
               )}
-              {settings.cityRunLabel && <span>{settings.cityRunLabel}</span>}
             </div>
             <div className="park-utility__actions">
               {settings.donationLink?.href && (
