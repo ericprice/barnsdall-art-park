@@ -8,6 +8,7 @@ import {SiteShell} from '@/components/site-shell'
 import {SiteHeader} from '@/components/site-header'
 import {SiteFooter} from '@/components/site-footer'
 import {SanityLive} from '@/sanity/live'
+import {interfaceText} from '../../../shared/interface'
 import './globals.scss'
 
 const publisher = localFont({
@@ -38,10 +39,13 @@ export default async function RootLayout({children}: {children: React.ReactNode}
     <html lang="en" data-scroll-behavior="smooth" className={publisher.variable}>
       <body>
         <a href="#main-content" className="skip-link">
-          {settings.interfaceText.skip}
+          {interfaceText.skip}
         </a>
         <SiteShell seed={randomInt(2 ** 32)}>
-          <SiteHeader settings={settings} initialSunset={getParkSunset(new Date()).toISOString()} />
+          <SiteHeader
+            settings={{title: settings.title, navigation: settings.navigation}}
+            initialSunset={getParkSunset(new Date()).toISOString()}
+          />
           {children}
           <SiteFooter settings={settings} />
         </SiteShell>

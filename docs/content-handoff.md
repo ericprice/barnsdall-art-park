@@ -4,7 +4,7 @@ The standalone Studio and website use project `i18fhbsv`, dataset `production`. 
 
 ## Editing
 
-- **Site settings** holds the wordmarks, navigation and section menus, donation and signup links, footer, address, social marks, interface labels, featured news story and calendar resources.
+- **Site settings** holds navigation and section menus, contact details, social links, and footer content. Select and reorder pages under **Legal links** to update the footer.
 - **Homepage** holds the slides, anniversary callout, ordered story and location references, quotations and six overview milestones.
 - **History / Timeline** opens the chronology. Each milestone has a date or range, description and optional photo. Drag milestones to reorder them. Edit the introduction and preservation notes in Body. Each archival image has one caption, which also supplies its alt text.
 - **Support the park** includes the Foundation and its subpages. On the Foundation page, edit people under Board or Staff and edit partners’ names, logos and URLs individually. On Supporters, open a year, a recognition group, then an individual or organization. Donation amounts and benefits need Foundation approval.
@@ -19,6 +19,6 @@ Use headings and subheadings in Body to divide narrative content. A caption supp
 
 The website’s production configuration reads published documents. Review and publish the individual records before their referencing homepage and settings documents. Refresh the protected preview after saving a draft.
 
-The signup row leads to the Foundation’s registration form, which requires a first name, last name and email. A provider-supplied email-only form action can be entered in Site settings. The legal destinations, annual giving amounts and benefits, confirmed event dates and image permissions remain launch inputs.
+The footer signup prefills the email address on the Foundation’s Bloomerang registration form on Contact. The provider’s form collects first name, last name and email. Annual giving amounts and benefits, confirmed event dates and image permissions remain launch inputs.
 
 The roster and supporters’ acknowledgments follow the Foundation’s records. Historical dates follow the Foundation’s timeline and grove history. The six-organization color plate and desktop interface supply the colors, type sizes and spacing. The responsive layouts adapt those dimensions for narrower screens. [Leadership](https://www.barnsdall.org/leadership) · [Timeline](https://www.barnsdall.org/timeline) · [Grove history](https://www.barnsdall.org/grove-history)

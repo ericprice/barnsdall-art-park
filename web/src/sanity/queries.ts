@@ -1,7 +1,10 @@
 import {defineQuery} from 'next-sanity'
 
 export const SITE_QUERY = defineQuery(`{
-  "settings": *[_type == "siteSettings" && _id == "siteSettings"][0],
+  "settings": *[_type == "siteSettings" && _id == "siteSettings"][0]{
+    title, description, address, contactEmail, socialLinks, footerText, landAcknowledgment,
+    navigation, footerLinks, legalPages[]->{_id, title, "slug": slug.current}
+  },
   "home": *[_type == "homePage" && _id == "homePage"][0]{
     title, historyLink, heroSlides[]{..., "orgTheme": organizationRef->{title, light, dark}}, celebration, quote, timeline,
     featuredContent[]->{_id, _type, title, slug, summary, image, organizationRef, "orgTheme": organizationRef->{title, light, dark}, storyDestination, featureImage, featureBackground, featureCaption, kind, startsAt, endsAt, repeatsUntil, allDay, publishedAt, website},

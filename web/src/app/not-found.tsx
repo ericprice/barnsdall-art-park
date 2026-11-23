@@ -1,13 +1,12 @@
 import Link from 'next/link'
-import {getSite} from '@/lib/content'
+import {interfaceText} from '../../../shared/interface'
 
-export default async function NotFound() {
-  const {settings} = await getSite()
+export default function NotFound() {
   return (
     <main id="main-content" className="interior">
-      <h1>{settings.interfaceText.notFound}</h1>
+      <h1>{interfaceText.notFound}</h1>
       <Link className="display-link" href="/">
-        {settings.interfaceText.home}
+        {interfaceText.home}
       </Link>
     </main>
   )

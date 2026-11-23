@@ -2,20 +2,29 @@ import {ParkImage} from './park-image'
 import Link from 'next/link'
 import type {SiteContent} from '@/lib/content'
 import {NewsletterSignup} from './newsletter-signup'
+import {interfaceText} from '../../../shared/interface'
+
+const copyrightYear = new Intl.DateTimeFormat('en-US', {
+  timeZone: 'America/Los_Angeles',
+  year: 'numeric',
+})
 
 export function SiteFooter({settings}: {settings: SiteContent['settings']}) {
   return (
     <footer className="park-footer" id="connect">
       <div className="park-footer__foundation">
         <Link href="/" className="park-footer__wordmark" aria-label={settings.title}>
-          <ParkImage image={settings.footerMark} sizes="(max-width: 44rem) 70vw, 40vw" />
+          <ParkImage
+            image="/identity/barnsdall-art-park-foundation.svg"
+            sizes="(max-width: 44rem) 70vw, 40vw"
+          />
         </Link>
         {settings.footerText && <p>{settings.footerText}</p>}
       </div>
       <div className="park-footer__connect">
         <div>
           <div className="park-footer__heading">
-            <h2>{settings.interfaceText.connect}</h2>
+            <h2>{interfaceText.connect}</h2>
             {!!settings.socialLinks?.length && (
               <ul aria-label="Social media">
                 {settings.socialLinks.map((link) => {
@@ -31,13 +40,7 @@ export function SiteFooter({settings}: {settings: SiteContent['settings']}) {
               </ul>
             )}
           </div>
-          <NewsletterSignup
-            labels={settings.interfaceText}
-            action={settings.newsletterFormAction}
-            emailField={settings.newsletterEmailField}
-            signupPage={settings.newsletterUrl}
-            contactForm={Boolean(settings.newsletterWidgetId)}
-          />
+          <NewsletterSignup />
           <div className="park-footer__details">
             <address>{settings.address}</address>
             <ul>
@@ -54,19 +57,14 @@ export function SiteFooter({settings}: {settings: SiteContent['settings']}) {
         </div>
         <div className="park-footer__fineprint">
           {settings.landAcknowledgment && <p>{settings.landAcknowledgment}</p>}
-          {settings.copyright && <p>{settings.copyright}</p>}
-          {(settings.interfaceText.privacy || settings.interfaceText.terms) && (
+          <p>©{copyrightYear.format(new Date())} Barnsdall Art Park Foundation</p>
+          {settings.legalLinks.length > 0 && (
             <div className="park-footer__legal">
-              {settings.privacyUrl ? (
-                <Link href={settings.privacyUrl}>{settings.interfaceText.privacy}</Link>
-              ) : (
-                <span>{settings.interfaceText.privacy}</span>
-              )}
-              {settings.termsUrl ? (
-                <Link href={settings.termsUrl}>{settings.interfaceText.terms}</Link>
-              ) : (
-                <span>{settings.interfaceText.terms}</span>
-              )}
+              {settings.legalLinks.map(({id, href, label}) => (
+                <Link key={id} href={href}>
+                  {label}
+                </Link>
+              ))}
             </div>
           )}
         </div>

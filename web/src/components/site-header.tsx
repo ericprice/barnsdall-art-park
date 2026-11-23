@@ -12,6 +12,7 @@ import {
   type KeyboardEvent as ReactKeyboardEvent,
 } from 'react'
 import type {SiteContent} from '@/lib/content'
+import {interfaceText} from '../../../shared/interface'
 import {formatParkSunset, getParkSunset} from '@/lib/park-sunset'
 import {HeaderSearch} from './header-search'
 
@@ -24,7 +25,7 @@ function Magnifier() {
   )
 }
 
-type Settings = SiteContent['settings']
+type Settings = Pick<SiteContent['settings'], 'title' | 'navigation'>
 type HeaderProps = {settings: Settings; initialSunset: string}
 
 function subscribeToClock(refresh: () => void) {
@@ -42,11 +43,11 @@ function currentSunset() {
   return getParkSunset(new Date()).toISOString()
 }
 
-function Sunset({initialSunset, label}: {initialSunset: string; label: string}) {
+function Sunset({initialSunset}: {initialSunset: string}) {
   const sunset = useSyncExternalStore(subscribeToClock, currentSunset, () => initialSunset)
   return (
     <span>
-      <time dateTime={sunset}>{formatParkSunset(new Date(sunset))}</time> {label}
+      <time dateTime={sunset}>{formatParkSunset(new Date(sunset))}</time> Sunset
     </span>
   )
 }
@@ -171,20 +172,16 @@ function Navigation({pathname, settings, initialSunset}: HeaderProps & {pathname
         <>
           <div className="park-utility">
             <div className="park-utility__info">
-              {settings.cityRunLabel && <span>{settings.cityRunLabel}</span>}
-              {settings.parkHoursLabel && <span>{settings.parkHoursLabel}</span>}
-              {settings.sunsetLabel && (
-                <Sunset initialSunset={initialSunset} label={settings.sunsetLabel} />
-              )}
+              <span>City-run since 1927</span>
+              <span>Open Until 10 PM</span>
+              <Sunset initialSunset={initialSunset} />
             </div>
-            {settings.donationLink?.href && (
-              <Link className="park-utility__donate" href={settings.donationLink.href}>
-                {settings.donationLink.label}
-              </Link>
-            )}
+            <Link className="park-utility__donate" href="/support/donate">
+              Donate
+            </Link>
           </div>
           <Link href="/" className="park-masthead" aria-label={settings.title} onClick={close}>
-            <ParkImage image={settings.headerMark} sizes="96vw" priority />
+            <ParkImage image="/identity/barnsdall-art-park.svg" sizes="96vw" priority />
           </Link>
         </>
       )}
@@ -211,11 +208,11 @@ function Navigation({pathname, settings, initialSunset}: HeaderProps & {pathname
               setOpen(null)
             }}
           >
-            {mobile ? settings.interfaceText.close : settings.interfaceText.menu}
+            {mobile ? interfaceText.close : interfaceText.menu}
           </button>
           <button
             type="button"
-            aria-label={settings.interfaceText.search}
+            aria-label={interfaceText.search}
             aria-expanded={open === 'search'}
             aria-controls="site-search-panel"
             onClick={(event) => toggleSearch(event.currentTarget)}
@@ -314,7 +311,7 @@ function Navigation({pathname, settings, initialSunset}: HeaderProps & {pathname
           <button
             className="park-navigation__search"
             type="button"
-            aria-label={settings.interfaceText.search}
+            aria-label={interfaceText.search}
             aria-expanded={open === 'search'}
             aria-controls="site-search-panel"
             onClick={(event) => toggleSearch(event.currentTarget)}
@@ -325,7 +322,7 @@ function Navigation({pathname, settings, initialSunset}: HeaderProps & {pathname
       </div>
       {open === 'search' && (
         <HeaderSearch
-          labels={settings.interfaceText}
+          labels={interfaceText}
           initialQuery={initialQuery}
           onNavigate={close}
         />

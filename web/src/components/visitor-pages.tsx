@@ -8,6 +8,7 @@ import {RichText} from './rich-text'
 import {PageSections} from './page-sections'
 import {PageHeading} from './page-heading'
 import {ContactSignup, LegacyPoliciesLink} from './visitor-forms'
+import {interfaceText} from '../../../shared/interface'
 import './visitor-pages.scss'
 
 type Props = {entry: ContentEntry; site: SiteContent}
@@ -92,7 +93,7 @@ export function ParkLandscape({entry, site}: Props) {
         <h1>{entry.title}</h1>
         {page?.subtitle && <p className="park-landscape__subtitle">{page.subtitle}</p>}
       </header>
-      <StoryGallery images={photos} text={site.settings.interfaceText} showCaption chevrons />
+      <StoryGallery images={photos} text={interfaceText} showCaption chevrons />
       <div className="park-landscape__columns">
         {!!links?.length && (
           <nav className="park-landscape__links" aria-label={entry.title}>
@@ -168,7 +169,7 @@ export function CentennialPage({entry}: Pick<Props, 'entry'>) {
   )
 }
 
-export function ContactPage({entry, site}: Props) {
+export function ContactPage({entry}: Pick<Props, 'entry'>) {
   const signup =
     entry.sections?.find((section) => section.anchor === 'subscribe') ?? entry.sections?.at(-1)
   return (
@@ -180,7 +181,7 @@ export function ContactPage({entry, site}: Props) {
         {entry.sections?.map((section) => (
           <section key={section._key} id={section.anchor}>
             <Block section={section} />
-            {section === signup && <ContactSignup settings={site.settings} />}
+            {section === signup && <ContactSignup />}
           </section>
         ))}
       </div>

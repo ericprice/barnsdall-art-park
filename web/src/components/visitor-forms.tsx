@@ -3,7 +3,11 @@
 import {useEffect, useRef, useState} from 'react'
 import {useRouter} from 'next/navigation'
 import {newsletterPrefillKey} from '@/lib/newsletter-prefill'
-import type {SiteContent} from '@/lib/content'
+import {interfaceText} from '../../../shared/interface'
+
+const newsletterScript =
+  'https://s3-us-west-2.amazonaws.com/bloomerang-public-cdn/barnsdallartparkfoundation/.widget-js/2146304.js'
+const newsletterFallback = 'https://www.barnsdall.org/contact'
 
 export function LegacyPoliciesLink() {
   const router = useRouter()
@@ -18,14 +22,13 @@ export function LegacyPoliciesLink() {
   return null
 }
 
-export function ContactSignup({settings}: {settings: SiteContent['settings']}) {
+export function ContactSignup() {
   const container = useRef<HTMLDivElement>(null)
   const [failed, setFailed] = useState(false)
-  const widget = settings.newsletterWidgetId
-  const {subscribeConsent: consent, subscribe} = settings.interfaceText
+  const {subscribeConsent: consent, subscribe} = interfaceText
   useEffect(() => {
     const host = container.current
-    if (!host || !widget) return
+    if (!host) return
     function prefill() {
       const input = host?.querySelector<HTMLInputElement>('#email-address, input[type=email]')
       if (!input) return
@@ -77,10 +80,7 @@ export function ContactSignup({settings}: {settings: SiteContent['settings']}) {
     // The official widget inserts its own form next to this script. Its SDK handles
     // validation, submission and confirmation within this container.
     const script = document.createElement('script')
-    script.src =
-      'https://s3-us-west-2.amazonaws.com/bloomerang-public-cdn/barnsdallartparkfoundation/.widget-js/' +
-      widget +
-      '.js'
+    script.src = newsletterScript
     script.async = true
     script.onerror = () => setFailed(true)
     let active = true
@@ -93,13 +93,11 @@ export function ContactSignup({settings}: {settings: SiteContent['settings']}) {
       observer.disconnect()
       host.replaceChildren()
     }
-  }, [widget, consent, subscribe])
+  }, [consent, subscribe])
   return (
     <>
       <div className="contact-subscription" hidden={failed} ref={container} />
-      {(!widget || failed) && settings.newsletterUrl && (
-        <a href={settings.newsletterUrl}>{settings.interfaceText.subscribe}</a>
-      )}
+      {failed && <a href={newsletterFallback}>{subscribe}</a>}
     </>
   )
 }

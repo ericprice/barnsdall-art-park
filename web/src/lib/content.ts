@@ -6,7 +6,6 @@ import {
   organizationTheme,
   type OrganizationTheme,
 } from '../../../shared/organizations'
-import {interfaceDefaults, type InterfaceText} from '../../../shared/interface'
 export type {InterfaceText} from '../../../shared/interface'
 import 'server-only'
 import {cache} from 'react'
@@ -19,7 +18,6 @@ import type {
   ParkImage,
   EditorialImage,
   RichText,
-  SiteSettings,
   Page,
   Place,
 } from '../../sanity.types'
@@ -72,25 +70,12 @@ export type NavItem = {
 }
 export type SiteContent = {
   settings: {
-    interfaceText: InterfaceText
-    headerMark?: ImageSource
-    footerMark?: ImageSource
-    copyright?: string
     footerLinks?: {label?: string; href?: string; _key?: string}[]
     title: string
     description: string
-    sunsetLabel?: string
-    cityRunLabel?: string
-    parkHoursLabel?: string
     address: string
     navigation: NavItem[]
-    donationLink?: {label?: string; href?: string} | null
-    newsletterWidgetId?: string
-    newsletterUrl?: string
-    newsletterFormAction?: string
-    newsletterEmailField?: string
-    privacyUrl?: string
-    termsUrl?: string
+    legalLinks: {id: string; label: string; href: string}[]
     contactEmail?: string
     footerText?: string
     landAcknowledgment?: string
@@ -213,29 +198,20 @@ function toEntry(doc: DocumentEntry): ContentEntry {
   }
 }
 
-function settingsFor(s: SiteSettings | null): SiteContent['settings'] {
+function settingsFor(s: SITE_QUERY_RESULT['settings']): SiteContent['settings'] {
   return {
-    interfaceText: {...interfaceDefaults, ...s?.interfaceText},
-    headerMark: s?.headerMark,
-    footerMark: s?.footerMark,
-    copyright: s?.copyright,
-    footerLinks: s?.footerLinks,
+    footerLinks: s?.footerLinks ?? undefined,
     title: s?.title || '',
     description: s?.description || '',
-    sunsetLabel: s?.sunsetLabel,
-    cityRunLabel: s?.cityRunLabel,
-    parkHoursLabel: s?.parkHoursLabel,
     address: s?.address || '',
-    donationLink: s?.donationLink,
-    contactEmail: s?.contactEmail,
-    newsletterWidgetId: s?.newsletterWidgetId,
-    newsletterUrl: s?.newsletterUrl,
-    newsletterFormAction: s?.newsletterFormAction,
-    newsletterEmailField: s?.newsletterEmailField,
-    privacyUrl: s?.privacyUrl,
-    termsUrl: s?.termsUrl,
-    footerText: s?.footerText,
-    landAcknowledgment: s?.landAcknowledgment,
+    contactEmail: s?.contactEmail ?? undefined,
+    legalLinks: (s?.legalPages ?? []).flatMap((page) =>
+      page?.slug && page.title
+        ? [{id: page._id, label: page.title, href: hrefFor('page', page.slug)}]
+        : [],
+    ),
+    footerText: s?.footerText ?? undefined,
+    landAcknowledgment: s?.landAcknowledgment ?? undefined,
     socialLinks: s?.socialLinks ?? [],
     navigation: s?.navigation?.length
       ? s.navigation.map((n) => ({

@@ -1,5 +1,4 @@
-// Initial field values for the singleton in Studio. Editors can change each label independently.
-export const interfaceDefaults = {
+export const interfaceText = {
   subscribeConsent: 'I agree to receive Barnsdall Art Park news and updates.',
   home: 'Home',
   notFound: 'Page not found',
@@ -16,8 +15,6 @@ export const interfaceDefaults = {
   connect: 'Connect',
   newsletterTitle: 'Sign up for Foundation news',
   emailAddress: 'Email address',
-  privacy: 'Privacy Policy',
-  terms: 'Terms of Use',
   explore: 'Explore the park',
   history: 'History',
   viewAll: 'View all',
@@ -25,30 +22,21 @@ export const interfaceDefaults = {
   skip: 'Skip to content',
   upcoming: 'Upcoming',
   archive: 'Archive',
-  calendar: 'Calendar',
   organization: 'Organization',
-  eventType: 'Type',
   all: 'All',
-  previous: 'Prev',
-  next: 'Next',
-  today: 'Today',
   news: 'News',
   whatsOn: 'What’s on',
   previousEvents: 'Previous events',
-  nextEvents: 'Next events',
   previousNews: 'Previous news',
   nextNews: 'Next news',
   previousStory: 'Previous story',
   nextStory: 'Next story',
-  calendarPrograms: 'Daily + Recurring',
-  continuesIn: 'Continues in {month}',
   loadMore: 'Load more',
   getTickets: 'Get tickets',
-  monthEvents: '{month} events',
   previousPhoto: 'Previous photograph',
   nextPhoto: 'Next photograph',
   noEvents: 'No events.',
   noNews: 'No news.',
   seeAlso: 'See also',
 }
-export type InterfaceText = typeof interfaceDefaults
+export type InterfaceText = typeof interfaceText

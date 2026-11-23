@@ -1,6 +1,5 @@
 import {organizationReference} from './organization'
 import {hostsNewsPage, isExternalNewsLink} from '../../shared/organizations'
-import {interfaceDefaults} from '../../shared/interface'
 import {supportPageFields} from './support-subpages'
 import {directoryFields, foundationHeadingsField} from './foundation'
 import {ALL_FIELDS_GROUP, defineArrayMember, defineField, defineType} from 'sanity'
@@ -39,46 +38,7 @@ export const siteSettings = defineType({
   fields: [
     title,
     defineField({name: 'description', type: 'text', rows: 3}),
-    defineField({name: 'headerMark', title: 'Header wordmark', type: 'parkImage'}),
-    defineField({name: 'footerMark', title: 'Footer wordmark', type: 'parkImage'}),
     defineField({name: 'footerLinks', type: 'array', of: [defineArrayMember({type: 'link'})]}),
-    defineField({name: 'copyright', title: 'Copyright line', type: 'string'}),
-    defineField({
-      name: 'interfaceText',
-      title: 'Navigation, forms and section labels',
-      type: 'object',
-      initialValue: interfaceDefaults,
-      fields: Object.entries(interfaceDefaults).map(([name, initialValue]) =>
-        defineField({
-          name,
-          type: 'string',
-          initialValue,
-          title:
-            name === 'newsletterTitle'
-              ? 'Newsletter signup prompt'
-              : name.replace(/([A-Z])/g, ' $1').replace(/^./, (c) => c.toUpperCase()),
-        }),
-      ),
-    }),
-    defineField({
-      name: 'sunsetLabel',
-      title: 'Header sunset label',
-      description: 'Appears after the sunset time calculated for Olive Hill each day.',
-      type: 'string',
-      initialValue: 'Sunset',
-    }),
-    defineField({
-      name: 'cityRunLabel',
-      title: 'Header city-run wording',
-      type: 'string',
-      initialValue: 'City-run since 1927',
-    }),
-    defineField({
-      name: 'parkHoursLabel',
-      title: 'Header park hours',
-      type: 'string',
-      initialValue: 'Open Until 10 PM',
-    }),
     defineField({
       name: 'navigation',
       description:
@@ -98,58 +58,12 @@ export const siteSettings = defineType({
       ],
     }),
     defineField({
-      name: 'calendarResources',
-      title: 'Calendar recurring program links',
+      name: 'legalPages',
+      title: 'Legal links',
+      description: 'Select and reorder the pages that appear in the footer.',
       type: 'array',
-      of: [
-        defineArrayMember({
-          name: 'calendarResource',
-          type: 'object',
-          fields: [title, summary, defineField({name: 'link', type: 'link'})],
-          preview: {select: {title: 'title', subtitle: 'link.label'}},
-        }),
-      ],
-    }),
-    defineField({name: 'donationLink', type: 'link'}),
-    defineField({
-      name: 'newsletterUrl',
-      type: 'url',
-      description: 'Hosted signup page for the Foundation newsletter.',
-    }),
-    defineField({
-      name: 'newsletterFormAction',
-      title: 'Newsletter form submission URL',
-      type: 'url',
-      description:
-        'The email-only HTTPS form action supplied by your newsletter provider. The footer submits directly to this URL by POST.',
-      validation: (rule) => rule.uri({scheme: ['https']}),
-    }),
-    defineField({
-      name: 'newsletterWidgetId',
-      title: 'Contact page Bloomerang newsletter form ID',
-      type: 'string',
-      description:
-        'The numeric ID of the newsletter signup widget in the Foundation’s Bloomerang account.',
-      validation: (r) => r.regex(/^\d+$/),
-    }),
-    defineField({
-      name: 'newsletterEmailField',
-      title: 'Newsletter email field name',
-      type: 'string',
-      description:
-        'Use the email field name specified by the provider (for example email or EMAIL). Defaults to email.',
-    }),
-    defineField({
-      name: 'privacyUrl',
-      title: 'Privacy policy URL',
-      type: 'url',
-      validation: (r) => r.uri({allowRelative: true, scheme: ['http', 'https']}),
-    }),
-    defineField({
-      name: 'termsUrl',
-      title: 'Terms of use URL',
-      type: 'url',
-      validation: (r) => r.uri({allowRelative: true, scheme: ['http', 'https']}),
+      of: [defineArrayMember({type: 'reference', to: [{type: 'page'}]})],
+      validation: (rule) => rule.unique(),
     }),
     defineField({name: 'address', type: 'text', rows: 2}),
     defineField({name: 'contactEmail', type: 'string', validation: (r) => r.email()}),

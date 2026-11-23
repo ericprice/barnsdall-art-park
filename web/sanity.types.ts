@@ -390,69 +390,11 @@ export type SiteSettings = {
   _rev: string
   title?: string
   description?: string
-  headerMark?: ParkImage
-  footerMark?: ParkImage
   footerLinks?: Array<
     {
       _key: string
     } & Link
   >
-  copyright?: string
-  interfaceText?: {
-    subscribeConsent?: string
-    home?: string
-    notFound?: string
-    retry?: string
-    unavailable?: string
-    menu?: string
-    close?: string
-    search?: string
-    subscribe?: string
-    searchPlaceholder?: string
-    searching?: string
-    noResults?: string
-    searchError?: string
-    connect?: string
-    newsletterTitle?: string
-    emailAddress?: string
-    privacy?: string
-    terms?: string
-    explore?: string
-    history?: string
-    viewAll?: string
-    readMore?: string
-    skip?: string
-    upcoming?: string
-    archive?: string
-    calendar?: string
-    organization?: string
-    eventType?: string
-    all?: string
-    previous?: string
-    next?: string
-    today?: string
-    news?: string
-    whatsOn?: string
-    previousEvents?: string
-    nextEvents?: string
-    previousNews?: string
-    nextNews?: string
-    previousStory?: string
-    nextStory?: string
-    calendarPrograms?: string
-    continuesIn?: string
-    loadMore?: string
-    getTickets?: string
-    monthEvents?: string
-    previousPhoto?: string
-    nextPhoto?: string
-    noEvents?: string
-    noNews?: string
-    seeAlso?: string
-  }
-  sunsetLabel?: string
-  cityRunLabel?: string
-  parkHoursLabel?: string
   navigation?: Array<{
     title?: string
     href?: string
@@ -464,20 +406,11 @@ export type SiteSettings = {
     _type: 'navigationItem'
     _key: string
   }>
-  calendarResources?: Array<{
-    title?: string
-    summary?: string
-    link?: Link
-    _type: 'calendarResource'
-    _key: string
-  }>
-  donationLink?: Link
-  newsletterUrl?: string
-  newsletterFormAction?: string
-  newsletterWidgetId?: string
-  newsletterEmailField?: string
-  privacyUrl?: string
-  termsUrl?: string
+  legalPages?: Array<
+    {
+      _key: string
+    } & PageReference
+  >
   address?: string
   contactEmail?: string
   socialLinks?: Array<
@@ -672,80 +605,21 @@ export type AllSanitySchemaTypes =
 
 // Source: ../web/src/sanity/queries.ts
 // Variable: SITE_QUERY
-// Query: {  "settings": *[_type == "siteSettings" && _id == "siteSettings"][0],  "home": *[_type == "homePage" && _id == "homePage"][0]{    title, historyLink, heroSlides[]{..., "orgTheme": organizationRef->{title, light, dark}}, celebration, quote, timeline,    featuredContent[]->{_id, _type, title, slug, summary, image, organizationRef, "orgTheme": organizationRef->{title, light, dark}, storyDestination, featureImage, featureBackground, featureCaption, kind, startsAt, endsAt, repeatsUntil, allDay, publishedAt, website},    featuredPlaces[]->{_id, _type, title, slug, summary, image, "orgTheme": organizationRef->{title, light, dark}, website}  },  "events": *[_type == "event" && defined(slug.current)] | order(startsAt asc){_id, _type, title, slug, summary, image, "orgTheme": organizationRef->{title, light, dark}, kind, startsAt, endsAt, repeatsUntil, allDay},  "articles": *[_type == "article" && defined(slug.current) && excludeFromNews != true] | order(defined(publishedAt) desc, publishedAt desc, title asc){_id, _type, title, slug, summary, image, organizationRef, "orgTheme": organizationRef->{title, light, dark}, storyDestination, featureImage, featureBackground, featureCaption, publishedAt}}
+// Query: {  "settings": *[_type == "siteSettings" && _id == "siteSettings"][0]{    title, description, address, contactEmail, socialLinks, footerText, landAcknowledgment,    navigation, footerLinks, legalPages[]->{_id, title, "slug": slug.current}  },  "home": *[_type == "homePage" && _id == "homePage"][0]{    title, historyLink, heroSlides[]{..., "orgTheme": organizationRef->{title, light, dark}}, celebration, quote, timeline,    featuredContent[]->{_id, _type, title, slug, summary, image, organizationRef, "orgTheme": organizationRef->{title, light, dark}, storyDestination, featureImage, featureBackground, featureCaption, kind, startsAt, endsAt, repeatsUntil, allDay, publishedAt, website},    featuredPlaces[]->{_id, _type, title, slug, summary, image, "orgTheme": organizationRef->{title, light, dark}, website}  },  "events": *[_type == "event" && defined(slug.current)] | order(startsAt asc){_id, _type, title, slug, summary, image, "orgTheme": organizationRef->{title, light, dark}, kind, startsAt, endsAt, repeatsUntil, allDay},  "articles": *[_type == "article" && defined(slug.current) && excludeFromNews != true] | order(defined(publishedAt) desc, publishedAt desc, title asc){_id, _type, title, slug, summary, image, organizationRef, "orgTheme": organizationRef->{title, light, dark}, storyDestination, featureImage, featureBackground, featureCaption, publishedAt}}
 export type SITE_QUERY_RESULT = {
   settings: {
-    _id: 'siteSettings'
-    _type: 'siteSettings'
-    _createdAt: string
-    _updatedAt: string
-    _rev: string
-    title?: string
-    description?: string
-    headerMark?: ParkImage
-    footerMark?: ParkImage
-    footerLinks?: Array<
+    title: string | null
+    description: string | null
+    address: string | null
+    contactEmail: string | null
+    socialLinks: Array<
       {
         _key: string
-      } & Link
-    >
-    copyright?: string
-    interfaceText?: {
-      subscribeConsent?: string
-      home?: string
-      notFound?: string
-      retry?: string
-      unavailable?: string
-      menu?: string
-      close?: string
-      search?: string
-      subscribe?: string
-      searchPlaceholder?: string
-      searching?: string
-      noResults?: string
-      searchError?: string
-      connect?: string
-      newsletterTitle?: string
-      emailAddress?: string
-      privacy?: string
-      terms?: string
-      explore?: string
-      history?: string
-      viewAll?: string
-      readMore?: string
-      skip?: string
-      upcoming?: string
-      archive?: string
-      calendar?: string
-      organization?: string
-      eventType?: string
-      all?: string
-      previous?: string
-      next?: string
-      today?: string
-      news?: string
-      whatsOn?: string
-      previousEvents?: string
-      nextEvents?: string
-      previousNews?: string
-      nextNews?: string
-      previousStory?: string
-      nextStory?: string
-      calendarPrograms?: string
-      continuesIn?: string
-      loadMore?: string
-      getTickets?: string
-      monthEvents?: string
-      previousPhoto?: string
-      nextPhoto?: string
-      noEvents?: string
-      noNews?: string
-      seeAlso?: string
-    }
-    sunsetLabel?: string
-    cityRunLabel?: string
-    parkHoursLabel?: string
-    navigation?: Array<{
+      } & SocialLink
+    > | null
+    footerText: string | null
+    landAcknowledgment: string | null
+    navigation: Array<{
       title?: string
       href?: string
       children?: Array<
@@ -755,30 +629,17 @@ export type SITE_QUERY_RESULT = {
       >
       _type: 'navigationItem'
       _key: string
-    }>
-    calendarResources?: Array<{
-      title?: string
-      summary?: string
-      link?: Link
-      _type: 'calendarResource'
-      _key: string
-    }>
-    donationLink?: Link
-    newsletterUrl?: string
-    newsletterFormAction?: string
-    newsletterWidgetId?: string
-    newsletterEmailField?: string
-    privacyUrl?: string
-    termsUrl?: string
-    address?: string
-    contactEmail?: string
-    socialLinks?: Array<
+    }> | null
+    footerLinks: Array<
       {
         _key: string
-      } & SocialLink
-    >
-    footerText?: string
-    landAcknowledgment?: string
+      } & Link
+    > | null
+    legalPages: Array<{
+      _id: string
+      title: string | null
+      slug: string | null
+    }> | null
   } | null
   home: {
     title: string | null
@@ -1294,7 +1155,7 @@ export type SEARCH_QUERY_RESULT = Array<
 // Query TypeMap
 declare global {
   interface SanityQueries {
-    '{\n  "settings": *[_type == "siteSettings" && _id == "siteSettings"][0],\n  "home": *[_type == "homePage" && _id == "homePage"][0]{\n    title, historyLink, heroSlides[]{..., "orgTheme": organizationRef->{title, light, dark}}, celebration, quote, timeline,\n    featuredContent[]->{_id, _type, title, slug, summary, image, organizationRef, "orgTheme": organizationRef->{title, light, dark}, storyDestination, featureImage, featureBackground, featureCaption, kind, startsAt, endsAt, repeatsUntil, allDay, publishedAt, website},\n    featuredPlaces[]->{_id, _type, title, slug, summary, image, "orgTheme": organizationRef->{title, light, dark}, website}\n  },\n  "events": *[_type == "event" && defined(slug.current)] | order(startsAt asc){_id, _type, title, slug, summary, image, "orgTheme": organizationRef->{title, light, dark}, kind, startsAt, endsAt, repeatsUntil, allDay},\n  "articles": *[_type == "article" && defined(slug.current) && excludeFromNews != true] | order(defined(publishedAt) desc, publishedAt desc, title asc){_id, _type, title, slug, summary, image, organizationRef, "orgTheme": organizationRef->{title, light, dark}, storyDestination, featureImage, featureBackground, featureCaption, publishedAt}\n}': SITE_QUERY_RESULT
+    '{\n  "settings": *[_type == "siteSettings" && _id == "siteSettings"][0]{\n    title, description, address, contactEmail, socialLinks, footerText, landAcknowledgment,\n    navigation, footerLinks, legalPages[]->{_id, title, "slug": slug.current}\n  },\n  "home": *[_type == "homePage" && _id == "homePage"][0]{\n    title, historyLink, heroSlides[]{..., "orgTheme": organizationRef->{title, light, dark}}, celebration, quote, timeline,\n    featuredContent[]->{_id, _type, title, slug, summary, image, organizationRef, "orgTheme": organizationRef->{title, light, dark}, storyDestination, featureImage, featureBackground, featureCaption, kind, startsAt, endsAt, repeatsUntil, allDay, publishedAt, website},\n    featuredPlaces[]->{_id, _type, title, slug, summary, image, "orgTheme": organizationRef->{title, light, dark}, website}\n  },\n  "events": *[_type == "event" && defined(slug.current)] | order(startsAt asc){_id, _type, title, slug, summary, image, "orgTheme": organizationRef->{title, light, dark}, kind, startsAt, endsAt, repeatsUntil, allDay},\n  "articles": *[_type == "article" && defined(slug.current) && excludeFromNews != true] | order(defined(publishedAt) desc, publishedAt desc, title asc){_id, _type, title, slug, summary, image, organizationRef, "orgTheme": organizationRef->{title, light, dark}, storyDestination, featureImage, featureBackground, featureCaption, publishedAt}\n}': SITE_QUERY_RESULT
     '*[_type in ["page", "place", "event", "article"] && _type == $type && slug.current == $slug][0]{..., "orgTheme": organizationRef->{title, light, dark}}': CONTENT_QUERY_RESULT
     '*[_type in ["page", "place", "event", "article"] && defined(slug.current) && (title match $searchTerm || organizationRef->title match $searchTerm || summary match $searchTerm || pt::text(body) match $searchTerm || boardMembers[].name match $searchTerm || boardMembers[].role match $searchTerm || boardMembers[].affiliation match $searchTerm || boardMembers[].bio match $searchTerm || staffMembers[].name match $searchTerm || staffMembers[].role match $searchTerm || staffMembers[].affiliation match $searchTerm || staffMembers[].bio match $searchTerm || partners[].name match $searchTerm || supporterYears[].groups[].supporters[].name match $searchTerm || initiativeCards[].title match $searchTerm || donationSections[].title match $searchTerm || timelineEntries[].dateLabel match $searchTerm || timelineEntries[].description match $searchTerm)] | order(title asc)[0...100]{_id, _type, title, slug, summary, image, organizationRef, "orgTheme": organizationRef->{title, light, dark}, website, storyDestination}': SEARCH_QUERY_RESULT
   }

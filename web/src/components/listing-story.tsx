@@ -7,6 +7,7 @@ import {ListingGrid, NewsCredit} from './listing-card'
 import {QuoteBand} from './quote-band'
 import {RichText} from './rich-text'
 import {StoryGallery} from './story-gallery'
+import {interfaceText as text} from '../../../shared/interface'
 
 export function ListingStory({
   entry,
@@ -17,7 +18,6 @@ export function ListingStory({
   site: SiteContent
   event: boolean
 }) {
-  const text = site.settings.interfaceText
   const images = [...(entry.image ? [entry.image] : []), ...(entry.gallery || [])]
   const index = site.articles.findIndex((article) => article.id === entry.id)
   const related = (entry.relatedStoryIds || []).flatMap(

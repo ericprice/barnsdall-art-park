@@ -5,14 +5,9 @@ import type {SiteContent} from '@/lib/content'
 import {DisplayLink} from './action-links'
 import {HomeFeatureCard} from './content-card'
 import {ExplorePark} from './explore-park'
+import {interfaceText as labels} from '../../../shared/interface'
 
-export function HomeSections({
-  home,
-  labels,
-}: {
-  home: SiteContent['home']
-  labels: SiteContent['settings']['interfaceText']
-}) {
+export function HomeSections({home}: {home: SiteContent['home']}) {
   const dots = drawDots(home.timeline.length)
   return (
     <>

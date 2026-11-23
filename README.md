@@ -27,7 +27,7 @@ npm run dev
 - Park: overview and direct links to the existing City facility websites. The park landscape has its own Foundation page; separate duplicate facility pages are not generated.
 - Foundation: mission, vision, work, board, staff, and partner logos, with distinct destinations for initiatives, giving, supporters, and volunteering.
 - Initiative and story templates: lead, image, rich text with headings, and links.
-- What’s On has Upcoming, Archive, and Calendar views with Organization and Type filters. Single-day events, inclusive exhibition spans, and weekly series use Los Angeles calendar dates.
+- What’s On has Upcoming and Archive views with an Organization filter. Single-day events, inclusive exhibition spans, and weekly series use Los Angeles calendar dates.
 - News opens with a featured story above a three-column index. Readers can filter by organization and browse older stories.
 - Search opens in the navigation on the current page. Existing search URLs open the same field and results on the homepage.
 
@@ -38,7 +38,7 @@ The **History / Timeline** page renders an ordered set of milestones. Editors ca
 `studio/schemaTypes` is the schema source of truth:
 
 - **Homepage** (`homePage` singleton): hero stories, anniversary, content/place references, quote, and milestones.
-- **Site settings** controls navigation, the homepage sunset label and city-run wording, contact details, social links, footer copy, land acknowledgment, donation links, newsletter form settings, and legal links. The header calculates sunset for the current date at Olive Hill in Los Angeles time.
+- **Site settings** controls navigation, contact details, social links, footer copy, land acknowledgment, and the ordered list of legal pages. The header calculates sunset for the current date at Olive Hill in Los Angeles time.
 - **Pages**: standard, Visit, Foundation, initiative, or History / Timeline template; summary, image and a rich-text body. Headings structure the page. The relevant templates also have editable milestones, directory entries, or annual giving levels.
 - **Park locations**: an official `website` destination takes precedence in cards, search, and venue links.
 - **Events** record the organization, type, Los Angeles start and end times, optional weekly repeat-until date, photographs, ticket link, and body.

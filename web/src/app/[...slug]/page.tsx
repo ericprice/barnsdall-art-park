@@ -3,6 +3,7 @@ import {QuoteBand} from '@/components/quote-band'
 import {SupportSubpage} from '@/components/support-subpage'
 import {FoundationDirectory} from '@/components/foundation-directory'
 import {foundationHeadings} from '../../../../shared/foundation'
+import {interfaceText} from '../../../../shared/interface'
 import type {Metadata} from 'next'
 import {notFound, redirect} from 'next/navigation'
 import {getEntry, getSite} from '@/lib/content'
@@ -32,13 +33,13 @@ export async function generateMetadata({params}: Props): Promise<Metadata> {
   const site = await getSite()
   const listingTitle =
     path === '/whats-on'
-      ? site.settings.interfaceText.whatsOn
+      ? interfaceText.whatsOn
       : path === '/news'
-        ? site.settings.interfaceText.news
+        ? interfaceText.news
         : undefined
   const entry = listingTitle ? undefined : await getEntry(path)
   return {
-    title: listingTitle || entry?.title || site.settings.interfaceText.notFound,
+    title: listingTitle || entry?.title || interfaceText.notFound,
     description: entry?.summary || site.settings.description,
     ...(entry?.image && typeof entry.image !== 'string' && entry.image.asset
       ? {
@@ -57,7 +58,7 @@ export default async function ContentPage({params, searchParams}: Props) {
   if (path === '/whats-on')
     return (
       <EventsBrowser
-        text={site.settings.interfaceText}
+        text={interfaceText}
         events={site.events}
         params={await searchParams}
         quote={site.home.quote}
@@ -66,7 +67,7 @@ export default async function ContentPage({params, searchParams}: Props) {
   if (path === '/news')
     return (
       <NewsListing
-        text={site.settings.interfaceText}
+        text={interfaceText}
         articles={site.articles}
         params={await searchParams}
         quote={site.home.quote}
@@ -76,7 +77,7 @@ export default async function ContentPage({params, searchParams}: Props) {
   if (!entry) notFound()
   if (path === '/park/the-park') return <ParkLandscape entry={entry} site={site} />
   if (path === '/visit/rentals') return <RentalsPage entry={entry} />
-  if (path === '/contact') return <ContactPage entry={entry} site={site} />
+  if (path === '/contact') return <ContactPage entry={entry} />
   if (path === '/support/olive-grove') return <OliveGrovePage entry={entry} />
   if (path === '/100') return <CentennialPage entry={entry} />
   if (entry.template === 'visit' || path === '/visit' || path === '/visit/policies')

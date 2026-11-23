@@ -349,7 +349,8 @@
   }
   &__legal {
     display: flex;
-    gap: 0.6em;
+    flex-wrap: wrap;
+    gap: 0 0.6em;
   }
 }
 .foundation-newsletter {
