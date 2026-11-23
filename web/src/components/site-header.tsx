@@ -187,7 +187,7 @@ function Navigation({pathname, settings, initialSunset}: HeaderProps & {pathname
             </div>
           </div>
           <Link href="/" className="park-masthead" aria-label={settings.title} onClick={close}>
-            <ParkImage image={settings.headerMark} sizes="96vw" priority alt={settings.title} />
+            <ParkImage image={settings.headerMark} sizes="96vw" priority />
           </Link>
         </>
       )}

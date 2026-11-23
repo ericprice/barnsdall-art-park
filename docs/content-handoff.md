@@ -6,12 +6,14 @@ The standalone Studio and website use project `i18fhbsv`, dataset `production`. 
 
 - **Site settings** holds the wordmarks, navigation and section menus, donation and signup links, footer, address, social marks, interface labels, featured news story and calendar resources.
 - **Homepage** holds the slides, anniversary callout, ordered story and location references, quotations and six overview milestones.
-- **History / Timeline** opens the chronology. Each milestone has a date or range, description and optional photo. Drag milestones to reorder them. The early history and preservation sections, archival captions and credits are editable.
+- **History / Timeline** opens the chronology. Each milestone has a date or range, description and optional photo. Drag milestones to reorder them. Edit the introduction and preservation notes in Body. Each archival image has one caption, which also supplies its alt text.
 - **Support the park** includes the Foundation and its subpages. On the Foundation page, edit people under Board or Staff and edit partners’ names, logos and URLs individually. On Supporters, open a year, a recognition group, then an individual or organization. Donation amounts and benefits need Foundation approval.
-- **Organizations and colors** holds the color pairs used across park locations, events and stories. Set a photograph’s treatment to its organization colors, original color or cutout in Studio. The website applies the tint in the browser.
+- **Organizations and colors** holds the color pairs used across park locations, events and stories. Select the organization on each event or story to set its category and color pair. The website applies event image colors in the browser. Homepage slides and news artwork also support the illustrated treatments in the design.
 - **Park locations** links to each facility’s own site. The Foundation maintains the park landscape page, map, directions, policies, rentals and initiative pages.
-- **What’s on** accepts a single event, an exhibition with an end date, or a weekly series with a final date. Times use Los Angeles local time. The design’s specimen dates are ready for editorial review.
+- **What’s on** accepts a single event, an exhibition with an end date, or a weekly series with a final date. Use Content for the organization, body and ticket link, Schedule for dates and Images for photography. Times use Los Angeles local time. The design’s specimen dates are ready for editorial review.
 - **News** manages the story body, photography, captions, organization, related stories and optional link to an original source. The homepage selection and the featured story on the news index are independently editable.
+
+Use headings and subheadings in Body to divide narrative content. A caption supplies the same text to image alt attributes. Existing photo acknowledgments are part of the caption.
 
 ## Review and publication
 

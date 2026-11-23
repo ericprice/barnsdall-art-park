@@ -8,11 +8,7 @@ export function SiteFooter({settings}: {settings: SiteContent['settings']}) {
     <footer className="park-footer" id="connect">
       <div>
         <Link href="/" className="park-footer__wordmark" aria-label={settings.title}>
-          <ParkImage
-            image={settings.footerMark}
-            sizes="(max-width: 44rem) 70vw, 40vw"
-            alt={settings.title}
-          />
+          <ParkImage image={settings.footerMark} sizes="(max-width: 44rem) 70vw, 40vw" />
         </Link>
         {settings.footerText && <p>{settings.footerText}</p>}
       </div>
@@ -25,12 +21,8 @@ export function SiteFooter({settings}: {settings: SiteContent['settings']}) {
                 if (!link.href || !link.label) return null
                 return (
                   <li key={link._key}>
-                    <a href={link.href}>
-                      {link.icon ? (
-                        <ParkImage image={link.icon} sizes="3rem" alt={link.label} />
-                      ) : (
-                        link.label
-                      )}
+                    <a href={link.href} aria-label={link.label}>
+                      {link.icon ? <ParkImage image={link.icon} sizes="3rem" /> : link.label}
                     </a>
                   </li>
                 )

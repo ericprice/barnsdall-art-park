@@ -4,6 +4,7 @@ import {themeForEntry} from '@/lib/image-theme'
 import {ParkImage} from './park-image'
 import {QuoteBand} from './quote-band'
 import {RichText} from './rich-text'
+import {PageSections} from './page-sections'
 import {SectionNavigation} from './section-navigation'
 import {ContactSignup, LegacyPoliciesLink} from './visitor-forms'
 import './visitor-pages.scss'
@@ -50,14 +51,14 @@ function Links({links}: {links?: PageSection['links']}) {
 }
 function Photo({
   image,
-  alt,
   orgTheme,
   priority = false,
+  showCaption = false,
 }: {
   image?: ImageSource
-  alt?: string
   orgTheme?: ContentEntry['orgTheme']
   priority?: boolean
+  showCaption?: boolean
 }) {
   if (!image) return null
   return (
@@ -66,13 +67,12 @@ function Photo({
         <ParkImage
           image={image}
           orgTheme={orgTheme}
-          alt={typeof image === 'string' ? alt : undefined}
           priority={priority}
           sizes="(max-width: 44rem) 95vw, 55vw"
         />
       </div>
-      {typeof image !== 'string' && (image.caption || image.credit) && (
-        <figcaption>{[image.caption, image.credit].filter(Boolean).join(' ')}</figcaption>
+      {showCaption && typeof image !== 'string' && image.caption && (
+        <figcaption>{image.caption}</figcaption>
       )}
     </figure>
   )
@@ -81,7 +81,6 @@ function Block({section}: {section: PageSection}) {
   return (
     <>
       <h2>{section.title}</h2>
-      {section.lead && <p>{section.lead}</p>}
       <RichText value={section.body} />
       <Links links={section.links} />
     </>
@@ -100,9 +99,10 @@ export function VisitPage({entry, site}: Props) {
       {!policies && (
         <>
           <LegacyPoliciesLink />
-          {entry.image && (
+          {(entry.image || map) && (
             <div id="map" className="visitor-map">
-              <Photo image={entry.image} alt={entry.imageAlt} priority />
+              <Photo image={entry.image} priority />
+              <RichText value={map?.body} />
               <Links links={map?.links} />
             </div>
           )}
@@ -129,12 +129,15 @@ export function ParkDirectory({entry, site}: Props) {
       <Breadcrumb site={site} paths={['/park']} />
       <h1>{entry.title}</h1>
       {entry.summary && <p className="visitor-wire__lead">{entry.summary}</p>}
+      <RichText value={entry.body} />
+      <RichText value={entry.sections?.[0]?.body} />
       <Links links={entry.sections?.[0]?.links} />
+      <PageSections sections={entry.sections?.slice(1)} />
       <div className="park-directory__cards">
         {site.places.map((place) => (
           <article key={place.id}>
             <Link href={place.href}>
-              <Photo image={place.image} alt={place.imageAlt} orgTheme={themeForEntry(place)} />
+              <Photo image={place.image} orgTheme={themeForEntry(place)} />
               <h2>{place.title}</h2>
               {place.summary && <p>{place.summary}</p>}
             </Link>
@@ -146,32 +149,20 @@ export function ParkDirectory({entry, site}: Props) {
 }
 
 export function ParkLandscape({entry, site}: Props) {
-  const about = entry.sections?.find((section) => section.anchor === 'about')
+  const about = entry.sections?.find((section) => section.anchor === 'about') ?? entry.sections?.[0]
   const sections = entry.sections?.filter((section) => section !== about)
   return (
     <main id="main-content" className="visitor-wire park-landscape">
       <Breadcrumb site={site} paths={['/park']} />
       <h1>{entry.title}</h1>
+      <RichText value={entry.body} />
       {about && (
-        <section className="park-overview">
+        <section className="park-overview" id={about.anchor}>
           <Block section={about} />
-          <Photo
-            image={about.image ?? entry.image}
-            alt={
-              typeof about.image === 'string'
-                ? 'Aerial view of Barnsdall Art Park.'
-                : entry.imageAlt
-            }
-            priority
-          />
+          <Photo image={about.image ?? entry.image} priority />
         </section>
       )}
-      {!about && (
-        <>
-          <RichText value={entry.body} />
-          <Photo image={entry.image} alt={entry.imageAlt} priority />
-        </>
-      )}
+      {!about && <Photo image={entry.image} priority />}
       <div className="park-landscape__sections">
         {sections?.map((section) => (
           <section
@@ -185,10 +176,13 @@ export function ParkLandscape({entry, site}: Props) {
             }
             key={section._key}
           >
-            {section.image && <Photo image={section.image} alt={section.imageAlt} />}
+            {section.image && <Photo image={section.image} showCaption />}
             <div>
               {section.anchor === 'archive' ? (
-                <Links links={section.links} />
+                <>
+                  <RichText value={section.body} />
+                  <Links links={section.links} />
+                </>
               ) : (
                 <Block section={section} />
               )}
@@ -207,17 +201,18 @@ export function RentalsPage({entry, site}: Props) {
       <Breadcrumb site={site} paths={['/visit']} />
       <h1>{entry.title}</h1>
       {entry.summary && <p className="visitor-wire__lead">{entry.summary}</p>}
+      <RichText value={entry.body} />
       <div className="rentals-page__inquiries">
-        <Photo image={entry.image} alt={entry.imageAlt} priority />
+        <Photo image={entry.image} priority />
         {inquiries && (
-          <section>
+          <section id={inquiries.anchor}>
             <Block section={inquiries} />
           </section>
         )}
       </div>
       <div className="rentals-page__venues">
         {venues.map((section) => (
-          <section key={section._key}>
+          <section key={section._key} id={section.anchor}>
             <Block section={section} />
           </section>
         ))}
@@ -227,33 +222,38 @@ export function RentalsPage({entry, site}: Props) {
 }
 
 export function CentennialPage({entry, site}: Props) {
-  const [campaign] = entry.sections ?? []
+  const [campaign, ...more] = entry.sections ?? []
   return (
     <main id="main-content" className="visitor-wire centennial-page">
       <Breadcrumb site={site} paths={['/100']} />
       {campaign?.title && <p className="visitor-kicker">{campaign.title}</p>}
       <h1>{entry.title}</h1>
       {entry.summary && <p className="visitor-wire__lead">{entry.summary}</p>}
-      <Photo image={entry.image} alt={entry.imageAlt} priority />
-      <div className="centennial-copy">
-        <RichText value={campaign?.body ?? entry.body} />
+      <Photo image={entry.image} priority />
+      <div className="centennial-copy" id={campaign?.anchor}>
+        <RichText value={entry.body} />
+        <RichText value={campaign?.body} />
         <Links links={campaign?.links} />
+        <PageSections sections={more} />
       </div>
     </main>
   )
 }
 
 export function ContactPage({entry, site}: Props) {
+  const signup =
+    entry.sections?.find((section) => section.anchor === 'subscribe') ?? entry.sections?.at(-1)
   return (
     <main id="main-content" className="visitor-wire contact-page">
       <Breadcrumb site={site} paths={['/contact']} />
       <h1>{entry.title}</h1>
       {entry.summary && <p className="visitor-wire__lead">{entry.summary}</p>}
+      <RichText value={entry.body} />
       <div className="contact-page__columns">
         {entry.sections?.map((section) => (
           <section key={section._key} id={section.anchor}>
             <Block section={section} />
-            {section.anchor === 'subscribe' && <ContactSignup settings={site.settings} />}
+            {section === signup && <ContactSignup settings={site.settings} />}
           </section>
         ))}
       </div>
@@ -262,42 +262,49 @@ export function ContactPage({entry, site}: Props) {
 }
 
 export function OliveGrovePage({entry, site}: Props) {
-  const [plan, past, news] = entry.sections ?? []
+  const [plan, past, news, ...more] = entry.sections ?? []
   return (
     <main id="main-content" className="visitor-wire olive-restoration">
       <Breadcrumb site={site} paths={['/support', '/support/initiatives']} />
       <h1>{entry.title}</h1>
       {entry.summary && <p className="visitor-wire__lead">{entry.summary}</p>}
+      <RichText value={entry.body} />
       <div className="rentals-page__inquiries">
-        <Photo image={entry.image} alt={entry.imageAlt} priority />
+        <Photo image={entry.image} priority showCaption />
         {plan && (
-          <section>
+          <section id={plan.anchor}>
             <Block section={plan} />
           </section>
         )}
       </div>
       {past && (
-        <details className="olive-restoration__past">
+        <details className="olive-restoration__past" id={past.anchor}>
           <summary>
             <h2>{past.title}</h2>
           </summary>
           <RichText value={past.body} />
+          <Links links={past.links} />
           {past.entries?.map((item) => (
             <article key={item._key} id={`past-${item._key}`}>
               <h3>{item.title}</h3>
               <div>
                 <RichText value={item.body} />
-                {item.link?.href && <Link href={item.link.href}>{item.link.label} »</Link>}
+                {item.links.map((link) => (
+                  <Link key={link._key} href={link.href}>
+                    {link.label} »
+                  </Link>
+                ))}
               </div>
             </article>
           ))}
         </details>
       )}
       {news && (
-        <section className="olive-restoration__news">
+        <section className="olive-restoration__news" id={news.anchor}>
           <Block section={news} />
         </section>
       )}
+      <PageSections sections={more} />
     </main>
   )
 }

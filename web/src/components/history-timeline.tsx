@@ -4,24 +4,14 @@ import {PageSections} from './page-sections'
 import {ParkImage} from './park-image'
 import {RichText} from './rich-text'
 
-function TimelinePhoto({
-  image,
-  alt,
-  wide = false,
-}: {
-  image: ImageSource
-  alt?: string
-  wide?: boolean
-}) {
+function TimelinePhoto({image, wide = false}: {image: ImageSource; wide?: boolean}) {
   if (!image || (typeof image !== 'string' && !image.asset)) return null
-  const metadata = typeof image === 'object' ? image : undefined
-  const caption = [metadata?.caption, metadata?.credit].filter(Boolean).join(' ')
+  const caption = typeof image === 'string' ? undefined : image.caption
   return (
     <figure>
       <div className="timeline-photo">
         <ParkImage
           image={image}
-          alt={alt ?? metadata?.alt}
           priority={wide}
           sizes={wide ? '(max-width: 44rem) 95vw, 58vw' : '(max-width: 44rem) 25vw, 15vw'}
         />
@@ -48,7 +38,7 @@ export function HistoryTimeline({
       {entry.summary && <p className="timeline-lead">{entry.summary}</p>}
       {Boolean(entry.image || entry.sections?.length || entry.body?.length) && (
         <div className="timeline-intro">
-          <TimelinePhoto image={entry.image} alt={entry.imageAlt} wide />
+          <TimelinePhoto image={entry.image} wide />
           <div>
             <RichText value={entry.body} />
             <PageSections sections={entry.sections} />
@@ -61,7 +51,7 @@ export function HistoryTimeline({
           <ol>
             {entry.timelineEntries.map((milestone) => (
               <li key={milestone._key} id={`milestone-${milestone._key}`}>
-                <TimelinePhoto image={milestone.image} alt={milestone.imageAlt} />
+                <TimelinePhoto image={milestone.image} />
                 <h3>{milestone.dateLabel}</h3>
                 <p>{milestone.description}</p>
               </li>

@@ -14,7 +14,7 @@ const exhibition = {
   id: 'exhibition',
   title: 'Long exhibition',
   href: '/event',
-  category: 'Gallery',
+  organization: 'Gallery',
   kind: 'Exhibition',
   date: '2027-01-01T19:00:00Z',
   endsAt: '2027-04-01T00:00:00Z',
@@ -23,7 +23,7 @@ const undated = {
   id: 'undated',
   title: 'Community gathering',
   href: '/gathering',
-  category: 'Foundation',
+  organization: 'Foundation',
   kind: 'Community',
 }
 test('an exhibition is shown throughout its date span, including a month it began before', () => {
@@ -48,7 +48,7 @@ test('undated events remain discoverable but do not appear on arbitrary calendar
   )
   assert.equal(overlapsDays(undated, '2027-02-01', '2027-02-28'), false)
 })
-test('search, category, and dates combine instead of replacing one another', () => {
+test('organization search, event type, and dates combine instead of replacing one another', () => {
   assert.equal(
     filterEvents([exhibition, undated], {
       today: '2027-02-01',
@@ -62,7 +62,7 @@ test('search, category, and dates combine instead of replacing one another', () 
   assert.equal(
     filterEvents([exhibition], {
       today: '2027-02-01',
-      q: 'LONG',
+      q: 'GALLERY',
       kind: 'Exhibition',
       from: '2027-02-01',
       to: '2027-02-28',
@@ -80,7 +80,7 @@ test('calendar validation handles invalid months, leap years, and year boundarie
 const fridays = {
   id: 'fridays',
   title: 'Fridays at Barnsdall',
-  category: 'Foundation',
+  organization: 'Foundation',
   href: '/fridays',
   date: '2027-03-06T02:00:00Z',
   endsAt: '2027-03-06T06:00:00Z',

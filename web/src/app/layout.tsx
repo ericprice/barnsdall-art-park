@@ -6,7 +6,6 @@ import {getParkSunset} from '@/lib/park-sunset'
 import {SiteHeader} from '@/components/site-header'
 import {SiteFooter} from '@/components/site-footer'
 import {SanityLive} from '@/sanity/live'
-import {imageBuilder} from '@/sanity/image'
 import './globals.scss'
 
 const boardDisplay = localFont({
@@ -50,19 +49,11 @@ const publisherSans = localFont({
 })
 
 export async function generateMetadata(): Promise<Metadata> {
-  const {settings, home} = await getSite()
-  const seo = home.seo || settings.seo
+  const {settings} = await getSite()
   return {
-    title: {default: seo?.title || settings.title, template: `%s — ${settings.title}`},
-    description: seo?.description || settings.description,
+    title: {default: settings.title, template: `%s — ${settings.title}`},
+    description: settings.description,
     ...(process.env.VERCEL_ENV === 'preview' ? {robots: {index: false, follow: false}} : {}),
-    ...(seo?.image?.asset
-      ? {
-          openGraph: {
-            images: [imageBuilder.image(seo.image).width(1200).height(630).fit('crop').url()],
-          },
-        }
-      : {}),
     ...(process.env.NEXT_PUBLIC_SITE_URL
       ? {metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL)}
       : {}),

@@ -522,19 +522,9 @@
     margin-bottom: 0.4em;
   }
 }
-.programme-story .listing-story__body .page-section {
-  width: 100%;
-  max-width: none;
-  text-align: left;
-  padding: 0;
-  margin: 2rem 0;
-  > h2 {
-    text-align: center;
-    font-size: var(--type-title);
-  }
-  .rich-text {
-    font-size: var(--type-body);
-  }
+.programme-story .listing-story__body .rich-text > h2 {
+  margin-block: 2rem 1.3rem;
+  text-align: center;
 }
 .news-story .listing-story__body .rich-text blockquote {
   font: 400 var(--type-section)/0.95 var(--display);

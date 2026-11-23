@@ -5,10 +5,12 @@ import {readableDate, scheduleLabel} from '@/lib/event-filters'
 import {ParkImage} from './park-image'
 
 export function NewsCredit({entry}: {entry: ContentEntry}) {
-  const organization = entry.organization || entry.category
+  const {organization} = entry
   return (
     <p className="listing-credit">
-      <Link href={'/news?organization=' + encodeURIComponent(organization)}>{organization}</Link>
+      {organization && (
+        <Link href={'/news?organization=' + encodeURIComponent(organization)}>{organization}</Link>
+      )}
       {entry.date && <time dateTime={entry.date}>{readableDate(entry.date)}</time>}
     </p>
   )
@@ -23,12 +25,14 @@ export function ListingCard({
   news?: boolean
   readMore?: string
 }) {
-  const organization = entry.organization || entry.venue?.title || entry.category
   return (
-    <article className="listing-card" style={themeStyle(themeForEntry(entry), entry.image)}>
+    <article
+      className="listing-card"
+      style={themeStyle(themeForEntry(entry), news ? entry.image : undefined)}
+    >
       <Link href={entry.href} className="listing-card__link">
         <div className="listing-card__photo">
-          <ParkImage orgTheme={themeForEntry(entry)} image={entry.image} />
+          <ParkImage editorial={news} orgTheme={themeForEntry(entry)} image={entry.image} />
         </div>
         <h3>{entry.title}</h3>
       </Link>
@@ -43,7 +47,7 @@ export function ListingCard({
         </>
       ) : (
         <p className="listing-credit listing-credit--event">
-          <span>{organization}</span>
+          {entry.organization && <span>{entry.organization}</span>}
           {entry.date && <time dateTime={entry.date}>{scheduleLabel(entry)}</time>}
         </p>
       )}

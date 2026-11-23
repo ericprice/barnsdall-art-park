@@ -2,7 +2,6 @@ import {themeForEntry, themeStyle} from '@/lib/image-theme'
 import Link from 'next/link'
 import type {ContentEntry, SiteContent} from '@/lib/content'
 import {scheduleLabel} from '@/lib/event-filters'
-import {PageSections} from './page-sections'
 import {ListingCard, ListingQuote, NewsCredit} from './listing-card'
 import {RichText} from './rich-text'
 import {StoryGallery} from './story-gallery'
@@ -17,7 +16,6 @@ export function ListingStory({
   event: boolean
 }) {
   const text = site.settings.interfaceText
-  const organization = entry.organization || entry.venue?.title || entry.category
   const images = [...(entry.image ? [entry.image] : []), ...(entry.gallery || [])]
   const index = site.articles.findIndex((article) => article.id === entry.id)
   const related = (entry.relatedStoryIds || []).flatMap(
@@ -34,12 +32,17 @@ export function ListingStory({
       <article>
         <header className="listing-head">
           <h1>{entry.title}</h1>
-          {event ? <h2>{organization}</h2> : <NewsCredit entry={entry} />}
+          {event ? (
+            entry.organization && <h2>{entry.organization}</h2>
+          ) : (
+            <NewsCredit entry={entry} />
+          )}
         </header>
         <StoryGallery
           text={text}
           key={entry.id}
           images={images}
+          showCaption={!event}
           orgTheme={event ? themeForEntry(entry) : undefined}
         />
         <div className="listing-story__columns">
@@ -48,15 +51,6 @@ export function ListingStory({
               {entry.date && (
                 <p>
                   <time dateTime={entry.date}>{scheduleLabel(entry, true)}</time>
-                </p>
-              )}
-              {entry.venue?.title && (
-                <p>
-                  {entry.venue.href ? (
-                    <Link href={entry.venue.href}>{entry.venue.title}</Link>
-                  ) : (
-                    entry.venue.title
-                  )}
                 </p>
               )}
               {entry.link?.href && (
@@ -68,8 +62,7 @@ export function ListingStory({
           )}
           <div className="listing-story__body">
             {entry.summary && <p className="lead">{entry.summary}</p>}
-            <RichText value={entry.body} />
-            {event && <PageSections sections={entry.sections} />}
+            <RichText value={entry.body} orgTheme={event ? themeForEntry(entry) : undefined} />
             {!event && entry.link?.href && <Link href={entry.link.href}>{entry.link.label}</Link>}
           </div>
         </div>

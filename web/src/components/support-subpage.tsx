@@ -36,11 +36,7 @@ function SupporterDirectory({entry}: {entry: ContentEntry}) {
                   {group.supporters?.map((person) => {
                     const mark = group.layout === 'logos' && person.logo?.asset
                     const content = mark ? (
-                      <ParkImage
-                        image={person.logo}
-                        alt={person.name}
-                        sizes="(max-width: 44rem) 44vw, 21vw"
-                      />
+                      <ParkImage image={person.logo} sizes="(max-width: 44rem) 44vw, 21vw" />
                     ) : (
                       <>
                         {person.name}
@@ -49,7 +45,13 @@ function SupporterDirectory({entry}: {entry: ContentEntry}) {
                     )
                     return (
                       <li key={person._key} className={mark ? 'has-logo' : undefined}>
-                        {person.url ? <a href={person.url}>{content}</a> : content}
+                        {person.url ? (
+                          <a href={person.url} aria-label={mark ? person.name : undefined}>
+                            {content}
+                          </a>
+                        ) : (
+                          content
+                        )}
                       </li>
                     )
                   })}
@@ -79,7 +81,7 @@ function Initiatives({entry}: {entry: ContentEntry}) {
             <article key={card._key}>
               {!completed && (
                 <div className="initiative-shape" data-color={card.color || 'pale-green'}>
-                  <ParkImage image={card.image} alt={card.image?.alt} />
+                  <ParkImage image={card.image} />
                 </div>
               )}
               {card.label && <p className="support-label">{card.label}</p>}
@@ -104,7 +106,7 @@ function Donate({entry}: {entry: ContentEntry}) {
         >
           {section.kind === 'feature' && (
             <div className="donation-feature-shape">
-              <ParkImage image={section.image} alt="" priority sizes="75vw" />
+              <ParkImage image={section.image} priority sizes="75vw" />
             </div>
           )}
           <div className="donation-heading">
@@ -152,7 +154,7 @@ export function SupportSubpage({
   path: string
 }) {
   const department = site.settings.navigation.find((item) => item.href === '/support')
-  const introductoryAction = entry.supportLink || entry.link
+  const introductoryAction = entry.supportLink
   const structured =
     entry.supporterYears ||
     entry.initiativeCards ||
@@ -180,7 +182,7 @@ export function SupportSubpage({
             <article key={item._key}>
               {item.image?.asset && (
                 <div className="volunteer-image">
-                  <ParkImage image={item.image} alt={item.image.alt} />
+                  <ParkImage image={item.image} />
                 </div>
               )}
               <h2>{item.title}</h2>

@@ -175,7 +175,7 @@ function Calendar({
                 <h3>
                   <Link href={entry.href}>{entry.title}</Link>
                 </h3>
-                <p>{entry.organization || entry.venue?.title || entry.category}</p>
+                {entry.organization && <p>{entry.organization}</p>}
                 {entry.date && <time dateTime={entry.date}>{scheduleLabel(entry)}</time>}
               </li>
             ))}
@@ -204,13 +204,12 @@ export function EventsBrowser({
   const archive = !calendar && params.period === 'archive'
   const month = validMonth(params.month, today.slice(0, 7))
   const count = Math.max(1, Math.min(200, parseInt(params.page || '1') || 1)) * 2
-  const organization = (e: ContentEntry) => e.organization || e.venue?.title || e.category
-  const organizations = [...new Set(events.map(organization))].sort()
+  const organizations = [...new Set(events.flatMap((event) => event.organization || []))].sort()
   const kinds = [...new Set(events.flatMap((e) => (e.kind ? [e.kind] : [])))].sort()
   const org = organizations.includes(params.organization || '') ? params.organization! : ''
   const kind = kinds.includes(params.kind || '') ? params.kind! : ''
   const filtered = events.filter(
-    (event) => (!org || organization(event) === org) && (!kind || event.kind === kind),
+    (event) => (!org || event.organization === org) && (!kind || event.kind === kind),
   )
   const groups = calendar ? [] : eventMonths(filtered, today, archive, count + 1)
   const href = (change: ListingParams) =>

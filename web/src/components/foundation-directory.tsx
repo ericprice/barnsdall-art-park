@@ -48,12 +48,12 @@ function PartnerMark({partner}: {partner: Partner}) {
         (svgAsset
           ? imageBuilder.image(logo).url()
           : imageBuilder.image(logo).width(540).auto('format').url())
-  const label = typeof logo === 'object' && logo?.alt ? logo.alt : name
+  const caption = typeof logo === 'object' ? logo?.caption : undefined
   const mark = src ? (
     <Image
       src={src}
       unoptimized={svgAsset}
-      alt={label}
+      alt={caption ?? ''}
       width={400}
       height={200}
       sizes="(max-width: 44rem) 35vw, 16vw"
@@ -61,7 +61,13 @@ function PartnerMark({partner}: {partner: Partner}) {
   ) : (
     name
   )
-  return partner.website ? <a href={partner.website}>{mark}</a> : mark
+  return partner.website ? (
+    <a href={partner.website} aria-label={name}>
+      {mark}
+    </a>
+  ) : (
+    mark
+  )
 }
 
 export function FoundationDirectory({entry}: {entry: ContentEntry}) {

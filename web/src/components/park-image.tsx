@@ -1,7 +1,7 @@
 import Image from 'next/image'
 import {useId} from 'react'
 import {imageBuilder} from '@/sanity/image'
-import {artDirection, duotoneMatrix} from '@/lib/image-theme'
+import {isCutout, duotoneMatrix} from '@/lib/image-theme'
 import type {OrganizationTheme} from '../../../shared/organizations'
 import type {ImageSource} from '@/lib/content'
 
@@ -10,14 +10,14 @@ export function ParkImage({
   className,
   priority = false,
   sizes = '(max-width: 44rem) 90vw, 33vw',
-  alt,
+  editorial = false,
   orgTheme,
 }: {
   image: ImageSource
   className?: string
   priority?: boolean
   sizes?: string
-  alt?: string
+  editorial?: boolean
   orgTheme?: OrganizationTheme
 }) {
   const filterId = 'duotone-' + useId().replace(/[^\w-]/g, '')
@@ -32,8 +32,8 @@ export function ParkImage({
           : imageBuilder.image(image).width(1600).auto('format').url()
         : null
   if (!src) return null
-  const treatment = artDirection(image)?.treatment
-  const tint = orgTheme && treatment !== 'original' && treatment !== 'cutout'
+  const artwork = editorial ? image : undefined
+  const tint = orgTheme && !isCutout(artwork)
   return (
     <>
       {tint && (
@@ -46,14 +46,14 @@ export function ParkImage({
         >
           <defs>
             <filter id={filterId} colorInterpolationFilters="sRGB">
-              <feColorMatrix type="matrix" values={duotoneMatrix(orgTheme, image)} />
+              <feColorMatrix type="matrix" values={duotoneMatrix(orgTheme, artwork)} />
             </filter>
           </defs>
         </svg>
       )}
       <Image
         src={src}
-        alt={alt ?? (typeof image === 'string' ? '' : image.alt || '')}
+        alt={typeof image === 'string' ? '' : (image.caption ?? '')}
         fill
         unoptimized={svgAsset || (typeof image === 'string' && image.endsWith('.svg'))}
         className={className}

@@ -68,7 +68,7 @@ export function filterEvents(
   return events.filter((event) => {
     if (
       options.q &&
-      ![event.title, event.summary, event.venue?.title]
+      ![event.title, event.summary, event.organization]
         .join(' ')
         .toLowerCase()
         .includes(options.q.toLowerCase())

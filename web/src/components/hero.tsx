@@ -62,6 +62,7 @@ export function Hero({slides, celebration}: Pick<SiteContent['home'], 'slides' |
             aria-hidden={i !== active}
           >
             <ParkImage
+              editorial
               orgTheme={themeForEntry(story)}
               image={story.image}
               priority={i === 0}

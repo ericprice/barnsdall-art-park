@@ -8,17 +8,18 @@ import {ParkImage} from './park-image'
 export function StoryGallery({
   images,
   orgTheme,
+  showCaption,
   text,
 }: {
   text: InterfaceText
   images: NonNullable<ImageSource>[]
   orgTheme?: OrganizationTheme
+  showCaption: boolean
 }) {
   const [index, setIndex] = useState(0)
   const image = images[index]
   if (!image) return null
-  const caption =
-    typeof image === 'string' ? null : [image.caption, image.credit].filter(Boolean).join(' · ')
+  const caption = typeof image === 'string' ? undefined : image.caption
   return (
     <figure className="story-gallery">
       <div className="story-gallery__photo">
@@ -47,7 +48,7 @@ export function StoryGallery({
           </button>
         </div>
       )}
-      {caption && <figcaption>{caption}</figcaption>}
+      {showCaption && caption && <figcaption>{caption}</figcaption>}
     </figure>
   )
 }

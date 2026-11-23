@@ -11,21 +11,12 @@ export function PageSections({sections}: {sections?: PageSection[]}) {
       key={section._key}
     >
       <h2>{section.title}</h2>
-      {section.lead && <p className="lead">{section.lead}</p>}
       <RichText value={section.body} />
       {section.image && (
         <div
           className={`section-image ${section.anchor === 'partners' ? 'section-image--partners' : ''}`}
         >
-          <ParkImage
-            image={section.image}
-            sizes="(max-width: 44rem) 90vw, 60vw"
-            alt={
-              typeof section.image === 'string' && section.anchor === 'partners'
-                ? 'Partners: City of Los Angeles, Department of Cultural Affairs, Recreation and Parks, and Los Angeles Parks Foundation.'
-                : undefined
-            }
-          />
+          <ParkImage image={section.image} sizes="(max-width: 44rem) 90vw, 60vw" />
         </div>
       )}
       {section.entries?.length ? (
@@ -39,11 +30,11 @@ export function PageSections({sections}: {sections?: PageSection[]}) {
                 </summary>
                 <div>
                   <RichText value={entry.body} />
-                  {entry.link?.href && (
-                    <Link className="text-link" href={entry.link.href}>
-                      {entry.link.label} <span aria-hidden="true">↗</span>
+                  {entry.links.map((link) => (
+                    <Link className="text-link" key={link._key} href={link.href}>
+                      {link.label} <span aria-hidden="true">↗</span>
                     </Link>
-                  )}
+                  ))}
                 </div>
               </details>
             ))}
@@ -54,11 +45,11 @@ export function PageSections({sections}: {sections?: PageSection[]}) {
               <div key={entry._key}>
                 <h3>{entry.title}</h3>
                 <RichText value={entry.body} />
-                {entry.link?.href && (
-                  <Link href={entry.link.href}>
-                    {entry.link.label} <span aria-hidden="true">»</span>
+                {entry.links.map((link) => (
+                  <Link key={link._key} href={link.href}>
+                    {link.label} <span aria-hidden="true">»</span>
                   </Link>
-                )}
+                ))}
               </div>
             ))}
           </div>

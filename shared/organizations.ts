@@ -62,20 +62,3 @@ export function organizationTheme(
 function hexColor(value?: string | null) {
   return value && /^#[a-f0-9]{6}$/i.test(value) ? value : undefined
 }
-
-export type ImageArtDirection = {
-  cutoutScale?: number
-  treatment?: 'organization' | 'cutout' | 'original'
-  light?: string
-  dark?: string
-}
-
-export const imageArtDirection: Record<string, ImageArtDirection> = {
-  '/images/lakota-porch.webp': {treatment: 'cutout', light: '#E0A8B5'},
-  '/images/hollyhock-house.webp': {treatment: 'cutout', light: '#FCC200', cutoutScale: 1.9},
-  '/images/hollyhock-hero.webp': {light: '#F2DBDF', dark: '#E0A8B5'},
-}
-
-export function imagePalette(theme: OrganizationTheme, art?: ImageArtDirection) {
-  return {light: hexColor(art?.light) ?? theme.light, dark: hexColor(art?.dark) ?? theme.dark}
-}

@@ -1,3 +1,5 @@
+import {bodyForLayout, type PageSection} from './body-layout'
+export type {PageSection} from './body-layout'
 import {organizationTheme, type OrganizationTheme} from '../../../shared/organizations'
 import {interfaceDefaults, type InterfaceText} from '../../../shared/interface'
 export type {InterfaceText} from '../../../shared/interface'
@@ -10,22 +12,15 @@ import type {
   SITE_QUERY_RESULT,
   SEARCH_QUERY_RESULT,
   ParkImage,
+  EditorialImage,
   RichText,
-  Seo,
   SiteSettings,
-  ContentSection,
   Page,
 } from '../../sanity.types'
 
-export type ImageSource = ParkImage | string | null | undefined
-export type PageSection = Omit<ContentSection, 'image'> & {
-  image?: ImageSource
-  imageAlt?: string
-  _key: string
-}
+export type ImageSource = ParkImage | EditorialImage | string | null | undefined
 export type TimelineEntry = Omit<NonNullable<Page['timelineEntries']>[number], 'image'> & {
   image?: ImageSource
-  imageAlt?: string
 }
 export type Partner = Omit<NonNullable<Page['partners']>[number], 'logo'> & {logo?: ImageSource}
 export type ContentEntry = {
@@ -33,14 +28,11 @@ export type ContentEntry = {
   title: string
   href: string
   directoryOrder?: number
-  category: string
   summary?: string | null
   image?: ImageSource
-  imageAlt?: string
   body?: RichText
   date?: string | null
   featureBackground?: string | null
-  featureCategory?: string | null
   featureImage?: ImageSource
   featureCaption?: string | null
   orgTheme?: OrganizationTheme
@@ -49,9 +41,7 @@ export type ContentEntry = {
   allDay?: boolean | null
   gallery?: (ParkImage & {_key: string})[]
   endsAt?: string | null
-  venue?: {title: string | null; href: string | null} | null
   link?: {label?: string; href?: string} | null
-  seo?: Seo
   kind?: string | null
   template?: Page['template']
   archiveEntry?: boolean
@@ -103,12 +93,10 @@ export type SiteContent = {
     contactEmail?: string
     footerText?: string
     landAcknowledgment?: string
-    seo?: Seo
     socialLinks?: {label?: string; href?: string; _key: string; icon?: ImageSource}[]
   }
   home: {
     historyLink?: {label?: string; href?: string}
-    seo?: Seo
     slides: {
       orgTheme?: OrganizationTheme
       id: string
@@ -160,11 +148,7 @@ type DocumentEntry =
   | SITE_QUERY_RESULT['pages'][number]
   | SEARCH_QUERY_RESULT[number]
 function toEntry(doc: DocumentEntry): ContentEntry {
-  const legacyCredit = 'organization' in doc ? doc.organization : undefined
-  const theme = organizationTheme(
-    'orgTheme' in doc ? doc.orgTheme : undefined,
-    legacyCredit || doc.title,
-  )
+  const owner = doc.orgTheme
   return {
     id: doc._id,
     title: doc.title || 'Untitled',
@@ -174,38 +158,28 @@ function toEntry(doc: DocumentEntry): ContentEntry {
         : 'website' in doc && doc.website?.href
           ? doc.website.href
           : hrefFor(doc._type, doc.slug?.current),
-    category:
-      doc._type === 'article'
-        ? ('category' in doc && doc.category) || 'News'
-        : doc._type === 'event'
-          ? ('orgTheme' in doc && doc.orgTheme?.title) ||
-            legacyCredit ||
-            ('kind' in doc && doc.kind) ||
-            'What’s on'
-          : doc._type === 'place'
-            ? 'The park'
-            : 'Foundation',
     summary: doc.summary,
     image: doc.image,
-    body: 'body' in doc ? doc.body : undefined,
-    seo: 'seo' in doc ? doc.seo : undefined,
+    ...bodyForLayout(
+      'body' in doc ? doc.body : undefined,
+      hrefFor(doc._type, doc.slug?.current),
+      'template' in doc ? (doc.template ?? undefined) : undefined,
+    ),
     date:
       doc._type === 'event' && 'startsAt' in doc
         ? doc.startsAt
         : 'publishedAt' in doc
           ? doc.publishedAt
           : null,
-    featureCategory: 'featureCategory' in doc ? doc.featureCategory : undefined,
     featureImage: 'featureImage' in doc ? doc.featureImage : undefined,
     featureBackground: 'featureBackground' in doc ? doc.featureBackground : undefined,
     featureCaption: 'featureCaption' in doc ? doc.featureCaption : null,
-    orgTheme: theme,
-    organization: ('orgTheme' in doc && doc.orgTheme?.title) || legacyCredit || null,
+    orgTheme: organizationTheme(owner),
+    organization: owner?.title,
     repeatsUntil: 'repeatsUntil' in doc ? doc.repeatsUntil : null,
     allDay: 'allDay' in doc ? doc.allDay : null,
     gallery: 'gallery' in doc ? doc.gallery : undefined,
     endsAt: 'endsAt' in doc ? doc.endsAt : null,
-    venue: 'venue' in doc ? doc.venue : null,
     link:
       'sourceLink' in doc
         ? doc.sourceLink
@@ -213,21 +187,12 @@ function toEntry(doc: DocumentEntry): ContentEntry {
           ? doc.ticketLink
           : 'website' in doc
             ? doc.website
-            : 'actionLink' in doc
-              ? doc.actionLink
-              : null,
+            : null,
     kind: 'kind' in doc ? doc.kind : null,
     template: 'template' in doc ? doc.template || undefined : undefined,
     archiveEntry: 'archiveEntry' in doc ? doc.archiveEntry : undefined,
     relatedStoryIds:
       'relatedStories' in doc ? doc.relatedStories?.map((story) => story._ref) : undefined,
-    sections:
-      'sections' in doc && doc.sections
-        ? doc.sections.map((section) => ({
-            ...section,
-            links: section.links?.map((link) => ({...link, href: link.href ?? undefined})),
-          }))
-        : undefined,
     foundationHeadings: 'foundationHeadings' in doc ? doc.foundationHeadings : undefined,
     boardMembers: 'boardMembers' in doc ? doc.boardMembers : undefined,
     staffMembers: 'staffMembers' in doc ? doc.staffMembers : undefined,
@@ -272,7 +237,6 @@ function settingsFor(s: SiteSettings | null): SiteContent['settings'] {
     footerText: s?.footerText,
     landAcknowledgment: s?.landAcknowledgment,
     socialLinks: s?.socialLinks ?? [],
-    seo: s?.seo,
     navigation: s?.navigation?.length
       ? s.navigation.map((n) => ({
           title: n.title || '',
@@ -295,7 +259,6 @@ export const getSite = cache(async (): Promise<SiteContent> => {
     pages: data.pages.map(toEntry),
     home: {
       historyLink: data.home?.historyLink || undefined,
-      seo: data.home?.seo || undefined,
       slides:
         data.home?.heroSlides?.map((s) => ({
           id: s._key,

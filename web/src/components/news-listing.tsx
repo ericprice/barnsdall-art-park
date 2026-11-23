@@ -19,9 +19,11 @@ export function NewsListing({
   text: InterfaceText
   quote?: SiteContent['home']['quote']
 }) {
-  const organizations = [...new Set(articles.map((a) => a.organization || a.category))].sort()
+  const organizations = [
+    ...new Set(articles.flatMap((article) => article.organization || [])),
+  ].sort()
   const selected = organizations.includes(params.organization || '') ? params.organization! : ''
-  const filtered = articles.filter((a) => !selected || (a.organization || a.category) === selected)
+  const filtered = articles.filter((a) => !selected || a.organization === selected)
   const pageSize = 9
   const lead = filtered.find((article) => article.id === featuredId) ?? filtered[0]
   const otherArticles = filtered.filter((article) => article !== lead)
@@ -52,6 +54,7 @@ export function NewsListing({
         >
           <div className="news-feature__photo">
             <ParkImage
+              editorial
               orgTheme={themeForEntry(featured)}
               image={featured.image}
               sizes="(max-width: 44rem) 90vw, 45vw"

@@ -29,7 +29,6 @@ export function ExplorePark({places, title}: {places: ContentEntry[]; title: str
               orgTheme={themeForEntry(place)}
               image={place.image}
               sizes="(max-width: 44rem) 70vw, 35vw"
-              alt=""
             />
           </div>
         ))}

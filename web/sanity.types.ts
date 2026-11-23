@@ -28,13 +28,6 @@ export type OrganizationReference = {
   [internalGroqTypeReferenceTo]?: 'organization'
 }
 
-export type PlaceReference = {
-  _ref: string
-  _type: 'reference'
-  _weak?: boolean
-  [internalGroqTypeReferenceTo]?: 'place'
-}
-
 export type Event = {
   _id: string
   _type: 'event'
@@ -48,8 +41,6 @@ export type Event = {
     'Exhibition' | 'Performance' | 'Screening' | 'Tour' | 'Workshop' | 'Community' | 'Foundation'
   summary?: string
   image?: ParkImage
-  organization?: string
-  featureCategory?: string
   featureImage?: ParkImage
   gallery?: Array<
     {
@@ -60,16 +51,8 @@ export type Event = {
   allDay?: boolean
   endsAt?: string
   repeatsUntil?: string
-  place?: PlaceReference
-  venueLabel?: string
   ticketLink?: Link
   body?: RichText
-  sections?: Array<
-    {
-      _key: string
-    } & ContentSection
-  >
-  seo?: Seo
 }
 
 export type SanityFileAssetReference = {
@@ -79,17 +62,43 @@ export type SanityFileAssetReference = {
   [internalGroqTypeReferenceTo]?: 'sanity.fileAsset'
 }
 
+export type RichText = Array<
+  | {
+      children?: Array<{
+        marks?: Array<string>
+        text?: string
+        _type: 'span'
+        _key: string
+      }>
+      style?: 'normal' | 'h2' | 'h3' | 'blockquote'
+      listItem?: 'bullet' | 'number'
+      markDefs?: Array<
+        | {
+            asset?: SanityFileAssetReference
+            media?: unknown
+            _type: 'download'
+            _key: string
+          }
+        | {
+            href?: string
+            _type: 'link'
+            _key: string
+          }
+      >
+      level?: number
+      _type: 'block'
+      _key: string
+    }
+  | ({
+      _key: string
+    } & ParkImage)
+>
+
 export type Link = {
   _type: 'link'
-  icon?: ParkImage
-  attachment?: {
-    asset?: SanityFileAssetReference
-    media?: unknown
-    _type: 'file'
-  }
   label?: string
-  sectionLabel?: string
   href?: string
+  sectionLabel?: string
 }
 
 export type SanityImageAssetReference = {
@@ -105,13 +114,13 @@ export type ParkImage = {
   media?: unknown
   hotspot?: SanityImageHotspot
   crop?: SanityImageCrop
-  alt?: string
   caption?: string
-  credit?: string
-  treatment?: 'organization' | 'cutout' | 'original'
-  cutoutScale?: number
-  light?: string
-  dark?: string
+}
+
+export type Slug = {
+  _type: 'slug'
+  current?: string
+  source?: string
 }
 
 export type Place = {
@@ -127,13 +136,7 @@ export type Place = {
   summary?: string
   image?: ParkImage
   body?: RichText
-  sections?: Array<
-    {
-      _key: string
-    } & ContentSection
-  >
   website?: Link
-  seo?: Seo
 }
 
 export type Page = {
@@ -146,15 +149,9 @@ export type Page = {
   slug?: Slug
   organizationRef?: OrganizationReference
   template?: 'standard' | 'visit' | 'foundation' | 'initiative' | 'timeline'
-  actionLink?: Link
   summary?: string
   image?: ParkImage
   body?: RichText
-  sections?: Array<
-    {
-      _key: string
-    } & ContentSection
-  >
   foundationHeadings?: {
     mission?: string
     leadership?: string
@@ -249,7 +246,6 @@ export type Page = {
     _type: 'givingLevel'
     _key: string
   }>
-  seo?: Seo
 }
 
 export type EventReference = {
@@ -264,6 +260,13 @@ export type ArticleReference = {
   _type: 'reference'
   _weak?: boolean
   [internalGroqTypeReferenceTo]?: 'article'
+}
+
+export type PlaceReference = {
+  _ref: string
+  _type: 'reference'
+  _weak?: boolean
+  [internalGroqTypeReferenceTo]?: 'place'
 }
 
 export type PageReference = {
@@ -284,7 +287,7 @@ export type HomePage = {
   heroSlides?: Array<{
     title?: string
     summary?: string
-    image?: ParkImage
+    image?: EditorialImage
     organizationRef?: OrganizationReference
     link?: Link
     _type: 'heroSlide'
@@ -319,7 +322,16 @@ export type HomePage = {
     _type: 'milestone'
     _key: string
   }>
-  seo?: Seo
+}
+
+export type EditorialImage = {
+  _type: 'editorialImage'
+  asset?: SanityImageAssetReference
+  media?: unknown
+  hotspot?: SanityImageHotspot
+  crop?: SanityImageCrop
+  caption?: string
+  presentation?: 'organization' | 'rose' | 'roseCutout' | 'closeCutout'
 }
 
 export type SiteSettings = {
@@ -434,11 +446,10 @@ export type SiteSettings = {
   socialLinks?: Array<
     {
       _key: string
-    } & Link
+    } & SocialLink
   >
   footerText?: string
   landAcknowledgment?: string
-  seo?: Seo
 }
 
 export type Article = {
@@ -450,13 +461,10 @@ export type Article = {
   title?: string
   slug?: Slug
   organizationRef?: OrganizationReference
-  category?: string
-  organization?: string
   storyDestination?: Link
   featureCaption?: string
-  featureCategory?: string
   featureBackground?: string
-  featureImage?: ParkImage
+  featureImage?: EditorialImage
   publishedAt?: string
   sourceLink?: Link
   archiveEntry?: boolean
@@ -466,51 +474,13 @@ export type Article = {
     } & ParkImage
   >
   summary?: string
-  image?: ParkImage
+  image?: EditorialImage
   body?: RichText
   relatedStories?: Array<
     {
       _key: string
     } & ArticleReference
   >
-  seo?: Seo
-}
-
-export type Seo = {
-  _type: 'seo'
-  title?: string
-  description?: string
-  image?: ParkImage
-}
-
-export type RichText = Array<
-  | {
-      children?: Array<{
-        marks?: Array<string>
-        text?: string
-        _type: 'span'
-        _key: string
-      }>
-      style?: 'normal' | 'h2' | 'h3' | 'blockquote'
-      listItem?: 'bullet' | 'number'
-      markDefs?: Array<{
-        href?: string
-        _type: 'link'
-        _key: string
-      }>
-      level?: number
-      _type: 'block'
-      _key: string
-    }
-  | ({
-      _key: string
-    } & ParkImage)
->
-
-export type Slug = {
-  _type: 'slug'
-  current?: string
-  source?: string
 }
 
 export type Organization = {
@@ -540,28 +510,6 @@ export type FoundationPerson = {
   profileUrl?: string
 }
 
-export type ContentSection = {
-  _type: 'contentSection'
-  title?: string
-  anchor?: string
-  lead?: string
-  body?: RichText
-  image?: ParkImage
-  links?: Array<
-    {
-      _key: string
-    } & Link
-  >
-  collapsible?: boolean
-  entries?: Array<{
-    title?: string
-    body?: RichText
-    link?: Link
-    _type: 'sectionEntry'
-    _key: string
-  }>
-}
-
 export type SanityImageCrop = {
   _type: 'sanity.imageCrop'
   top?: number
@@ -576,6 +524,13 @@ export type SanityImageHotspot = {
   y?: number
   height?: number
   width?: number
+}
+
+export type SocialLink = {
+  _type: 'socialLink'
+  label?: string
+  href?: string
+  icon?: ParkImage
 }
 
 export type SanityImagePaletteSwatch = {
@@ -677,29 +632,29 @@ export type Geopoint = {
 
 export type AllSanitySchemaTypes =
   | OrganizationReference
-  | PlaceReference
   | Event
   | SanityFileAssetReference
+  | RichText
   | Link
   | SanityImageAssetReference
   | ParkImage
+  | Slug
   | Place
   | Page
   | EventReference
   | ArticleReference
+  | PlaceReference
   | PageReference
   | HomePage
+  | EditorialImage
   | SiteSettings
   | Article
-  | Seo
-  | RichText
-  | Slug
   | Organization
   | FoundationPartner
   | FoundationPerson
-  | ContentSection
   | SanityImageCrop
   | SanityImageHotspot
+  | SocialLink
   | SanityImagePaletteSwatch
   | SanityImagePalette
   | SanityImageDimensions
@@ -711,7 +666,7 @@ export type AllSanitySchemaTypes =
 
 // Source: ../web/src/sanity/queries.ts
 // Variable: SITE_QUERY
-// Query: {  "settings": *[_type == "siteSettings" && _id == "siteSettings"][0],  "home": *[_type == "homePage" && _id == "homePage"][0]{    title, historyLink, heroSlides[]{..., "orgTheme": organizationRef->{title, light, dark}}, celebration, quote, timeline, seo,    featuredContent[]->{_id, _type, title, slug, summary, image, "orgTheme": organizationRef->{title, light, dark}, category, storyDestination, featureCategory, featureImage, featureBackground, featureCaption, organization, kind, startsAt, endsAt, repeatsUntil, allDay, publishedAt, website},    featuredPlaces[]->{_id, _type, title, slug, summary, image, "orgTheme": organizationRef->{title, light, dark}, website}  },  "places": *[_type == "place" && defined(slug.current)] | order(coalesce(directoryOrder, 9999) asc, title asc)[0...100]{_id, _type, title, slug, summary, image, "orgTheme": organizationRef->{title, light, dark}, website},  "events": *[_type == "event" && defined(slug.current)] | order(startsAt asc){_id, _type, title, slug, summary, image, "orgTheme": organizationRef->{title, light, dark}, organization, kind, startsAt, endsAt, repeatsUntil, allDay, "venue": select(defined(place) || defined(venueLabel) => {"title": coalesce(venueLabel, place->title), "href": select(defined(place) => coalesce(place->website.href, "/park/" + place->slug.current))})},  "articles": *[_type == "article" && defined(slug.current)] | order(coalesce(archiveEntry, false) asc, defined(publishedAt) desc, publishedAt desc, title asc){_id, _type, title, slug, summary, image, "orgTheme": organizationRef->{title, light, dark}, organization, category, storyDestination, featureCategory, featureImage, featureBackground, featureCaption, publishedAt},  "pages": *[_type == "page" && defined(slug.current)] | order(title asc)[0...100]{_id, _type, title, slug, summary, image, "orgTheme": organizationRef->{title, light, dark}, template}}
+// Query: {  "settings": *[_type == "siteSettings" && _id == "siteSettings"][0],  "home": *[_type == "homePage" && _id == "homePage"][0]{    title, historyLink, heroSlides[]{..., "orgTheme": organizationRef->{title, light, dark}}, celebration, quote, timeline,    featuredContent[]->{_id, _type, title, slug, summary, image, "orgTheme": organizationRef->{title, light, dark}, storyDestination, featureImage, featureBackground, featureCaption, kind, startsAt, endsAt, repeatsUntil, allDay, publishedAt, website},    featuredPlaces[]->{_id, _type, title, slug, summary, image, "orgTheme": organizationRef->{title, light, dark}, website}  },  "places": *[_type == "place" && defined(slug.current)] | order(coalesce(directoryOrder, 9999) asc, title asc)[0...100]{_id, _type, title, slug, summary, image, "orgTheme": organizationRef->{title, light, dark}, website},  "events": *[_type == "event" && defined(slug.current)] | order(startsAt asc){_id, _type, title, slug, summary, image, "orgTheme": organizationRef->{title, light, dark}, kind, startsAt, endsAt, repeatsUntil, allDay},  "articles": *[_type == "article" && defined(slug.current)] | order(coalesce(archiveEntry, false) asc, defined(publishedAt) desc, publishedAt desc, title asc){_id, _type, title, slug, summary, image, "orgTheme": organizationRef->{title, light, dark}, storyDestination, featureImage, featureBackground, featureCaption, publishedAt},  "pages": *[_type == "page" && defined(slug.current)] | order(title asc)[0...100]{_id, _type, title, slug, summary, image, "orgTheme": organizationRef->{title, light, dark}, template}}
 export type SITE_QUERY_RESULT = {
   settings: {
     _id: 'siteSettings'
@@ -825,11 +780,10 @@ export type SITE_QUERY_RESULT = {
     socialLinks?: Array<
       {
         _key: string
-      } & Link
+      } & SocialLink
     >
     footerText?: string
     landAcknowledgment?: string
-    seo?: Seo
   } | null
   home: {
     title: string | null
@@ -837,7 +791,7 @@ export type SITE_QUERY_RESULT = {
     heroSlides: Array<{
       title?: string
       summary?: string
-      image?: ParkImage
+      image?: EditorialImage
       organizationRef?: OrganizationReference
       link?: Link
       _type: 'heroSlide'
@@ -871,7 +825,6 @@ export type SITE_QUERY_RESULT = {
       _type: 'milestone'
       _key: string
     }> | null
-    seo: Seo | null
     featuredContent: Array<
       | {
           _id: string
@@ -879,19 +832,16 @@ export type SITE_QUERY_RESULT = {
           title: string | null
           slug: Slug | null
           summary: string | null
-          image: ParkImage | null
+          image: EditorialImage | null
           orgTheme: {
             title: string | null
             light: string | null
             dark: string | null
           } | null
-          category: string | null
           storyDestination: Link | null
-          featureCategory: string | null
-          featureImage: ParkImage | null
+          featureImage: EditorialImage | null
           featureBackground: string | null
           featureCaption: string | null
-          organization: string | null
           kind: null
           startsAt: null
           endsAt: null
@@ -912,13 +862,10 @@ export type SITE_QUERY_RESULT = {
             light: string | null
             dark: string | null
           } | null
-          category: null
           storyDestination: null
-          featureCategory: string | null
           featureImage: ParkImage | null
           featureBackground: null
           featureCaption: null
-          organization: string | null
           kind:
             | 'Community'
             | 'Exhibition'
@@ -947,13 +894,10 @@ export type SITE_QUERY_RESULT = {
             light: string | null
             dark: string | null
           } | null
-          category: null
           storyDestination: null
-          featureCategory: null
           featureImage: null
           featureBackground: null
           featureCaption: null
-          organization: null
           kind: null
           startsAt: null
           endsAt: null
@@ -974,13 +918,10 @@ export type SITE_QUERY_RESULT = {
             light: string | null
             dark: string | null
           } | null
-          category: null
           storyDestination: null
-          featureCategory: null
           featureImage: null
           featureBackground: null
           featureCaption: null
-          organization: null
           kind: null
           startsAt: null
           endsAt: null
@@ -1031,7 +972,6 @@ export type SITE_QUERY_RESULT = {
       light: string | null
       dark: string | null
     } | null
-    organization: string | null
     kind:
       | 'Community'
       | 'Exhibition'
@@ -1045,10 +985,6 @@ export type SITE_QUERY_RESULT = {
     endsAt: string | null
     repeatsUntil: string | null
     allDay: boolean | null
-    venue: {
-      title: string | null
-      href: string | null
-    }
   }>
   articles: Array<{
     _id: string
@@ -1056,17 +992,14 @@ export type SITE_QUERY_RESULT = {
     title: string | null
     slug: Slug | null
     summary: string | null
-    image: ParkImage | null
+    image: EditorialImage | null
     orgTheme: {
       title: string | null
       light: string | null
       dark: string | null
     } | null
-    organization: string | null
-    category: string | null
     storyDestination: Link | null
-    featureCategory: string | null
-    featureImage: ParkImage | null
+    featureImage: EditorialImage | null
     featureBackground: string | null
     featureCaption: string | null
     publishedAt: string | null
@@ -1089,7 +1022,7 @@ export type SITE_QUERY_RESULT = {
 
 // Source: ../web/src/sanity/queries.ts
 // Variable: CONTENT_QUERY
-// Query: *[_type in ["page", "place", "event", "article"] && _type == $type && slug.current == $slug][0]{..., sections[]{..., links[]{..., "href": coalesce(attachment.asset->url,href)}}, "orgTheme": organizationRef->{title, light, dark}, "venue": select(defined(place) || defined(venueLabel) => {"title": coalesce(venueLabel, place->title), "href": select(defined(place) => coalesce(place->website.href, "/park/" + place->slug.current))})}
+// Query: *[_type in ["page", "place", "event", "article"] && _type == $type && slug.current == $slug][0]{..., "orgTheme": organizationRef->{title, light, dark}}
 export type CONTENT_QUERY_RESULT =
   | {
       _id: string
@@ -1100,13 +1033,10 @@ export type CONTENT_QUERY_RESULT =
       title?: string
       slug?: Slug
       organizationRef?: OrganizationReference
-      category?: string
-      organization?: string
       storyDestination?: Link
       featureCaption?: string
-      featureCategory?: string
       featureBackground?: string
-      featureImage?: ParkImage
+      featureImage?: EditorialImage
       publishedAt?: string
       sourceLink?: Link
       archiveEntry?: boolean
@@ -1116,21 +1046,18 @@ export type CONTENT_QUERY_RESULT =
         } & ParkImage
       >
       summary?: string
-      image?: ParkImage
+      image?: EditorialImage
       body?: RichText
       relatedStories?: Array<
         {
           _key: string
         } & ArticleReference
       >
-      seo?: Seo
-      sections: null
       orgTheme: {
         title: string | null
         light: string | null
         dark: string | null
       } | null
-      venue: null
     }
   | {
       _id: string
@@ -1151,8 +1078,6 @@ export type CONTENT_QUERY_RESULT =
         | 'Workshop'
       summary?: string
       image?: ParkImage
-      organization?: string
-      featureCategory?: string
       featureImage?: ParkImage
       gallery?: Array<
         {
@@ -1163,50 +1088,13 @@ export type CONTENT_QUERY_RESULT =
       allDay?: boolean
       endsAt?: string
       repeatsUntil?: string
-      place?: PlaceReference
-      venueLabel?: string
       ticketLink?: Link
       body?: RichText
-      sections: Array<{
-        _key: string
-        _type: 'contentSection'
-        title?: string
-        anchor?: string
-        lead?: string
-        body?: RichText
-        image?: ParkImage
-        links: Array<{
-          _key: string
-          _type: 'link'
-          icon?: ParkImage
-          attachment?: {
-            asset?: SanityFileAssetReference
-            media?: unknown
-            _type: 'file'
-          }
-          label?: string
-          sectionLabel?: string
-          href: string | null
-        }> | null
-        collapsible?: boolean
-        entries?: Array<{
-          title?: string
-          body?: RichText
-          link?: Link
-          _type: 'sectionEntry'
-          _key: string
-        }>
-      }> | null
-      seo?: Seo
       orgTheme: {
         title: string | null
         light: string | null
         dark: string | null
       } | null
-      venue: {
-        title: string | null
-        href: string | null
-      }
     }
   | {
       _id: string
@@ -1218,40 +1106,9 @@ export type CONTENT_QUERY_RESULT =
       slug?: Slug
       organizationRef?: OrganizationReference
       template?: 'foundation' | 'initiative' | 'standard' | 'timeline' | 'visit'
-      actionLink?: Link
       summary?: string
       image?: ParkImage
       body?: RichText
-      sections: Array<{
-        _key: string
-        _type: 'contentSection'
-        title?: string
-        anchor?: string
-        lead?: string
-        body?: RichText
-        image?: ParkImage
-        links: Array<{
-          _key: string
-          _type: 'link'
-          icon?: ParkImage
-          attachment?: {
-            asset?: SanityFileAssetReference
-            media?: unknown
-            _type: 'file'
-          }
-          label?: string
-          sectionLabel?: string
-          href: string | null
-        }> | null
-        collapsible?: boolean
-        entries?: Array<{
-          title?: string
-          body?: RichText
-          link?: Link
-          _type: 'sectionEntry'
-          _key: string
-        }>
-      }> | null
       foundationHeadings?: {
         mission?: string
         leadership?: string
@@ -1346,13 +1203,11 @@ export type CONTENT_QUERY_RESULT =
         _type: 'givingLevel'
         _key: string
       }>
-      seo?: Seo
       orgTheme: {
         title: string | null
         light: string | null
         dark: string | null
       } | null
-      venue: null
     }
   | {
       _id: string
@@ -1367,50 +1222,18 @@ export type CONTENT_QUERY_RESULT =
       summary?: string
       image?: ParkImage
       body?: RichText
-      sections: Array<{
-        _key: string
-        _type: 'contentSection'
-        title?: string
-        anchor?: string
-        lead?: string
-        body?: RichText
-        image?: ParkImage
-        links: Array<{
-          _key: string
-          _type: 'link'
-          icon?: ParkImage
-          attachment?: {
-            asset?: SanityFileAssetReference
-            media?: unknown
-            _type: 'file'
-          }
-          label?: string
-          sectionLabel?: string
-          href: string | null
-        }> | null
-        collapsible?: boolean
-        entries?: Array<{
-          title?: string
-          body?: RichText
-          link?: Link
-          _type: 'sectionEntry'
-          _key: string
-        }>
-      }> | null
       website?: Link
-      seo?: Seo
       orgTheme: {
         title: string | null
         light: string | null
         dark: string | null
       } | null
-      venue: null
     }
   | null
 
 // Source: ../web/src/sanity/queries.ts
 // Variable: SEARCH_QUERY
-// Query: *[_type in ["page", "place", "event", "article"] && defined(slug.current) && (title match $searchTerm || summary match $searchTerm || pt::text(body) match $searchTerm || boardMembers[].name match $searchTerm || boardMembers[].role match $searchTerm || boardMembers[].affiliation match $searchTerm || boardMembers[].bio match $searchTerm || staffMembers[].name match $searchTerm || staffMembers[].role match $searchTerm || staffMembers[].affiliation match $searchTerm || staffMembers[].bio match $searchTerm || partners[].name match $searchTerm || supporterYears[].groups[].supporters[].name match $searchTerm || initiativeCards[].title match $searchTerm || volunteerOpportunities[].title match $searchTerm || donationSections[].title match $searchTerm || timelineEntries[].dateLabel match $searchTerm || timelineEntries[].description match $searchTerm || sections[].title match $searchTerm || sections[].lead match $searchTerm || pt::text(sections[].body[]) match $searchTerm || sections[].entries[].title match $searchTerm || pt::text(sections[].entries[].body[]) match $searchTerm)] | order(title asc)[0...100]{_id, _type, title, slug, summary, image, "orgTheme": organizationRef->{title, light, dark}, website}
+// Query: *[_type in ["page", "place", "event", "article"] && defined(slug.current) && (title match $searchTerm || organizationRef->title match $searchTerm || summary match $searchTerm || pt::text(body) match $searchTerm || boardMembers[].name match $searchTerm || boardMembers[].role match $searchTerm || boardMembers[].affiliation match $searchTerm || boardMembers[].bio match $searchTerm || staffMembers[].name match $searchTerm || staffMembers[].role match $searchTerm || staffMembers[].affiliation match $searchTerm || staffMembers[].bio match $searchTerm || partners[].name match $searchTerm || supporterYears[].groups[].supporters[].name match $searchTerm || initiativeCards[].title match $searchTerm || volunteerOpportunities[].title match $searchTerm || donationSections[].title match $searchTerm || timelineEntries[].dateLabel match $searchTerm || timelineEntries[].description match $searchTerm)] | order(title asc)[0...100]{_id, _type, title, slug, summary, image, "orgTheme": organizationRef->{title, light, dark}, website}
 export type SEARCH_QUERY_RESULT = Array<
   | {
       _id: string
@@ -1418,7 +1241,7 @@ export type SEARCH_QUERY_RESULT = Array<
       title: string | null
       slug: Slug | null
       summary: string | null
-      image: ParkImage | null
+      image: EditorialImage | null
       orgTheme: {
         title: string | null
         light: string | null
@@ -1473,9 +1296,9 @@ export type SEARCH_QUERY_RESULT = Array<
 // Query TypeMap
 declare global {
   interface SanityQueries {
-    '{\n  "settings": *[_type == "siteSettings" && _id == "siteSettings"][0],\n  "home": *[_type == "homePage" && _id == "homePage"][0]{\n    title, historyLink, heroSlides[]{..., "orgTheme": organizationRef->{title, light, dark}}, celebration, quote, timeline, seo,\n    featuredContent[]->{_id, _type, title, slug, summary, image, "orgTheme": organizationRef->{title, light, dark}, category, storyDestination, featureCategory, featureImage, featureBackground, featureCaption, organization, kind, startsAt, endsAt, repeatsUntil, allDay, publishedAt, website},\n    featuredPlaces[]->{_id, _type, title, slug, summary, image, "orgTheme": organizationRef->{title, light, dark}, website}\n  },\n  "places": *[_type == "place" && defined(slug.current)] | order(coalesce(directoryOrder, 9999) asc, title asc)[0...100]{_id, _type, title, slug, summary, image, "orgTheme": organizationRef->{title, light, dark}, website},\n  "events": *[_type == "event" && defined(slug.current)] | order(startsAt asc){_id, _type, title, slug, summary, image, "orgTheme": organizationRef->{title, light, dark}, organization, kind, startsAt, endsAt, repeatsUntil, allDay, "venue": select(defined(place) || defined(venueLabel) => {"title": coalesce(venueLabel, place->title), "href": select(defined(place) => coalesce(place->website.href, "/park/" + place->slug.current))})},\n  "articles": *[_type == "article" && defined(slug.current)] | order(coalesce(archiveEntry, false) asc, defined(publishedAt) desc, publishedAt desc, title asc){_id, _type, title, slug, summary, image, "orgTheme": organizationRef->{title, light, dark}, organization, category, storyDestination, featureCategory, featureImage, featureBackground, featureCaption, publishedAt},\n  "pages": *[_type == "page" && defined(slug.current)] | order(title asc)[0...100]{_id, _type, title, slug, summary, image, "orgTheme": organizationRef->{title, light, dark}, template}\n}': SITE_QUERY_RESULT
-    '*[_type in ["page", "place", "event", "article"] && _type == $type && slug.current == $slug][0]{..., sections[]{..., links[]{..., "href": coalesce(attachment.asset->url,href)}}, "orgTheme": organizationRef->{title, light, dark}, "venue": select(defined(place) || defined(venueLabel) => {"title": coalesce(venueLabel, place->title), "href": select(defined(place) => coalesce(place->website.href, "/park/" + place->slug.current))})}': CONTENT_QUERY_RESULT
-    '*[_type in ["page", "place", "event", "article"] && defined(slug.current) && (title match $searchTerm || summary match $searchTerm || pt::text(body) match $searchTerm || boardMembers[].name match $searchTerm || boardMembers[].role match $searchTerm || boardMembers[].affiliation match $searchTerm || boardMembers[].bio match $searchTerm || staffMembers[].name match $searchTerm || staffMembers[].role match $searchTerm || staffMembers[].affiliation match $searchTerm || staffMembers[].bio match $searchTerm || partners[].name match $searchTerm || supporterYears[].groups[].supporters[].name match $searchTerm || initiativeCards[].title match $searchTerm || volunteerOpportunities[].title match $searchTerm || donationSections[].title match $searchTerm || timelineEntries[].dateLabel match $searchTerm || timelineEntries[].description match $searchTerm || sections[].title match $searchTerm || sections[].lead match $searchTerm || pt::text(sections[].body[]) match $searchTerm || sections[].entries[].title match $searchTerm || pt::text(sections[].entries[].body[]) match $searchTerm)] | order(title asc)[0...100]{_id, _type, title, slug, summary, image, "orgTheme": organizationRef->{title, light, dark}, website}': SEARCH_QUERY_RESULT
+    '{\n  "settings": *[_type == "siteSettings" && _id == "siteSettings"][0],\n  "home": *[_type == "homePage" && _id == "homePage"][0]{\n    title, historyLink, heroSlides[]{..., "orgTheme": organizationRef->{title, light, dark}}, celebration, quote, timeline,\n    featuredContent[]->{_id, _type, title, slug, summary, image, "orgTheme": organizationRef->{title, light, dark}, storyDestination, featureImage, featureBackground, featureCaption, kind, startsAt, endsAt, repeatsUntil, allDay, publishedAt, website},\n    featuredPlaces[]->{_id, _type, title, slug, summary, image, "orgTheme": organizationRef->{title, light, dark}, website}\n  },\n  "places": *[_type == "place" && defined(slug.current)] | order(coalesce(directoryOrder, 9999) asc, title asc)[0...100]{_id, _type, title, slug, summary, image, "orgTheme": organizationRef->{title, light, dark}, website},\n  "events": *[_type == "event" && defined(slug.current)] | order(startsAt asc){_id, _type, title, slug, summary, image, "orgTheme": organizationRef->{title, light, dark}, kind, startsAt, endsAt, repeatsUntil, allDay},\n  "articles": *[_type == "article" && defined(slug.current)] | order(coalesce(archiveEntry, false) asc, defined(publishedAt) desc, publishedAt desc, title asc){_id, _type, title, slug, summary, image, "orgTheme": organizationRef->{title, light, dark}, storyDestination, featureImage, featureBackground, featureCaption, publishedAt},\n  "pages": *[_type == "page" && defined(slug.current)] | order(title asc)[0...100]{_id, _type, title, slug, summary, image, "orgTheme": organizationRef->{title, light, dark}, template}\n}': SITE_QUERY_RESULT
+    '*[_type in ["page", "place", "event", "article"] && _type == $type && slug.current == $slug][0]{..., "orgTheme": organizationRef->{title, light, dark}}': CONTENT_QUERY_RESULT
+    '*[_type in ["page", "place", "event", "article"] && defined(slug.current) && (title match $searchTerm || organizationRef->title match $searchTerm || summary match $searchTerm || pt::text(body) match $searchTerm || boardMembers[].name match $searchTerm || boardMembers[].role match $searchTerm || boardMembers[].affiliation match $searchTerm || boardMembers[].bio match $searchTerm || staffMembers[].name match $searchTerm || staffMembers[].role match $searchTerm || staffMembers[].affiliation match $searchTerm || staffMembers[].bio match $searchTerm || partners[].name match $searchTerm || supporterYears[].groups[].supporters[].name match $searchTerm || initiativeCards[].title match $searchTerm || volunteerOpportunities[].title match $searchTerm || donationSections[].title match $searchTerm || timelineEntries[].dateLabel match $searchTerm || timelineEntries[].description match $searchTerm)] | order(title asc)[0...100]{_id, _type, title, slug, summary, image, "orgTheme": organizationRef->{title, light, dark}, website}': SEARCH_QUERY_RESULT
   }
 }
 // Lets @sanity/client releases that predate the global registry read it too

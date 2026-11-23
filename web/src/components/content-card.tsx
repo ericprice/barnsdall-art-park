@@ -1,4 +1,4 @@
-import {artDirection, themeForEntry, themeStyle} from '@/lib/image-theme'
+import {isCutout, themeForEntry, themeStyle} from '@/lib/image-theme'
 import Link from 'next/link'
 import {scheduleLabel} from '@/lib/event-filters'
 import {ParkImage} from './park-image'
@@ -7,18 +7,17 @@ import type {ContentEntry} from '@/lib/content'
 export function ContentCard({entry, index = 0}: {entry: ContentEntry; index?: number}) {
   const theme = themeForEntry(entry)
   return (
-    <article
-      style={themeStyle(theme, entry.image)}
-      className={`content-card content-card--${index % 6}`}
-    >
+    <article style={themeStyle(theme)} className={`content-card content-card--${index % 6}`}>
       <Link href={entry.href} className="content-card__link">
-        <div className="content-card__image" data-treatment={artDirection(entry.image)?.treatment}>
+        <div className="content-card__image">
           <ParkImage orgTheme={theme} image={entry.image} />
         </div>
-        <p className="content-card__category">
-          <span className="small-seed" aria-hidden="true" />
-          {entry.category}
-        </p>
+        {entry.organization && (
+          <p className="content-card__category">
+            <span className="small-seed" aria-hidden="true" />
+            {entry.organization}
+          </p>
+        )}
         <h2>
           {entry.title}
           {entry.href.startsWith('https://') && (
@@ -39,20 +38,23 @@ export function HomeFeatureCard({entry, index}: {entry: ContentEntry; index: num
   const image = entry.featureImage || entry.image
   const theme = themeForEntry(entry)
   return (
-    <article style={themeStyle(theme, image)} className={`home-feature content-card--${index % 6}`}>
+    <article
+      style={themeStyle(theme, event ? undefined : image)}
+      className={`home-feature content-card--${index % 6}`}
+    >
       <Link href={entry.href}>
         <div
           className="content-card__image"
-          data-treatment={artDirection(image)?.treatment}
+          data-treatment={!event && isCutout(image) ? 'cutout' : undefined}
           style={
-            !image && entry.featureBackground
+            !event && !image && entry.featureBackground
               ? {backgroundColor: entry.featureBackground}
               : undefined
           }
         >
-          <ParkImage orgTheme={theme} image={image} />
+          <ParkImage editorial={!event} orgTheme={theme} image={image} />
         </div>
-        <p className="home-feature__category">{entry.featureCategory || entry.category}</p>
+        {entry.organization && <p className="home-feature__category">{entry.organization}</p>}
         <h2>{entry.title}</h2>
         {event && entry.date ? (
           <time dateTime={entry.date}>{scheduleLabel(entry)}</time>

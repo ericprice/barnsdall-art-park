@@ -1,29 +1,40 @@
 import type {CSSProperties} from 'react'
-import {
-  organizationTheme,
-  imageArtDirection,
-  imagePalette,
-  type OrganizationTheme,
-  type ImageArtDirection,
-} from '../../../shared/organizations'
+import {organizationTheme, type OrganizationTheme} from '../../../shared/organizations'
 import type {ImageSource} from './content'
 
-export function artDirection(image: ImageSource): ImageArtDirection | undefined {
-  return typeof image === 'string' ? imageArtDirection[image] : (image ?? undefined)
+function artworkPresentation(image: ImageSource) {
+  return typeof image === 'object' && image?._type === 'editorialImage'
+    ? image.presentation
+    : undefined
 }
 
-export function themeStyle(theme: OrganizationTheme, image?: ImageSource): CSSProperties {
-  const pair = imagePalette(theme, artDirection(image))
+export function isCutout(image: ImageSource) {
+  const presentation = artworkPresentation(image)
+  return presentation === 'roseCutout' || presentation === 'closeCutout'
+}
+
+function imageColors(theme: OrganizationTheme, artwork?: ImageSource) {
+  switch (artworkPresentation(artwork)) {
+    case 'rose':
+      return {light: '#F2DBDF', dark: '#E0A8B5'}
+    case 'roseCutout':
+      return {light: '#E0A8B5', dark: theme.dark}
+    default:
+      return theme
+  }
+}
+
+export function themeStyle(theme: OrganizationTheme, artwork?: ImageSource): CSSProperties {
+  const {light, dark} = imageColors(theme, artwork)
   return {
-    '--cutout-scale': artDirection(image)?.cutoutScale,
-    '--org-light': pair.light,
-    '--org-dark': pair.dark,
+    '--cutout-scale': artworkPresentation(artwork) === 'closeCutout' ? 1.9 : undefined,
+    '--org-light': light,
+    '--org-dark': dark,
   } as CSSProperties
 }
 
-// SVG filters operate in sRGB here so the endpoints are the exact editorial hex colors.
-export function duotoneMatrix(theme: OrganizationTheme, image: ImageSource) {
-  const {light, dark} = imagePalette(theme, artDirection(image))
+export function duotoneMatrix(theme: OrganizationTheme, artwork?: ImageSource) {
+  const {light, dark} = imageColors(theme, artwork)
   const rows = [1, 3, 5].map((offset) => {
     const lo = parseInt(dark.slice(offset, offset + 2), 16) / 255
     const hi = parseInt(light.slice(offset, offset + 2), 16) / 255

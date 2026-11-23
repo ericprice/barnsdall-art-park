@@ -39,13 +39,12 @@ export async function generateMetadata({params}: Props): Promise<Metadata> {
         : undefined
   const entry = listingTitle ? undefined : await getEntry(path)
   return {
-    title:
-      listingTitle || entry?.seo?.title || entry?.title || site.settings.interfaceText.notFound,
-    description: entry?.seo?.description || entry?.summary || site.settings.description,
-    ...(entry?.seo?.image?.asset
+    title: listingTitle || entry?.title || site.settings.interfaceText.notFound,
+    description: entry?.summary || site.settings.description,
+    ...(entry?.image && typeof entry.image !== 'string' && entry.image.asset
       ? {
           openGraph: {
-            images: [imageBuilder.image(entry.seo.image).width(1200).height(630).fit('crop').url()],
+            images: [imageBuilder.image(entry.image).width(1200).height(630).fit('crop').url()],
           },
         }
       : {}),
@@ -128,15 +127,10 @@ export default async function ContentPage({params, searchParams}: Props) {
                 orgTheme={entry.template === 'initiative' ? themeForEntry(entry) : undefined}
                 priority
                 sizes="(max-width: 44rem) 95vw, 66vw"
-                alt={entry.imageAlt}
               />
             </div>
-            {typeof entry.image !== 'string' && (entry.image.caption || entry.image.credit) && (
-              <figcaption>
-                {entry.image.caption}
-                {entry.image.caption && entry.image.credit ? ' · ' : ''}
-                {entry.image.credit}
-              </figcaption>
+            {typeof entry.image !== 'string' && entry.image.caption && (
+              <figcaption>{entry.image.caption}</figcaption>
             )}
           </figure>
         )}
