@@ -34,7 +34,7 @@ body {
   margin: 0;
   color: var(--ink);
   background: var(--paper);
-  font: 400 var(--type-body)/1.35 var(--body);
+  @include publisher-type;
   -webkit-font-smoothing: antialiased;
 }
 button,
@@ -78,8 +78,7 @@ h2,
 h3,
 h4 {
   @include display;
-  letter-spacing: var(--heading-tracking);
-  line-height: 1;
+  line-height: var(--leading-title);
 }
 strong {
   font-weight: 700;
@@ -109,26 +108,27 @@ strong {
   }
 }
 .display-link {
-  @include display-type(label, 1.1);
+  @include display-type(label);
+  display: inline-block;
   text-decoration: none;
 }
 .lead {
-  font: 400 var(--type-title)/1.12 var(--lead);
+  font: 400 var(--type-title)/var(--leading-title) var(--lead);
   text-transform: none;
 }
 .caption,
 figcaption {
-  font: 400 var(--type-caption)/1.4 var(--caption);
+  @include publisher-type;
 }
 .external-arrow {
-  font: 400 0.65em/1 var(--caption);
+  font: 400 0.65em/1 var(--body);
   white-space: nowrap;
 }
 .seed-dot {
   @include olive-dot;
   width: 1cap;
   height: 1cap;
-  mask-position: right center;
+  mask-position: left center;
   margin-inline-end: 0.12em;
   vertical-align: baseline;
 }
@@ -162,13 +162,13 @@ figcaption {
   }
 }
 .content-card__category {
-  font: 400 var(--type-caption)/1.3 var(--caption);
+  @include publisher-type;
   margin: 0.6rem 0 0.3rem;
 }
 .content-card__summary {
   margin: 0.65rem auto 0;
   max-width: 21rem;
-  font-size: var(--type-body);
+  @include type-size(body);
 }
 .content-card__image {
   position: relative;
@@ -235,7 +235,7 @@ figcaption {
     margin-inline: auto;
   }
   blockquote > p {
-    font: 400 var(--type-display)/0.94 var(--lead);
+    font: 400 var(--type-display)/var(--leading-display) var(--lead);
     text-transform: none;
     letter-spacing: var(--heading-tracking);
     text-wrap: balance;
@@ -247,7 +247,7 @@ figcaption {
     align-items: center;
     gap: 0.7rem;
     margin-top: 1.3rem;
-    font: 400 var(--type-caption)/1.4 var(--caption);
+    @include publisher-type;
   }
 }
 .history {
@@ -261,14 +261,14 @@ figcaption {
     padding: 0;
   }
   h3 {
-    font-size: var(--type-title);
+    @include type-size(title);
   }
   p {
     margin: 0.8rem 0;
-    font-size: var(--type-body);
+    @include type-size(body);
   }
   .display-link {
-    font-size: var(--type-label);
+    @include type-size(label);
   }
 }
 .section-heading {
@@ -288,7 +288,7 @@ figcaption {
 .interior {
   padding-top: 3rem;
   h1 {
-    font-size: var(--type-display);
+    @include type-size(display);
     text-align: center;
   }
   > p:not(.breadcrumbs) {
@@ -315,7 +315,7 @@ figcaption {
   flex-wrap: wrap;
   justify-content: center;
   gap: 0.6rem 1.4rem;
-  font-size: var(--type-label);
+  @include type-size(label);
   margin-top: 1rem;
   a {
     text-decoration: none;
@@ -362,16 +362,16 @@ figcaption {
     margin-top: 1rem;
   }
   h2 {
-    font-size: var(--type-title);
+    @include type-size(title);
     margin-top: 2.5rem;
   }
   h3 {
-    font: 400 var(--type-title)/1.1 var(--lead);
+    font: 400 var(--type-title)/var(--leading-title) var(--lead);
     text-transform: none;
     margin-top: 1.75rem;
   }
   blockquote {
-    font: 400 var(--type-title)/1.15 var(--lead);
+    font: 400 var(--type-title)/var(--leading-title) var(--lead);
     text-transform: none;
   }
   ul,
@@ -396,7 +396,7 @@ figcaption {
   }
 }
 .mission-heading {
-  font-size: var(--type-title);
+  @include type-size(title);
   text-align: center;
   margin: 1rem 0 1.5rem;
 }
@@ -407,7 +407,7 @@ figcaption {
   scroll-margin-top: 2rem;
   h2 {
     text-align: center;
-    font-size: var(--type-title);
+    @include type-size(title);
     margin-bottom: 1.3rem;
   }
   .lead {
@@ -423,7 +423,7 @@ figcaption {
   gap: 2rem;
   margin-top: 2rem;
   h3 {
-    font-size: var(--type-title);
+    @include type-size(title);
     text-align: center;
     margin-bottom: 1rem;
   }
@@ -465,14 +465,14 @@ figcaption {
     align-items: center;
     gap: 1rem;
     padding: 1rem 0;
-    font: 400 var(--type-label)/1.1 var(--lead);
+    font: 400 var(--type-label)/var(--leading-label) var(--lead);
     list-style: none;
     &::-webkit-details-marker {
       display: none;
     }
     span::after {
       content: '+';
-      font-family: var(--caption);
+      font-family: var(--body);
     }
   }
   details[open] summary span::after {
@@ -506,7 +506,7 @@ figcaption {
     padding: 2rem;
   }
   h2 {
-    font-size: var(--type-title);
+    @include type-size(title);
   }
   p {
     margin-block: 1rem;
@@ -547,17 +547,16 @@ figcaption {
     padding-top: 1rem;
   }
   .content-card h2 {
-    font-size: var(--type-title);
+    @include type-size(title);
   }
   .content-card__image {
     width: 78%;
   }
   .content-card__category {
-    font-size: var(--type-body);
+    @include type-size(body);
   }
   .content-card__summary {
-    font-size: var(--type-body);
-    line-height: 1.3;
+    @include type-size(body);
   }
   .content-card--3 .content-card__image {
     width: 90%;
@@ -567,10 +566,10 @@ figcaption {
     padding: 2rem 1.3rem;
     margin-top: 2rem;
     blockquote > p {
-      font-size: var(--type-display);
+      @include type-size(display);
     }
     footer {
-      font-size: var(--type-body);
+      @include type-size(body);
       gap: 0.5rem;
     }
   }
@@ -584,7 +583,7 @@ figcaption {
   .section-heading {
     justify-content: space-between;
     h2 {
-      font-size: var(--type-display);
+      @include type-size(display);
     }
     > a {
       position: static;
@@ -593,22 +592,22 @@ figcaption {
   .interior {
     padding-top: 2.5rem;
     h1 {
-      font-size: var(--type-display);
+      @include type-size(display);
     }
   }
   .page-heading {
     margin-bottom: 2rem;
     > .lead {
-      font-size: var(--type-title);
+      @include type-size(title);
     }
   }
   .subnav {
     gap: 0.7rem 1rem;
-    font-size: var(--type-label);
+    @include type-size(label);
     margin-top: 1rem;
   }
   .interior__intro {
-    font-size: var(--type-title);
+    @include type-size(title);
   }
   .interior__image {
     width: calc(100% - 2rem);
@@ -623,7 +622,7 @@ figcaption {
   .page-section {
     margin-top: 2.5rem;
     h2 {
-      font-size: var(--type-title);
+      @include type-size(title);
     }
   }
   .section-columns {
@@ -636,7 +635,7 @@ figcaption {
   .map-links {
     gap: 0.8rem 1.2rem;
     .display-link {
-      font-size: var(--type-label);
+      @include type-size(label);
     }
   }
   .giving-levels {
@@ -673,7 +672,7 @@ figcaption {
 .foundation-page {
   .mission-heading,
   .page-section h2 {
-    font-size: var(--type-section);
+    @include type-size(section);
   }
 
   .interior__intro,
@@ -684,7 +683,7 @@ figcaption {
   }
 
   .subnav {
-    font-size: var(--type-title);
+    @include type-size(title);
     [aria-current='page'] {
       position: relative;
       isolation: isolate;
@@ -705,7 +704,7 @@ figcaption {
   }
 
   .interior__intro {
-    font: 400 calc(var(--type-body) * 1.467)/1.23 var(--body);
+    @include publisher-type(publisher-lead);
     margin-bottom: 1em;
   }
 
@@ -719,7 +718,7 @@ figcaption {
 
   @media (max-width: 44rem) {
     .subnav {
-      font-size: var(--type-label);
+      @include type-size(label);
     }
     .interior__intro,
     .interior__body {

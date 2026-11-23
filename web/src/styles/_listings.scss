@@ -4,7 +4,7 @@
 .listing,
 .listing-story {
   padding-top: max(1.75rem, site-size(4));
-  font-size: var(--type-body);
+  @include type-size(body);
 }
 
 .listing-head {
@@ -14,12 +14,11 @@
   margin: 0 var(--gutter);
   pointer-events: none;
   h1 {
-    font-size: var(--type-display);
-    line-height: 0.89;
+    @include type-size(display);
     text-wrap: balance;
   }
   h2 {
-    font-size: var(--type-section);
+    @include type-size(section);
     margin-top: 0.12em;
   }
   a,
@@ -36,10 +35,9 @@
   justify-content: center;
   gap: 0.35em 0.9em;
   @include display;
-  line-height: 1;
 }
 .listing-tabs {
-  font-size: var(--type-title);
+  @include type-size(title);
   margin-top: 0.4em;
   a {
     position: relative;
@@ -56,7 +54,7 @@
   }
 }
 .listing-filters {
-  font-size: var(--type-label);
+  @include type-size(label);
   margin-top: 0.55em;
 }
 .listing-filter {
@@ -68,7 +66,7 @@
     width: 100%;
     opacity: 0;
     cursor: pointer;
-    font: 400 calc(1rem * var(--publisher-scale)) var(--body);
+    @include publisher-type;
   }
   &:focus-within {
     outline: 0.125rem solid currentColor;
@@ -80,7 +78,7 @@
 }
 .programme-month > h2,
 .programme-calendar h2 {
-  font-size: var(--type-section);
+  @include type-size(section);
   margin: 0 0 0.6em;
   text-align: center;
 }
@@ -92,8 +90,7 @@
 .listing-card {
   text-align: center;
   h3 {
-    font-size: var(--type-title);
-    line-height: 0.88;
+    @include type-size(title);
     margin: 0.46em 0 0;
     text-wrap: balance;
   }
@@ -123,7 +120,7 @@
   gap: 0 0.7em;
   flex-wrap: wrap;
   margin-top: 0.85em;
-  font: 400 var(--type-body)/1.25 var(--body);
+  @include publisher-type;
   &--event {
     flex-direction: column;
     white-space: pre-wrap;
@@ -148,9 +145,7 @@
   justify-content: space-between;
   margin: max(2rem, site-size(4)) var(--gutter);
   gap: var(--gutter);
-  @include display;
-  font-size: var(--type-title);
-  line-height: 1;
+  @include display-type(title);
   a {
     text-decoration: none;
   }
@@ -173,16 +168,14 @@
     flex-wrap: wrap;
     gap: 0.65em;
     margin-bottom: 1em;
-    @include display;
-    font-size: var(--type-label);
+    @include display-type(label);
     h2 {
       margin: 0;
     }
   }
   &__weekdays {
     text-align: center;
-    @include display;
-    font-size: var(--type-label);
+    @include display-type(label);
   }
   &__weeks {
     border-top: 0.065rem solid currentColor;
@@ -210,8 +203,7 @@
   }
   &__point {
     display: block;
-    font-size: var(--type-caption);
-    line-height: 1.1;
+    @include type-size(body);
     margin-block: 0.4em;
     overflow-wrap: anywhere;
     text-decoration-color: var(--org-dark);
@@ -240,7 +232,7 @@
       border-top: 0.065rem solid currentColor;
     }
     h3 {
-      font-size: var(--type-title);
+      @include type-size(title);
       margin-bottom: 0.15em;
     }
     time {
@@ -260,8 +252,7 @@
   justify-content: center;
   text-align: center;
   h2 {
-    font-size: var(--type-display);
-    line-height: 0.87;
+    @include type-size(display);
     max-width: 11em;
     text-wrap: balance;
   }
@@ -285,8 +276,7 @@
     max-width: 20em;
   }
   &__read {
-    @include display;
-    font-size: var(--type-label);
+    @include display-type(label);
     text-decoration: none;
     margin-top: 0.6em;
   }
@@ -325,9 +315,7 @@
     justify-content: space-between;
     pointer-events: none;
     button {
-      @include display;
-      font-size: var(--type-section);
-      line-height: 1;
+      @include display-type(section);
       pointer-events: auto;
     }
   }
@@ -340,11 +328,11 @@
   &__body {
     grid-column: 2;
     .lead {
-      font-size: var(--type-label);
+      @include type-size(label);
       margin-bottom: 0.75em;
     }
     .rich-text {
-      font-size: var(--type-body);
+      @include type-size(body);
     }
   }
 }
@@ -363,7 +351,7 @@
   }
   &__schedule {
     text-align: center;
-    font: 400 var(--type-title)/0.96 var(--display);
+    font: 400 var(--type-title)/var(--leading-title) var(--display);
     text-transform: uppercase;
     text-wrap: balance;
   }
@@ -380,8 +368,7 @@
     text-decoration: none;
   }
   h2 {
-    font-size: var(--type-title);
-    line-height: 0.88;
+    @include type-size(title);
     text-wrap: balance;
     max-width: 13em;
     margin: 0 auto;
@@ -390,13 +377,11 @@
   &__caption {
     display: inline-block;
     margin-top: 0.6em;
-    font: 400 var(--type-body)/1.2 var(--body);
+    @include publisher-type;
     white-space: pre-wrap;
   }
   &__category {
-    @include display;
-    font-size: var(--type-label);
-    line-height: 0.95;
+    @include display-type(label);
   }
   .content-card__image {
     width: 51%;
@@ -500,8 +485,7 @@
   margin: 3rem var(--gutter) 0;
   > h2 {
     text-align: center;
-    font-size: var(--type-display);
-    line-height: 1;
+    @include type-size(display);
     margin-bottom: 0.4em;
   }
 }
@@ -510,7 +494,7 @@
   text-align: center;
 }
 .news-story .listing-story__body .rich-text blockquote {
-  font: 400 var(--type-section)/0.95 var(--lead);
+  font: 400 var(--type-section)/var(--leading-section) var(--lead);
   text-transform: none;
   text-align: center;
   margin: 1.2em -12%;
@@ -536,11 +520,11 @@
     padding: var(--gutter);
     background: var(--pale-green);
     h2 {
-      font-size: var(--type-label);
+      @include type-size(label);
       margin: 0;
     }
     h3 {
-      font-size: var(--type-title);
+      @include type-size(title);
     }
     section {
       margin-top: 1em;
@@ -560,7 +544,7 @@
   &__controls .calendar-month-select {
     cursor: pointer;
     position: relative;
-    font-size: var(--type-title);
+    @include type-size(title);
     select {
       position: absolute;
       inset: 0;

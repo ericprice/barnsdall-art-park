@@ -13,23 +13,21 @@
   --site-width: #{$site-width};
   --heading-tracking: -0.02em;
   --gutter: max(1rem, #{site-size(2)});
-  --display: 'Barnsdall Low', var(--font-publisher-sans), sans-serif;
+  --display: 'Barnsdall Low', var(--body);
   --lead: 'Barnsdall High', var(--font-publisher), serif;
   --body: var(--font-publisher), Georgia, serif;
-  --caption: var(--font-publisher-sans), Arial, sans-serif;
 }
 
 @mixin display {
   font-family: var(--display);
   font-weight: 400;
+  letter-spacing: var(--heading-tracking);
   text-transform: uppercase;
 }
 
-@mixin display-type($step, $leading: 1) {
+@mixin display-type($step) {
   @include display;
-  font-size: var(--type-#{$step});
-  line-height: $leading;
-  letter-spacing: var(--heading-tracking);
+  @include type-size($step);
 }
 
 // Barnsdall Low is wider than the display face on the 1024-wide boards.
@@ -41,5 +39,14 @@
   --publisher-scale: 0.75;
   --type-body: calc(max(1rem, #{site-size(1.465)}) * var(--publisher-scale));
   --type-publisher-lead: calc(var(--type-label) * var(--publisher-scale));
-  --type-caption: var(--type-body);
+  --type-compact-label: clamp(0.875rem, 4.4vw, var(--type-label));
+
+  // Baseline distances divided by type sizes on the original design plates.
+  --leading-display: calc(69 / 84);
+  --leading-section: calc(46 / 54);
+  --leading-title: calc(28 / 34);
+  --leading-label: calc(21 / 24);
+  --leading-compact-label: var(--leading-label);
+  --leading-body: calc(20 / 15);
+  --leading-publisher-lead: 1.2;
 }

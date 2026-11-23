@@ -17,7 +17,7 @@
   }
   .support-action {
     display: inline-block;
-    font: 400 var(--type-body)/1.25 var(--body);
+    @include publisher-type;
     text-decoration: underline;
     text-underline-offset: 0.18em;
     &::before {
@@ -29,9 +29,7 @@
     }
   }
   .support-label {
-    @include display;
-    font-size: var(--type-label);
-    line-height: 1;
+    @include display-type(label);
     margin: 0;
   }
 }
@@ -48,9 +46,7 @@
 .supporter-year {
   border-top: 0.05rem solid #989898;
   summary {
-    @include display;
-    line-height: 1;
-    font-size: var(--type-section);
+    @include display-type(section);
     padding: 0.22em 1em;
     text-align: center;
     list-style: none;
@@ -77,7 +73,7 @@
   }
   h2 {
     text-align: center;
-    font-size: var(--type-label);
+    @include type-size(label);
     margin-bottom: 1em;
   }
   ul {
@@ -91,7 +87,7 @@
     text-align: center;
   }
   li {
-    font: 400 var(--type-body)/1.25 var(--body);
+    @include publisher-type;
     break-inside: avoid;
     overflow-wrap: anywhere;
   }
@@ -145,13 +141,12 @@
   }
   h2,
   h3 {
-    font-size: var(--type-title);
-    line-height: 0.95;
+    @include type-size(title);
   }
   article > p:not(.support-label) {
     margin: 0.65em auto;
     max-width: 20em;
-    line-height: 1.25;
+    line-height: var(--leading-body);
   }
 }
 .initiative-shape {
@@ -190,7 +185,7 @@
 .support-initiatives.is-completed {
   margin-block: 4rem;
   > h2 {
-    font-size: var(--type-section);
+    @include type-size(section);
     text-align: center;
     margin-bottom: 2rem;
   }
@@ -212,16 +207,12 @@
   }
   .donation-heading h2,
   h3 {
-    font-size: var(--type-title);
+    @include type-size(title);
     text-align: center;
   }
   .donation-heading .support-label {
-    font-size: var(--type-title);
+    @include type-size(title);
     text-align: center;
-  }
-  .donation-heading h2,
-  h3 {
-    line-height: 1;
   }
   .donation-heading .support-label + h2 {
     color: var(--olive);
@@ -248,7 +239,7 @@
     }
     .support-label + h2 {
       color: var(--ink);
-      font-size: var(--type-display);
+      @include type-size(display);
     }
     .donation-copy {
       max-width: 60%;
@@ -277,7 +268,7 @@
     margin-top: 2rem;
   }
   .donation-level-grid h3 {
-    font-size: var(--type-label);
+    @include type-size(label);
   }
   .donation-level-grid .support-action {
     margin-top: 0.6rem;
@@ -286,7 +277,7 @@
     margin-top: 4rem;
   }
   .donation-section--ways .donation-heading h2 {
-    font-size: var(--type-section);
+    @include type-size(section);
   }
   .giving-method {
     margin-block: 1.5rem;

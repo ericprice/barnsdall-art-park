@@ -1,3 +1,5 @@
+@use '../styles/scale' as *;
+
 .visitor-photo {
   position: relative;
   aspect-ratio: 1.9;
@@ -20,17 +22,17 @@
   width: min(100%, 76rem);
   margin-inline: auto;
   padding: 3rem var(--gutter) 6rem;
-  font: 400 var(--type-body)/1.35 var(--body);
+  @include publisher-type;
   h1 {
-    font-size: var(--type-display);
+    @include type-size(display);
   }
   h2 {
-    font-size: var(--type-label);
+    @include type-size(label);
     margin-bottom: 0.8rem;
   }
   figcaption {
     margin-top: 0.4rem;
-    font: 400 var(--type-caption)/1.3 var(--caption);
+    @include publisher-type;
   }
   section {
     scroll-margin-top: 2rem;
@@ -39,7 +41,7 @@
 .visitor-wire__lead {
   margin: 1.5rem 0 2.5rem;
   max-width: 42rem;
-  font: 400 var(--type-publisher-lead)/1.18 var(--body);
+  @include publisher-type(publisher-lead);
 }
 .visitor-arrival {
   padding-block: 3rem;
@@ -48,7 +50,7 @@
     text-align: center;
   }
   h1 {
-    font-size: var(--type-display);
+    @include type-size(display);
   }
   .visitor-summary,
   .visitor-prose {
@@ -56,10 +58,10 @@
     margin: 0 auto;
   }
   .visitor-summary {
-    font: 400 var(--type-publisher-lead)/1.15 var(--body);
+    @include publisher-type(publisher-lead);
   }
   .visitor-prose {
-    font: 400 var(--type-body)/1.3 var(--body);
+    @include publisher-type;
   }
   .visitor-prose section {
     margin-top: 2.5rem;
@@ -67,7 +69,7 @@
   .visitor-prose h2 {
     margin-bottom: 0.7rem;
     text-align: center;
-    font-size: var(--type-title);
+    @include type-size(title);
   }
   .visitor-links a {
     color: inherit;
@@ -84,7 +86,7 @@
     justify-content: center;
     gap: 1rem;
     margin-top: 0.5rem;
-    font: 400 var(--type-label)/1 var(--display);
+    font: 400 var(--type-label)/var(--leading-label) var(--display);
     text-transform: uppercase;
   }
   .visitor-map li {
@@ -104,8 +106,7 @@
   }
 }
 .visitor-policies .visitor-summary {
-  font-size: var(--type-body);
-  line-height: 1.3;
+  @include type-size(body);
 }
 .visitor-policies .visitor-prose > .rich-text {
   margin-top: 1rem;
@@ -179,7 +180,7 @@
   margin-top: 2rem;
 }
 .visitor-kicker {
-  font: 400 var(--type-caption)/1.2 var(--caption);
+  @include publisher-type;
   text-transform: uppercase;
   margin: 0 0 1rem;
 }
@@ -216,7 +217,7 @@
     padding: 0.5em 0.8em;
     background: var(--green);
     color: white;
-    font: 400 var(--type-label)/1 var(--display);
+    font: 400 var(--type-label)/var(--leading-label) var(--display);
     text-transform: uppercase;
   }
 }
@@ -232,7 +233,7 @@
       width: calc(100% - 2 * var(--gutter));
     }
     .visitor-map .visitor-links {
-      font-size: var(--type-label);
+      @include type-size(label);
     }
   }
   .park-directory__cards,
@@ -276,7 +277,7 @@
     border-top: 0.0625rem solid currentColor;
   }
   h3 {
-    font-size: var(--type-label);
+    @include type-size(label);
   }
   a {
     display: inline-block;
@@ -289,7 +290,7 @@
   }
 }
 .visitor-crumb {
-  font: 400 var(--type-caption)/1.3 var(--caption);
+  @include publisher-type;
   margin-bottom: 1.5rem;
 }
 .visitor-crumb a {

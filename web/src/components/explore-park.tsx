@@ -20,6 +20,7 @@ export function ExplorePark({places, title}: {places: ContentEntry[]; title: str
     const index = ids.indexOf(place.id)
     return {place, photoDot: dots[index % dots.length], labelDot: dots[(index + 5) % dots.length]}
   })
+  const descriptionDot = dots[(ids.indexOf(selected.id) + 10) % dots.length]
 
   return (
     <section className="explore" aria-labelledby="explore-heading">
@@ -53,7 +54,7 @@ export function ExplorePark({places, title}: {places: ContentEntry[]; title: str
               href={place.href}
               style={
                 {
-                  '--label-dot': `url("/identity/dots/${labelDot}.svg#label")`,
+                  '--label-dot': `url("/identity/dots/${labelDot}.svg?fit=label")`,
                 } as CSSProperties
               }
               data-current={selected.id === place.id}
@@ -80,7 +81,11 @@ export function ExplorePark({places, title}: {places: ContentEntry[]; title: str
       </ul>
       <p className="explore__description" id="explore-description">
         <Link href={selected.href}>
-          <span className="small-seed" aria-hidden="true" />
+          <span
+            className="small-seed"
+            style={{'--olive-dot': `url("/identity/dots/${descriptionDot}.svg")`} as CSSProperties}
+            aria-hidden="true"
+          />
           {selected.summary || selected.title}
         </Link>
       </p>

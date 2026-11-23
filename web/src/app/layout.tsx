@@ -17,12 +17,6 @@ const publisher = localFont({
   variable: '--font-publisher',
   display: 'swap',
 })
-const publisherSans = localFont({
-  src: '../fonts/publisher-sans.woff2',
-  variable: '--font-publisher-sans',
-  weight: '400',
-  display: 'swap',
-})
 
 export async function generateMetadata(): Promise<Metadata> {
   const {settings} = await getSite()
@@ -39,11 +33,7 @@ export async function generateMetadata(): Promise<Metadata> {
 export default async function RootLayout({children}: {children: React.ReactNode}) {
   const {settings} = await getSite()
   return (
-    <html
-      lang="en"
-      data-scroll-behavior="smooth"
-      className={`${publisher.variable} ${publisherSans.variable}`}
-    >
+    <html lang="en" data-scroll-behavior="smooth" className={publisher.variable}>
       <body>
         <a href="#main-content" className="skip-link">
           {settings.interfaceText.skip}

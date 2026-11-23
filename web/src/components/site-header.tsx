@@ -159,7 +159,11 @@ function Navigation({pathname, settings, initialSunset}: HeaderProps & {pathname
                 <Link href={settings.donationLink.href}>{settings.donationLink.label}</Link>
               )}
               {settings.subscribeLink?.href && (
-                <a href={settings.subscribeLink.href} onClick={close}>
+                <a
+                  className="park-utility__subscribe"
+                  href={settings.subscribeLink.href}
+                  onClick={close}
+                >
                   {settings.subscribeLink.label}
                 </a>
               )}

@@ -4,3 +4,13 @@ $site-width: 75rem;
 @function site-size($percent) {
   @return min($percent * 1vw, $site-width * $percent * 0.01);
 }
+
+@mixin type-size($step) {
+  font-size: var(--type-#{$step});
+  line-height: var(--leading-#{$step});
+}
+
+@mixin publisher-type($step: body) {
+  font: 400 var(--type-#{$step})/var(--leading-#{$step}) var(--body);
+  text-wrap: pretty;
+}

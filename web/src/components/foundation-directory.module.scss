@@ -6,15 +6,15 @@
   text-align: center;
 
   h2 {
-    font-size: var(--type-section);
+    @include type-size(section);
   }
 
   h3 {
-    font-size: var(--type-title);
+    @include type-size(title);
   }
 
   h4 {
-    font-size: var(--type-label);
+    @include type-size(label);
   }
 
   :where(ul) {
