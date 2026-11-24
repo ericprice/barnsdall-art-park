@@ -113,7 +113,6 @@ $home-base-gap: max(2rem, site-size(4));
   );
   inset-block-end: max(var(--gutter), env(safe-area-inset-bottom));
   width: min(max(8rem, #{site-size(20.5)}), 38svh);
-  mix-blend-mode: multiply;
   aspect-ratio: 0.95;
   container-type: inline-size;
   display: grid;

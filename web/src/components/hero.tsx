@@ -107,7 +107,7 @@ export function Hero({slides, celebration}: Pick<SiteContent['home'], 'slides' |
                   orgTheme={themeForEntry(story)}
                   image={story.image}
                   priority={i === 0}
-                  sizes="(max-width: 44rem) 95vw, (max-width: 75rem) 75vw, 56.25rem"
+                  sizes="(max-width: 44rem) 95vw, (max-width: 64rem) 75vw, 48rem"
                 />
               </div>
             </div>
