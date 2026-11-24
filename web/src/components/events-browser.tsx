@@ -25,7 +25,7 @@ export function EventsBrowser({
   events: ContentEntry[]
   params: ListingParams
   text: InterfaceText
-  quote?: SiteContent['home']['quote']
+  quote: SiteContent['settings']['quotes']
 }) {
   const today = eventDay(new Date().toISOString())!
   const archive = params.period === 'archive'
@@ -72,7 +72,11 @@ export function EventsBrowser({
       <nav className="listing-paging" aria-label="Event listings">
         {!archive && <Link href={href({period: 'archive'})}>‹‹ {text.previousEvents}</Link>}
         {groups.length > count && (
-          <Link className="listing-paging__next" href={href({page: String(count / 2 + 1)})} scroll={false}>
+          <Link
+            className="listing-paging__next"
+            href={href({page: String(count / 2 + 1)})}
+            scroll={false}
+          >
             {text.loadMore} »
           </Link>
         )}

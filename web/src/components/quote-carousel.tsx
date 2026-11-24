@@ -5,7 +5,10 @@ import type {SiteContent} from '@/lib/content'
 import {DotLink} from './action-links'
 import {CarouselChevron} from './carousel-chevron'
 
-type Quote = Pick<NonNullable<SiteContent['home']['quote']>, 'attribution' | 'link'> & {
+type Quote = Pick<
+  NonNullable<SiteContent['settings']['quotes']>[number],
+  'attribution' | 'link'
+> & {
   text: string
   dotIndex: number
 }

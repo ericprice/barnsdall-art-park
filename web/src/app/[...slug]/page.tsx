@@ -32,11 +32,7 @@ export async function generateMetadata({params}: Props): Promise<Metadata> {
   const path = `/${slug.join('/')}`
   const site = await getSite()
   const listingTitle =
-    path === '/whats-on'
-      ? interfaceText.whatsOn
-      : path === '/news'
-        ? interfaceText.news
-        : undefined
+    path === '/whats-on' ? interfaceText.whatsOn : path === '/news' ? interfaceText.news : undefined
   const entry = listingTitle ? undefined : await getEntry(path)
   return {
     title: listingTitle || entry?.title || interfaceText.notFound,
@@ -61,7 +57,7 @@ export default async function ContentPage({params, searchParams}: Props) {
         text={interfaceText}
         events={site.events}
         params={await searchParams}
-        quote={site.home.quote}
+        quote={site.settings.quotes}
       />
     )
   if (path === '/news')
@@ -70,26 +66,26 @@ export default async function ContentPage({params, searchParams}: Props) {
         text={interfaceText}
         articles={site.articles}
         params={await searchParams}
-        quote={site.home.quote}
+        quote={site.settings.quotes}
       />
     )
   const entry = await getEntry(path)
   if (!entry) notFound()
   const external = /^https?:\/\//.test(entry.href)
   if (path.startsWith('/park/') && !external) return <ParkLandscape entry={entry} site={site} />
-  if (path === '/visit/rentals') return <RentalsPage entry={entry} />
-  if (path === '/contact') return <ContactPage entry={entry} />
-  if (path === '/support/olive-grove') return <OliveGrovePage entry={entry} />
-  if (path === '/100') return <CentennialPage entry={entry} />
-  if (entry.template === 'visit' || path === '/visit' || path === '/visit/policies')
+  if (entry.template === 'rentals') return <RentalsPage entry={entry} />
+  if (entry.template === 'contact') return <ContactPage entry={entry} />
+  if (entry.template === 'restoration') return <OliveGrovePage entry={entry} />
+  if (entry.template === 'centennial') return <CentennialPage entry={entry} />
+  if (entry.template === 'visit' || entry.template === 'policies')
     return <VisitPage entry={entry} site={site} />
-  if (entry.template === 'timeline' || path === '/history') return <HistoryTimeline entry={entry} />
-  if (external) redirect(entry.href)
+  if (entry.template === 'timeline') return <HistoryTimeline entry={entry} />
+  if (external || (path.startsWith('/news/') && entry.href !== path)) redirect(entry.href)
   if (path.startsWith('/whats-on/') || path.startsWith('/news/'))
     return <ListingStory entry={entry} site={site} event={path.startsWith('/whats-on/')} />
-  if (['/support/initiatives', '/support/supporters', '/support/donate'].includes(path))
+  if (['initiatives', 'supporters', 'donate'].includes(entry.template || ''))
     return <SupportSubpage entry={entry} site={site} path={path} />
-  const foundation = entry.template === 'foundation' || path === '/support'
+  const foundation = entry.template === 'foundation'
   return (
     <main
       id="main-content"
@@ -101,11 +97,7 @@ export default async function ContentPage({params, searchParams}: Props) {
           path={path}
           settings={site.settings}
         />
-        {foundation && (
-          <h2 className="mission-heading">
-            {entry.foundationHeadings?.mission ?? foundationHeadings.mission}
-          </h2>
-        )}
+        {foundation && <h2 className="mission-heading">{foundationHeadings.mission}</h2>}
         {entry.summary && <p className="interior__intro lead">{entry.summary}</p>}
         {entry.image && (
           <figure className="interior-figure">
@@ -134,33 +126,10 @@ export default async function ContentPage({params, searchParams}: Props) {
             </p>
           )}
         </div>
-        <PageSections
-          sections={entry.sections?.filter((section) => {
-            if (!foundation) return true
-            if (section.anchor === 'partners') return entry.partners == null
-            if (section.anchor === 'leadership')
-              return entry.boardMembers == null && entry.staffMembers == null
-            return true
-          })}
-        />
+        <PageSections sections={entry.sections} />
         {foundation && <FoundationDirectory entry={entry} />}
-        {entry.givingLevels?.length ? (
-          <section className="giving-levels" aria-label="Annual giving levels">
-            {entry.givingLevels.map((level) => (
-              <div key={level._key}>
-                <h2 className="card-heading">{level.title}</h2>
-                <p>{level.summary}</p>
-                {level.link?.href && (
-                  <DisplayLink href={level.link.href} arrow="↗">
-                    {level.link.label}
-                  </DisplayLink>
-                )}
-              </div>
-            ))}
-          </section>
-        ) : null}
       </article>
-      <QuoteBand quote={site.home.quote} />
+      <QuoteBand quote={site.settings.quotes} />
     </main>
   )
 }

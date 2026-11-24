@@ -40,7 +40,9 @@ export function RichText({value, orgTheme}: {value?: RichTextValue; orgTheme?: O
                     <DotLink href={link.href} download={link.download || undefined}>
                       {link.label}
                     </DotLink>
-                  ) : children}
+                  ) : (
+                    children
+                  )}
                 </p>
               )
             },
@@ -78,8 +80,8 @@ export function RichText({value, orgTheme}: {value?: RichTextValue; orgTheme?: O
               )
             },
             link: ({value, children}) => {
-              const href = (value && linkDestination(value)) || '#'
-              return <a href={href}>{children}</a>
+              const href = value && linkDestination(value)
+              return href ? <a href={href}>{children}</a> : <>{children}</>
             },
           },
         }}

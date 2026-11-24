@@ -58,7 +58,6 @@ export function filterEvents(
   events: ContentEntry[],
   options: {
     q?: string
-    kind?: string
     from?: string
     to?: string
     archive?: boolean
@@ -74,7 +73,6 @@ export function filterEvents(
         .includes(options.q.toLowerCase())
     )
       return false
-    if (options.kind && event.kind !== options.kind) return false
     if (options.from || options.to)
       return overlapsDays(event, options.from || '0001-01-01', options.to || '9999-12-31')
     const end = eventBounds(event)?.end

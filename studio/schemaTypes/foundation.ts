@@ -1,7 +1,6 @@
 import {defineArrayMember, defineField, defineType} from 'sanity'
 import {UserIcon} from '@sanity/icons/User'
 import {ImageIcon} from '@sanity/icons/Image'
-import {foundationHeadings} from '../../shared/foundation'
 
 export const foundationPerson = defineType({
   name: 'foundationPerson',
@@ -54,18 +53,6 @@ export const directoryFields = [
     title,
     type: 'array',
     of: [defineArrayMember({type})],
-    hidden: ({parent, value}) =>
-      parent?.template !== 'foundation' && parent?.slug?.current !== 'support' && value == null,
+    hidden: ({document}) => document?.template !== 'foundation',
   }),
 )
-
-export const foundationHeadingsField = defineField({
-  name: 'foundationHeadings',
-  title: 'Foundation section headings',
-  type: 'object',
-  options: {collapsible: true, collapsed: true},
-  fields: Object.entries(foundationHeadings).map(([name, title]) =>
-    defineField({name, title, type: 'string'}),
-  ),
-  hidden: ({parent}) => parent?.template !== 'foundation' && parent?.slug?.current !== 'support',
-})

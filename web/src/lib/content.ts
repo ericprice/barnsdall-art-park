@@ -1,4 +1,6 @@
-import {bodyForLayout, type PageSection} from './body-layout'
+import {historyPageId} from '../../../shared/page-layouts'
+import {contentPath, resolveInternalLinks} from './internal-links'
+import {pageSections, type PageSection} from './body-layout'
 export type {PageSection} from './body-layout'
 import {
   hostsNewsPage,
@@ -10,7 +12,7 @@ export type {InterfaceText} from '../../../shared/interface'
 import 'server-only'
 import {cache} from 'react'
 import {readContent} from '@/sanity/read'
-import {CONTENT_QUERY, SEARCH_QUERY, SITE_QUERY} from '@/sanity/queries'
+import {CONTENT_QUERY, SEARCH_QUERY, SITE_QUERY, DESTINATIONS_QUERY} from '@/sanity/queries'
 import type {
   CONTENT_QUERY_RESULT,
   SITE_QUERY_RESULT,
@@ -45,13 +47,11 @@ export type ContentEntry = {
   gallery?: (ParkImage & {_key: string})[]
   endsAt?: string | null
   link?: {label?: string; href?: string} | null
-  kind?: string | null
   subtitle?: string
   sidebarLinks?: Place['sidebarLinks']
   template?: Page['template']
   relatedStoryIds?: string[]
   sections?: PageSection[]
-  foundationHeadings?: Page['foundationHeadings']
   boardMembers?: Page['boardMembers']
   staffMembers?: Page['staffMembers']
   partners?: Partner[]
@@ -62,7 +62,6 @@ export type ContentEntry = {
   completedHeading?: Page['completedHeading']
   initiativeCards?: Page['initiativeCards']
   donationSections?: Page['donationSections']
-  givingLevels?: Page['givingLevels']
 }
 export type NavItem = {
   title: string
@@ -77,10 +76,10 @@ export type SiteContent = {
     address: string
     navigation: NavItem[]
     legalLinks: {id: string; label: string; href: string}[]
-    contactEmail?: string
+    quotes: NonNullable<SITE_QUERY_RESULT['settings']>['quotes']
     footerText?: string
     landAcknowledgment?: string
-    socialLinks?: {label?: string; href?: string; _key: string; icon?: ImageSource}[]
+    socialLinks?: {label?: string; href?: string; _key: string}[]
   }
   home: {
     historyLink?: {label?: string; href?: string}
@@ -93,18 +92,6 @@ export type SiteContent = {
       link?: {label?: string; href?: string}
     }[]
     celebration?: {title?: string; link?: {label?: string; href?: string}} | null
-    quote?: {
-      additional?: {
-        _key?: string
-        _type?: string
-        text?: string
-        attribution?: string
-        link?: {label?: string; href?: string}
-      }[]
-      text?: string
-      attribution?: string
-      link?: {label?: string; href?: string}
-    } | null
     timeline: {
       id: string
       year?: string
@@ -118,23 +105,22 @@ export type SiteContent = {
   articles: ContentEntry[]
 }
 
-function hrefFor(type: string, slug?: string) {
-  const prefix =
-    type === 'place' ? '/park' : type === 'event' ? '/whats-on' : type === 'article' ? '/news' : ''
-  return slug ? `${prefix}/${slug}` : '/'
-}
+const withLinks = <T>(data: T) =>
+  resolveInternalLinks(data, (ids) => readContent(DESTINATIONS_QUERY, {ids}))
 
 type DocumentEntry =
   | NonNullable<CONTENT_QUERY_RESULT>
-  | NonNullable<NonNullable<NonNullable<SITE_QUERY_RESULT['home']>['featuredContent']>[number]>
-  | NonNullable<NonNullable<NonNullable<SITE_QUERY_RESULT['home']>['exploreLocations']>[number]['location']>
+  | NonNullable<NonNullable<NonNullable<SITE_QUERY_RESULT['home']>['features']>[number]['entry']>
+  | NonNullable<
+      NonNullable<NonNullable<SITE_QUERY_RESULT['home']>['exploreLocations']>[number]['location']
+    >
   | SITE_QUERY_RESULT['events'][number]
   | SITE_QUERY_RESULT['articles'][number]
   | SEARCH_QUERY_RESULT[number]
 function hasStoryDestination(doc: DocumentEntry) {
   if (doc._type !== 'article') return true
   const organization = 'organizationRef' in doc ? doc.organizationRef?._ref : undefined
-  const href = 'storyDestination' in doc ? doc.storyDestination?.href : undefined
+  const href = 'externalUrl' in doc ? doc.externalUrl : undefined
   return hostsNewsPage(organization) || isExternalNewsLink(href)
 }
 
@@ -144,46 +130,37 @@ function toEntry(doc: DocumentEntry): ContentEntry {
     id: doc._id,
     title: doc.title || 'Untitled',
     href:
-      'storyDestination' in doc && doc.storyDestination?.href
-        ? doc.storyDestination.href
-        : 'externalUrl' in doc && doc.externalUrl
-          ? doc.externalUrl
-          : hrefFor(doc._type, doc.slug?.current),
+      ('externalUrl' in doc && doc.externalUrl) ||
+      ('targetSlug' in doc && doc.targetSlug && contentPath('page', doc.targetSlug)) ||
+      contentPath(doc._type, doc.slug?.current),
     summary: doc.summary,
     image: 'image' in doc ? doc.image : undefined,
-    ...bodyForLayout(
-      'body' in doc ? doc.body : undefined,
-      hrefFor(doc._type, doc.slug?.current),
-      'template' in doc ? (doc.template ?? undefined) : undefined,
-    ),
+    // During the two-phase migration the previous release still reads the unsectioned body.
+    body:
+      'migrationIntro' in doc
+        ? (doc.migrationIntro as RichText)
+        : 'body' in doc
+          ? doc.body
+          : undefined,
+    sections: 'contentSections' in doc ? pageSections(doc.contentSections) : undefined,
     date:
       doc._type === 'event' && 'startsAt' in doc
         ? doc.startsAt
         : 'publishedAt' in doc
           ? doc.publishedAt
           : null,
-    featureImage: 'featureImage' in doc ? doc.featureImage : undefined,
-    featureBackground: 'featureBackground' in doc ? doc.featureBackground : undefined,
-    featureCaption: 'featureCaption' in doc ? doc.featureCaption : null,
     orgTheme: organizationTheme(owner),
     organization: owner?.title,
     repeatsUntil: 'repeatsUntil' in doc ? doc.repeatsUntil : null,
     allDay: 'allDay' in doc ? doc.allDay : null,
     gallery: 'gallery' in doc ? doc.gallery : undefined,
     endsAt: 'endsAt' in doc ? doc.endsAt : null,
-    link:
-      'sourceLink' in doc
-        ? doc.sourceLink
-        : 'ticketLink' in doc
-          ? doc.ticketLink
-          : null,
-    kind: 'kind' in doc ? doc.kind : null,
+    link: 'sourceLink' in doc ? doc.sourceLink : 'ticketLink' in doc ? doc.ticketLink : null,
     subtitle: 'subtitle' in doc ? doc.subtitle || undefined : undefined,
     sidebarLinks: 'sidebarLinks' in doc ? doc.sidebarLinks : undefined,
     template: 'template' in doc ? doc.template || undefined : undefined,
     relatedStoryIds:
       'relatedStories' in doc ? doc.relatedStories?.map((story) => story._ref) : undefined,
-    foundationHeadings: 'foundationHeadings' in doc ? doc.foundationHeadings : undefined,
     boardMembers: 'boardMembers' in doc ? doc.boardMembers : undefined,
     staffMembers: 'staffMembers' in doc ? doc.staffMembers : undefined,
     partners: 'partners' in doc ? doc.partners : undefined,
@@ -194,7 +171,6 @@ function toEntry(doc: DocumentEntry): ContentEntry {
     completedHeading: 'completedHeading' in doc ? doc.completedHeading : undefined,
     initiativeCards: 'initiativeCards' in doc ? doc.initiativeCards : undefined,
     donationSections: 'donationSections' in doc ? doc.donationSections : undefined,
-    givingLevels: 'givingLevels' in doc ? doc.givingLevels : undefined,
   }
 }
 
@@ -204,10 +180,10 @@ function settingsFor(s: SITE_QUERY_RESULT['settings']): SiteContent['settings'] 
     title: s?.title || '',
     description: s?.description || '',
     address: s?.address || '',
-    contactEmail: s?.contactEmail ?? undefined,
+    quotes: s?.quotes ?? [],
     legalLinks: (s?.legalPages ?? []).flatMap((page) =>
       page?.slug && page.title
-        ? [{id: page._id, label: page.title, href: hrefFor('page', page.slug)}]
+        ? [{id: page._id, label: page.title, href: contentPath('page', page.slug)}]
         : [],
     ),
     footerText: s?.footerText ?? undefined,
@@ -226,7 +202,7 @@ function settingsFor(s: SITE_QUERY_RESULT['settings']): SiteContent['settings'] 
 }
 
 export const getSite = cache(async (): Promise<SiteContent> => {
-  const data = await readContent(SITE_QUERY)
+  const data = await withLinks(await readContent(SITE_QUERY, {historyId: historyPageId}))
   return {
     settings: settingsFor(data.settings),
     events: data.events.map(toEntry),
@@ -243,16 +219,24 @@ export const getSite = cache(async (): Promise<SiteContent> => {
           link: s.link,
         })) || [],
       celebration: data.home?.celebration,
-      quote: data.home?.quote,
       timeline:
-        data.home?.timeline?.map((t) => ({
+        data.milestones?.map((t) => ({
           id: t._key,
-          year: t.year,
-          summary: t.summary,
-          link: t.link,
+          year: t.year ?? undefined,
+          summary: t.summary ?? undefined,
+          link: t.link ?? undefined,
         })) || [],
-      features: (data.home?.featuredContent || []).flatMap((doc) =>
-        doc && hasStoryDestination(doc) ? [toEntry(doc)] : [],
+      features: (data.home?.features || []).flatMap(({entry, image, background, caption}) =>
+        entry && hasStoryDestination(entry)
+          ? [
+              {
+                ...toEntry(entry),
+                featureImage: image,
+                featureBackground: background,
+                featureCaption: caption,
+              },
+            ]
+          : [],
       ),
       places: (data.home?.exploreLocations || []).flatMap(({location, image}) =>
         location ? [{...toEntry(location), image}] : [],
@@ -269,7 +253,7 @@ export const getEntry = cache(async (path: string): Promise<ContentEntry | undef
   const data = await readContent(CONTENT_QUERY, {type, slug})
   if (!data && path === '/history')
     return (await getEntry('/timeline')) ?? getEntry('/grove-history')
-  return data && hasStoryDestination(data) ? toEntry(data) : undefined
+  return data && hasStoryDestination(data) ? toEntry(await withLinks(data)) : undefined
 })
 
 export async function searchContent(query: string): Promise<ContentEntry[]> {

@@ -7,16 +7,28 @@ import {ParkImage} from './park-image'
 export function PageSections({sections}: {sections?: PageSection[]}) {
   return sections?.map((section) => (
     <section
-      className={`page-section ${(section.entries?.length && !section.collapsible) || section.anchor === 'partners' ? 'page-section--wide' : ''}`}
+      className={`page-section ${section.entries?.length && !section.collapsible ? 'page-section--wide' : ''}`}
       id={section.anchor}
       key={section._key}
     >
+      <SectionContent section={section} />
+    </section>
+  ))
+}
+
+export function SectionContent({
+  section,
+  downloadPdf = false,
+}: {
+  section: PageSection
+  downloadPdf?: boolean
+}) {
+  return (
+    <>
       <h2>{section.title}</h2>
       <RichText value={section.body} />
       {section.image && (
-        <div
-          className={`section-image ${section.anchor === 'partners' ? 'section-image--partners' : ''}`}
-        >
+        <div className="section-image">
           <ParkImage image={section.image} sizes="(max-width: 44rem) 90vw, 60vw" />
         </div>
       )}
@@ -56,7 +68,7 @@ export function PageSections({sections}: {sections?: PageSection[]}) {
           </div>
         )
       ) : null}
-      <ActionLinks links={section.links} />
-    </section>
-  ))
+      <ActionLinks links={section.links} downloadPdf={downloadPdf} />
+    </>
+  )
 }

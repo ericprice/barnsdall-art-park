@@ -1,3 +1,5 @@
+import {createElement} from 'react'
+import {ColorPair} from './organization-preview'
 import {defineField, defineType} from 'sanity'
 import {TagIcon} from '@sanity/icons/Tag'
 
@@ -23,7 +25,14 @@ export const organization = defineType({
       }),
     ),
   ],
-  preview: {select: {title: 'title'}},
+  preview: {
+    select: {title: 'title', light: 'light', dark: 'dark'},
+    prepare: ({title, light, dark}) => ({
+      title,
+      subtitle: [light, dark].filter(Boolean).join(' / '),
+      media: () => createElement(ColorPair, {light, dark}),
+    }),
+  },
 })
 
 export const organizationReference = defineField({

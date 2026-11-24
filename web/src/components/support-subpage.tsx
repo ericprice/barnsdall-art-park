@@ -123,9 +123,9 @@ function Donate({entry}: {entry: ContentEntry}) {
               <ActionLink action={section.link} />
             </div>
           )}
-          {section.kind === 'levels' && entry.givingLevels?.length ? (
+          {section.kind === 'levels' && section.levels?.length ? (
             <div className="donation-level-grid">
-              {entry.givingLevels.map((level) => (
+              {section.levels.map((level) => (
                 <article key={level._key}>
                   <h3 className="card-heading">{level.title}</h3>
                   {level.summary && <p>{level.summary}</p>}
@@ -159,30 +159,21 @@ export function SupportSubpage({
 }) {
   const department = site.settings.navigation.find((item) => item.href === '/support')
   const introductoryAction = entry.supportLink
-  const structured = entry.supporterYears || entry.initiativeCards || entry.donationSections
   return (
     <main id="main-content" className="interior support-subpage">
       <PageHeading title={department?.title ?? entry.title} path={path} settings={site.settings} />
       {entry.summary && <p className="support-intro lead">{entry.summary}</p>}
-      {introductoryAction && (
+      {entry.template === 'supporters' && introductoryAction && (
         <div className="support-intro-action">
           <ActionLink action={introductoryAction} />
         </div>
       )}
       <RichText value={entry.body} />
-      {entry.supporterYears && <SupporterDirectory entry={entry} />}
-      {entry.initiativeCards && <Initiatives entry={entry} />}
-      {entry.donationSections && <Donate entry={entry} />}
+      {entry.template === 'supporters' && <SupporterDirectory entry={entry} />}
+      {entry.template === 'initiatives' && <Initiatives entry={entry} />}
+      {entry.template === 'donate' && <Donate entry={entry} />}
       {!!entry.sections?.length && <PageSections sections={entry.sections} />}
-      {!structured &&
-        entry.givingLevels?.map((level) => (
-          <section className="giving-method" key={level._key}>
-            <h2 className="card-heading">{level.title}</h2>
-            <p>{level.summary}</p>
-            <ActionLink action={level.link} />
-          </section>
-        ))}
-      <QuoteBand quote={site.home.quote} />
+      <QuoteBand quote={site.settings.quotes} />
     </main>
   )
 }

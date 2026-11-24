@@ -1,7 +1,11 @@
+import {contentSections} from './sections'
+import {destinationFields, quoteFields, validDestination} from './objects'
+import {FeatureColor} from './feature-color'
+import {pageLayouts, pageHasMainImage, historyPageId} from '../../shared/page-layouts'
 import {organizationReference} from './organization'
 import {hostsNewsPage, isExternalNewsLink} from '../../shared/organizations'
 import {supportPageFields} from './support-subpages'
-import {directoryFields, foundationHeadingsField} from './foundation'
+import {directoryFields} from './foundation'
 import {
   ALL_FIELDS_GROUP,
   defineArrayMember,
@@ -20,8 +24,28 @@ const title = defineField({name: 'title', type: 'string', validation: (r) => r.r
 const slug = defineField({
   name: 'slug',
   type: 'slug',
-  options: {source: 'title'},
-  validation: (r) => r.required(),
+  options: {
+    source: (doc) => {
+      const current = (doc.slug as {current?: string})?.current || ''
+      const prefix = current.includes('/') ? current.slice(0, current.lastIndexOf('/') + 1) : ''
+      return prefix + String(doc.title || '')
+    },
+    slugify: (value) =>
+      value
+        .toLowerCase()
+        .trim()
+        .replace(/[^a-z0-9/]+/g, '-')
+        .replace(/^-+|-+$/g, ''),
+  },
+  validation: (r) =>
+    r
+      .required()
+      .custom(
+        (v) =>
+          !v?.current ||
+          /^[^/?#]+(?:\/[^/?#]+)*$/.test(v.current) ||
+          'Generate a complete page path.',
+      ),
 })
 const summary = defineField({name: 'summary', type: 'text', rows: 3})
 const image = defineField({name: 'image', type: 'parkImage'})
@@ -56,7 +80,7 @@ export const siteSettings = defineType({
   type: 'document',
   fields: [
     title,
-    defineField({name: 'description', type: 'text', rows: 3}),
+    defineField({name: 'description', title: 'Site description', type: 'text', rows: 3}),
     defineField({name: 'footerLinks', type: 'array', of: [defineArrayMember({type: 'link'})]}),
     defineField({
       name: 'navigation',
@@ -69,7 +93,7 @@ export const siteSettings = defineType({
           type: 'object',
           fields: [
             title,
-            defineField({name: 'href', type: 'string'}),
+            ...destinationFields,
             defineField({name: 'children', type: 'array', of: [defineArrayMember({type: 'link'})]}),
           ],
           preview: {select: {title: 'title'}},
@@ -85,7 +109,19 @@ export const siteSettings = defineType({
       validation: (rule) => rule.unique(),
     }),
     defineField({name: 'address', type: 'text', rows: 2}),
-    defineField({name: 'contactEmail', type: 'string', validation: (r) => r.email()}),
+    defineField({
+      name: 'quotes',
+      title: 'Sitewide quotes',
+      type: 'array',
+      of: [
+        defineArrayMember({
+          name: 'siteQuote',
+          type: 'object',
+          fields: [...quoteFields, defineField({name: 'link', type: 'link'})],
+          preview: {select: {title: 'text', subtitle: 'attribution'}},
+        }),
+      ],
+    }),
     defineField({
       name: 'socialLinks',
       type: 'array',
@@ -99,12 +135,10 @@ export const siteSettings = defineType({
 export const homePage = defineType({
   name: 'homePage',
   icon: HomeIcon,
-  initialValue: {title: 'Home'},
+  preview: {prepare: () => ({title: 'Homepage'})},
   title: 'Homepage',
   type: 'document',
   fields: [
-    title,
-    defineField({name: 'historyLink', title: 'History section link', type: 'link'}),
     defineField({
       name: 'heroSlides',
       title: 'Featured stories',
@@ -129,17 +163,6 @@ export const homePage = defineType({
       name: 'celebration',
       type: 'object',
       fields: [title, defineField({name: 'link', type: 'link'})],
-    }),
-    defineField({
-      name: 'featuredContent',
-      type: 'array',
-      of: [
-        defineArrayMember({
-          type: 'reference',
-          to: [{type: 'event'}, {type: 'article'}, {type: 'place'}, {type: 'page'}],
-        }),
-      ],
-      validation: (r) => r.max(6).unique(),
     }),
     defineField({
       name: 'exploreLocations',
@@ -170,46 +193,56 @@ export const homePage = defineType({
         }),
     }),
     defineField({
-      name: 'quote',
-      type: 'object',
-      fields: [
-        defineField({
-          name: 'additional',
-          title: 'More quotations',
-          type: 'array',
-          of: [
-            defineArrayMember({
-              name: 'quotation',
-              type: 'object',
-              fields: [
-                defineField({name: 'text', type: 'text', rows: 3}),
-                defineField({name: 'attribution', type: 'string'}),
-                defineField({name: 'link', type: 'link'}),
-              ],
-              preview: {select: {title: 'text', subtitle: 'attribution'}},
-            }),
-          ],
-        }),
-        defineField({name: 'text', type: 'text', rows: 3}),
-        defineField({name: 'attribution', type: 'string'}),
-        defineField({name: 'link', type: 'link'}),
-      ],
-    }),
-    defineField({
-      name: 'timeline',
+      name: 'features',
+      title: 'Featured content',
       type: 'array',
       of: [
         defineArrayMember({
-          name: 'milestone',
+          name: 'featureCard',
+          title: 'Featured item',
           type: 'object',
           fields: [
-            defineField({name: 'year', type: 'string', validation: (r) => r.required()}),
-            summary,
-            defineField({name: 'link', type: 'link'}),
+            defineField({
+              name: 'entry',
+              title: 'Item',
+              type: 'reference',
+              to: ['event', 'article', 'place', 'page'].map((type) => ({type})),
+              validation: (r) => r.required(),
+            }),
+            defineField({
+              name: 'image',
+              title: 'Alternate image',
+              type: 'editorialImage',
+              description: 'Leave empty to use the selected item’s main image.',
+            }),
+            defineField({name: 'caption', title: 'Link caption', type: 'string'}),
+            defineField({
+              name: 'background',
+              title: 'Shape color',
+              type: 'string',
+              components: {field: FeatureColor},
+              validation: (r) => r.regex(/^#[a-f\d]{6}$/i),
+            }),
           ],
-          preview: {select: {title: 'year', subtitle: 'summary'}},
+          preview: {
+            select: {title: 'entry.title', override: 'image', main: 'entry.image'},
+            prepare: ({title, override, main}) => ({title, media: override || main}),
+          },
         }),
       ],
+      validation: (r) =>
+        r.custom((items) => {
+          const ids = (items || []).flatMap(
+            (item) => (item as {entry?: {_ref?: string}}).entry?._ref || [],
+          )
+          return new Set(ids).size === ids.length || 'Select each item once.'
+        }),
+    }),
+    defineField({
+      name: 'historyLink',
+      title: 'History section link',
+      type: 'link',
+      description: 'Choose the milestones shown here under Pages → History.',
     }),
   ],
 })
@@ -219,39 +252,42 @@ export const page = defineType({
   icon: DocumentIcon,
   title: 'Page',
   type: 'document',
-  groups: [contentGroup, imagesGroup, {name: 'settings', title: 'Page settings'}, hideAllFields],
+  groups: [
+    contentGroup,
+    {...imagesGroup, hidden: ({document}) => !pageHasMainImage(document?.template)},
+    {
+      name: 'directory',
+      title: 'Directory',
+      hidden: ({document}) => document?.template !== 'foundation',
+    },
+    {name: 'settings', title: 'Page settings'},
+    hideAllFields,
+  ],
   fields: [
     {...title, group: 'content'},
-    {...slug, group: 'content'},
     {...organizationReference, group: 'content'},
     {...summary, group: 'content'},
     {...body, group: 'content'},
-    {...mainImage, group: 'images'},
+    {...slug, group: 'content'},
+    {...contentSections, group: 'content'},
+    {...mainImage, group: 'images', hidden: ({document}) => !pageHasMainImage(document?.template)},
     defineField({
       name: 'template',
+      title: 'Page layout',
       group: 'settings',
       type: 'string',
       initialValue: 'standard',
       options: {
-        list: [
-          {title: 'Standard / story', value: 'standard'},
-          {title: 'Visit', value: 'visit'},
-          {title: 'Foundation', value: 'foundation'},
-          {title: 'Initiative', value: 'initiative'},
-          {title: 'History / Timeline', value: 'timeline'},
-        ],
+        list: Object.entries(pageLayouts).map(([value, title]) => ({value, title})),
       },
     }),
-    {...foundationHeadingsField, group: 'content'},
-    ...directoryFields.map((field) => ({...field, group: 'content'})),
+    ...directoryFields.map((field) => ({...field, group: 'directory'})),
     defineField({
       name: 'timelineHeading',
       group: 'content',
       title: 'Timeline section heading',
       type: 'string',
-      hidden: ({parent}) =>
-        parent?.template !== 'timeline' &&
-        !['history', 'timeline', 'grove-history'].includes(parent?.slug?.current),
+      hidden: ({document}) => document?.template !== 'timeline',
     }),
     defineField({
       name: 'timelineEntries',
@@ -279,33 +315,33 @@ export const page = defineType({
               validation: (r) => r.required(),
             }),
             image,
+            defineField({
+              name: 'showOnHomepage',
+              title: 'Show on homepage',
+              type: 'boolean',
+              hidden: ({document}) => document?._id?.replace(/^drafts\./, '') !== historyPageId,
+            }),
+            defineField({
+              name: 'homeHighlight',
+              title: 'Homepage wording and link',
+              type: 'object',
+              description: 'Leave the text blank to use the milestone’s date and description.',
+              hidden: ({document, parent}) =>
+                !parent?.showOnHomepage ||
+                document?._id?.replace(/^drafts\./, '') !== historyPageId,
+              fields: [
+                defineField({name: 'year', title: 'Short date override', type: 'string'}),
+                defineField({...summary, title: 'Short description override'}),
+                defineField({name: 'link', type: 'link'}),
+              ],
+            }),
           ],
           preview: {select: {title: 'dateLabel', subtitle: 'description', media: 'image'}},
         }),
       ],
-      hidden: ({parent}) =>
-        parent?.template !== 'timeline' &&
-        !['history', 'timeline', 'grove-history'].includes(parent?.slug?.current),
+      hidden: ({document}) => document?.template !== 'timeline',
     }),
     ...supportPageFields.map((field) => ({...field, group: 'content'})),
-    defineField({
-      name: 'givingLevels',
-      group: 'content',
-      hidden: ({document}) =>
-        (document?.slug as {current?: string} | undefined)?.current !== 'support/donate',
-      title: 'Annual giving program',
-      description:
-        'Up to three approved giving levels. Link to the external donation provider; no payment details are collected here.',
-      type: 'array',
-      of: [
-        defineArrayMember({
-          type: 'object',
-          name: 'givingLevel',
-          fields: [title, summary, defineField({name: 'link', type: 'link'})],
-        }),
-      ],
-      validation: (r) => r.max(3),
-    }),
   ],
   preview,
 })
@@ -320,7 +356,6 @@ export const place = defineType({
   groups: [contentGroup, {...imagesGroup, hidden: linksOut}, hideAllFields],
   fields: [
     {...title, group: 'content'},
-    {...slug, group: 'content'},
     {...organizationReference, group: 'content'},
     {...summary, group: 'content'},
     defineField({
@@ -333,16 +368,17 @@ export const place = defineType({
     }),
     defineField({name: 'subtitle', group: 'content', type: 'string', hidden: linksOut}),
     {...body, group: 'content', hidden: linksOut},
+    {...slug, group: 'content'},
+    {...contentSections, group: 'content', hidden: linksOut},
     {...sidebarLinks, group: 'content', hidden: linksOut},
     {...gallery, group: 'images', hidden: linksOut},
   ],
   preview: {select: {title: 'title', subtitle: 'externalUrl', media: 'gallery.0'}},
 })
-const featureCaption = defineField({
-  name: 'featureCaption',
-  title: 'Homepage link caption',
-  type: 'string',
-})
+const offsiteArticle: ConditionalPropertyCallback = ({document}) => {
+  const owner = (document?.organizationRef as {_ref?: string})?._ref
+  return Boolean(document?.externalUrl || document?.targetPage || (owner && !hostsNewsPage(owner)))
+}
 const eventClock = {displayTimeZone: 'America/Los_Angeles'}
 
 export const article = defineType({
@@ -353,33 +389,55 @@ export const article = defineType({
   groups: [contentGroup, imagesGroup, {name: 'publishing', title: 'Publishing'}, hideAllFields],
   fields: [
     {...title, group: 'content'},
-    {...slug, group: 'content'},
     defineField({
       ...organizationReference,
       group: 'content',
       validation: (rule) => rule.required(),
     }),
     {...summary, group: 'content'},
-    {...body, group: 'content'},
-    {...editorialImage, group: 'images'},
-    {...gallery, group: 'images'},
     defineField({
-      name: 'storyDestination',
+      name: 'externalUrl',
+      title: 'External article URL',
+      type: 'url',
       group: 'content',
-      title: 'Article destination',
-      type: 'link',
       description:
-        'Enter the original article URL for partner news. The Foundation and The Park can leave this blank to use an on-site story.',
+        'Required for partner news. Leave empty for an on-site Foundation or Park story.',
+      hidden: ({document}) => Boolean(document?.targetPage),
       validation: (rule) =>
-        rule.custom((link, context) => {
-          const organization = context.document?.organizationRef as {_ref?: string} | undefined
-          if (!organization?._ref || hostsNewsPage(organization._ref)) return true
+        rule.uri({scheme: ['https', 'http']}).custom((url, ctx) => {
+          const owner = (ctx.document?.organizationRef as {_ref?: string})?._ref
           return (
-            isExternalNewsLink((link as {href?: string} | undefined)?.href) ||
-            'Enter an external article URL for this organization.'
+            !owner ||
+            hostsNewsPage(owner) ||
+            isExternalNewsLink(url) ||
+            'Enter the partner article’s URL.'
           )
         }),
     }),
+    defineField({
+      name: 'targetPage',
+      title: 'Promotion destination',
+      type: 'reference',
+      weak: true,
+      to: [{type: 'page'}],
+      group: 'content',
+      validation: (r) =>
+        r.custom(
+          (v, ctx) =>
+            !v ||
+            ctx.document?.excludeFromNews === true ||
+            'Clear the promotion destination to turn this into a news story.',
+        ),
+      hidden: ({document}) =>
+        !document?.targetPage &&
+        (!document?.excludeFromNews ||
+          Boolean(document?.externalUrl) ||
+          !hostsNewsPage((document?.organizationRef as {_ref?: string})?._ref)),
+    }),
+    {...body, group: 'content', hidden: offsiteArticle},
+    {...slug, group: 'content'},
+    {...editorialImage, group: 'images'},
+    {...gallery, group: 'images', hidden: offsiteArticle},
     defineField({
       name: 'excludeFromNews',
       group: 'publishing',
@@ -389,39 +447,25 @@ export const article = defineType({
       description:
         'Keep this card available for features and omit it from the chronological News listing.',
     }),
-    {...featureCaption, group: 'publishing'},
     defineField({
-      name: 'featureBackground',
-      group: 'images',
-      title: 'Homepage shape color',
-      description: 'Optional six-digit hex color for a feature without an image.',
-      type: 'string',
-      validation: (r) => r.regex(/^#[a-fA-F0-9]{6}$/),
+      name: 'publishedAt',
+      title: 'Display date',
+      description:
+        'Shown on the listing and used to order news. Use Studio publishing controls to release a story.',
+      group: 'publishing',
+      type: 'datetime',
+      options: eventClock,
     }),
-    defineField({
-      name: 'featureImage',
-      group: 'images',
-      title: 'Homepage image',
-      type: 'editorialImage',
-    }),
-    defineField({name: 'publishedAt', group: 'publishing', type: 'datetime', options: eventClock}),
     defineField({
       name: 'sourceLink',
+      hidden: offsiteArticle,
       group: 'content',
       title: 'Original story or source',
       type: 'link',
     }),
     defineField({
-      name: 'archiveEntry',
-      group: 'publishing',
-      title: 'File in the news archive',
-      type: 'boolean',
-      initialValue: false,
-      description:
-        'Marks a story imported from the archive. Leave the publication date blank when unknown.',
-    }),
-    defineField({
       name: 'relatedStories',
+      hidden: offsiteArticle,
       group: 'content',
       title: 'See also',
       type: 'array',
@@ -430,7 +474,22 @@ export const article = defineType({
       validation: (rule) => rule.unique().max(3),
     }),
   ],
-  preview,
+  preview: {
+    select: {
+      title: 'title',
+      owner: 'organizationRef.title',
+      url: 'externalUrl',
+      promo: 'excludeFromNews',
+      media: 'image',
+    },
+    prepare: ({title, owner, url, promo, media}) => ({
+      title,
+      media,
+      subtitle: [owner, promo ? 'Promotion' : url ? 'External article' : 'On-site story']
+        .filter(Boolean)
+        .join(' · '),
+    }),
+  },
 })
 export const event = defineType({
   name: 'event',
@@ -440,7 +499,6 @@ export const event = defineType({
   groups: [contentGroup, imagesGroup, {name: 'schedule', title: 'Schedule'}, hideAllFields],
   fields: [
     {...title, group: 'content'},
-    {...slug, group: 'content'},
     defineField({
       ...organizationReference,
       group: 'content',
@@ -448,32 +506,9 @@ export const event = defineType({
     }),
     {...summary, group: 'content'},
     {...body, group: 'content'},
-    defineField({
-      name: 'kind',
-      group: 'content',
-      title: 'Event type',
-      type: 'string',
-      options: {
-        list: [
-          'Exhibition',
-          'Performance',
-          'Screening',
-          'Tour',
-          'Workshop',
-          'Community',
-          'Foundation',
-        ],
-      },
-    }),
+    {...slug, group: 'content'},
     {...mainImage, group: 'images'},
     {...gallery, group: 'images'},
-    defineField({
-      name: 'featureImage',
-      group: 'images',
-      title: 'Homepage image',
-      description: 'The homepage uses the main image when this is empty.',
-      type: 'parkImage',
-    }),
     defineField({
       name: 'startsAt',
       group: 'schedule',
@@ -527,7 +562,33 @@ export const event = defineType({
           return true
         }),
     }),
-    defineField({name: 'ticketLink', group: 'content', type: 'link'}),
+    defineField({
+      name: 'ticketLink',
+      title: 'Ticket link',
+      group: 'schedule',
+      type: 'object',
+      fields: [
+        defineField({name: 'label', title: 'Label', type: 'string', placeholder: 'Get Tickets'}),
+        ...destinationFields,
+      ],
+      validation: (rule) => rule.custom(validDestination),
+    }),
   ],
-  preview,
+  preview: {
+    select: {title: 'title', owner: 'organizationRef.title', date: 'startsAt', media: 'image'},
+    prepare: ({title, date, owner, media}) => ({
+      title,
+      media,
+      subtitle: [
+        date &&
+          new Intl.DateTimeFormat('en-US', {
+            dateStyle: 'medium',
+            timeZone: eventClock.displayTimeZone,
+          }).format(new Date(date)),
+        owner,
+      ]
+        .filter(Boolean)
+        .join(' · '),
+    }),
+  },
 })

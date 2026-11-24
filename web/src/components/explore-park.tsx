@@ -21,15 +21,15 @@ export function ExplorePark({places, title}: {places: ContentEntry[]; title: str
     const index = ids.indexOf(place.id)
     return {place, photoDot: dots[index % dots.length], labelDot: dots[(index + 5) % dots.length]}
   })
+  const selectedIndex = places.indexOf(selected)
+  const column = selectedIndex % 3
+  const rowSize = Math.min(3, places.length - selectedIndex + column)
+  const photoPosition = rowSize === 1 ? 1 : rowSize === 2 ? column + 3 : column
   const descriptionDot = dots[(ids.indexOf(selected.id) + 10) % dots.length]
 
   return (
     <section className="explore" aria-labelledby="explore-heading">
-      <div
-        className="explore__picture"
-        data-position={places.indexOf(selected) % 5}
-        aria-hidden="true"
-      >
+      <div className="explore__picture" data-position={photoPosition} aria-hidden="true">
         {locations.map(({place, photoDot}) => (
           <div
             key={place.id}

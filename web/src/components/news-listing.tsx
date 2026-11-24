@@ -15,7 +15,7 @@ export function NewsListing({
   articles: ContentEntry[]
   params: ListingParams
   text: InterfaceText
-  quote?: SiteContent['home']['quote']
+  quote: SiteContent['settings']['quotes']
 }) {
   const pageSize = 6
   const [lead, ...otherArticles] = articles
@@ -35,7 +35,10 @@ export function NewsListing({
           className="news-feature"
           style={themeStyle(themeForEntry(featured), featuredCutout ? undefined : featured.image)}
         >
-          <div className="news-feature__photo" data-treatment={featuredCutout ? 'cutout' : undefined}>
+          <div
+            className="news-feature__photo"
+            data-treatment={featuredCutout ? 'cutout' : undefined}
+          >
             <ParkImage
               editorial={!featuredCutout}
               orgTheme={themeForEntry(featured)}

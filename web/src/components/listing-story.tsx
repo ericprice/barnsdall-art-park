@@ -92,7 +92,7 @@ export function ListingStory({
           )}
         </nav>
       )}
-      <QuoteBand quote={site.home.quote} />
+      <QuoteBand quote={site.settings.quotes} />
     </main>
   )
 }

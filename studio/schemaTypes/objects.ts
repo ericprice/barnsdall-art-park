@@ -1,20 +1,33 @@
 import {defineArrayMember, defineField, defineType} from 'sanity'
 import {LinkIcon} from '@sanity/icons/Link'
 import {ImageIcon} from '@sanity/icons/Image'
+import {BlockquoteIcon} from '@sanity/icons/Blockquote'
 
-const linkLabel = defineField({
-  name: 'label',
-  type: 'string',
-  validation: (rule) => rule.required(),
-})
-const linkDestination = defineField({
-  name: 'href',
-  title: 'Destination',
-  type: 'string',
-  description: 'A site path (/visit), web address, mailto: or tel: link.',
-  validation: (rule) =>
-    rule.required().regex(/^(\/(?!\/)|#|https?:\/\/|mailto:|tel:)/, {name: 'link destination'}),
-})
+const label = defineField({name: 'label', type: 'string', validation: (rule) => rule.required()})
+const destinationPattern = /^(\/(?!\/)|#|https?:\/\/|mailto:|tel:)/
+export const destinationFields = [
+  defineField({
+    name: 'internal',
+    title: 'Site page',
+    type: 'reference',
+    weak: true,
+    to: ['page', 'place', 'event', 'article'].map((type) => ({type})),
+    hidden: ({parent}) => Boolean(parent?.href),
+  }),
+  defineField({
+    name: 'href',
+    title: 'URL or fragment',
+    type: 'string',
+    description: 'For external websites, email, telephone, or a specific site path or anchor.',
+    hidden: ({parent}) => Boolean(parent?.internal),
+    validation: (rule) => rule.regex(destinationPattern),
+  }),
+]
+type Destination = {internal?: {_ref?: string}; href?: string}
+export const validDestination = (value: Destination | undefined) =>
+  !value ||
+  Boolean(value.internal?._ref) !== Boolean(value.href) ||
+  'Choose a site page or enter one URL.'
 
 export const socialLink = defineType({
   name: 'socialLink',
@@ -22,37 +35,56 @@ export const socialLink = defineType({
   type: 'object',
   icon: LinkIcon,
   fields: [
-    linkLabel,
-    linkDestination,
-    defineField({name: 'icon', title: 'Social media mark', type: 'parkImage'}),
+    label,
+    defineField({
+      name: 'href',
+      title: 'Website',
+      type: 'url',
+      validation: (rule) => rule.required().uri({scheme: ['https', 'http']}),
+    }),
   ],
-  preview: {select: {title: 'label', subtitle: 'href', media: 'icon'}},
+  preview: {select: {title: 'label', subtitle: 'href'}},
 })
-
 export const link = defineType({
   name: 'link',
   icon: LinkIcon,
   title: 'Link',
   type: 'object',
-  fields: [linkLabel, linkDestination],
-  preview: {select: {title: 'label', subtitle: 'href'}},
+  fields: [label, ...destinationFields],
+  validation: (rule) => rule.custom(validDestination),
+  preview: {
+    select: {title: 'label', url: 'href', page: 'internal.title'},
+    prepare: ({title, url, page}) => ({title, subtitle: page || url}),
+  },
 })
 
-const imageCaption = defineField({
-  name: 'caption',
-  type: 'string',
-  description: 'Also used as the alternative text for this image.',
-})
-
+const imageFields = [
+  defineField({
+    name: 'decorative',
+    title: 'Decorative image',
+    type: 'boolean',
+    description: 'Screen readers skip decorative images.',
+  }),
+  defineField({
+    name: 'alt',
+    title: 'Alternative text',
+    type: 'string',
+    hidden: ({parent}) => Boolean(parent?.decorative),
+  }),
+  defineField({
+    name: 'caption',
+    type: 'string',
+    description: 'Visible credit or caption where the layout includes one.',
+  }),
+]
 export const parkImage = defineType({
   name: 'parkImage',
   icon: ImageIcon,
   title: 'Image',
   type: 'image',
   options: {hotspot: true},
-  fields: [imageCaption],
+  fields: imageFields,
 })
-
 export const editorialImage = defineType({
   name: 'editorialImage',
   icon: ImageIcon,
@@ -60,10 +92,10 @@ export const editorialImage = defineType({
   type: 'image',
   options: {hotspot: true},
   fields: [
-    imageCaption,
+    ...imageFields,
     defineField({
       name: 'presentation',
-      title: 'Artwork presentation',
+      title: 'Card and feature treatment',
       type: 'string',
       initialValue: 'organization',
       options: {
@@ -78,6 +110,10 @@ export const editorialImage = defineType({
   ],
 })
 
+export const quoteFields = [
+  defineField({name: 'text', type: 'text', rows: 3, validation: (rule) => rule.required()}),
+  defineField({name: 'attribution', type: 'string'}),
+]
 export const richText = defineType({
   name: 'richText',
   title: 'Body',
@@ -87,10 +123,9 @@ export const richText = defineType({
       type: 'block',
       styles: [
         {title: 'Paragraph', value: 'normal'},
-        {title: 'Dotted link', value: 'dotLink'},
+        {title: 'Dotted link (link the entire paragraph)', value: 'dotLink'},
         {title: 'Heading', value: 'h2'},
         {title: 'Subheading', value: 'h3'},
-        {title: 'Quote', value: 'blockquote'},
       ],
       marks: {
         decorators: [
@@ -102,26 +137,40 @@ export const richText = defineType({
           defineArrayMember({
             name: 'link',
             type: 'object',
-            fields: [
-              defineField({
-                name: 'href',
-                type: 'url',
-                validation: (r) =>
-                  r.uri({allowRelative: true, scheme: ['http', 'https', 'mailto', 'tel']}),
-              }),
-            ],
+            fields: destinationFields,
+            validation: (rule) => rule.custom(validDestination),
           }),
         ],
       },
+      validation: (rule) =>
+        rule.custom((value) => {
+          const block = value as
+            | {
+                style?: string
+                children?: {text?: string; marks?: string[]}[]
+                markDefs?: {_key: string}[]
+              }
+            | undefined
+          if (block?.style !== 'dotLink') return true
+          const spans = block.children?.filter(
+            (span) => 'text' in span && typeof span.text === 'string' && span.text.length,
+          )
+          return (
+            Boolean(
+              spans?.length &&
+              block.markDefs?.some((mark) =>
+                spans.every((span) => Array.isArray(span.marks) && span.marks.includes(mark._key)),
+              ),
+            ) || 'Link the entire paragraph to one destination.'
+          )
+        }),
     }),
     defineArrayMember({
       name: 'quotation',
-      title: 'Attributed quote',
+      title: 'Quote',
+      icon: BlockquoteIcon,
       type: 'object',
-      fields: [
-        defineField({name: 'text', type: 'text', rows: 3, validation: (rule) => rule.required()}),
-        defineField({name: 'attribution', type: 'string'}),
-      ],
+      fields: quoteFields,
       preview: {select: {title: 'text', subtitle: 'attribution'}},
     }),
     defineArrayMember({type: 'parkImage'}),

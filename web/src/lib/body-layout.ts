@@ -1,6 +1,6 @@
 import {tryGetFileAsset} from '@sanity/asset-utils'
 import {dataset, projectId} from '../sanity/env.ts'
-import type {ParkImage, RichText} from '../../sanity.types'
+import type {Page, ParkImage, RichText} from '../../sanity.types'
 
 type TextBlock = Extract<RichText[number], {_type: 'block'}>
 type Mark = NonNullable<TextBlock['markDefs']>[number]
@@ -9,6 +9,7 @@ type LayoutItem = {_key: string; title: string; body: RichText; links: BodyLink[
 export type PageSection = LayoutItem & {
   anchor: string
   image?: ParkImage
+  role?: string
   collapsible: boolean
   entries: LayoutItem[]
 }
@@ -54,88 +55,30 @@ export function standaloneLink(block: Pick<TextBlock, 'children' | 'markDefs' | 
   if (href) return {href, label: blockText(block), download: mark._type === 'download'}
 }
 
-const layoutPaths = new Set([
-  '/visit',
-  '/visit/policies',
-  '/visit/rentals',
-  '/support',
-  '/support/olive-grove',
-  '/100',
-  '/contact',
-  '/history',
-])
-
-// The CMS stores one ordered body. Designed visitor pages arrange its heading groups into
-// maps, columns, landscape spreads and disclosures. Stories render the body directly.
-export function bodyForLayout(body: RichText | undefined, path: string, template?: string) {
-  const parkLocation = path.startsWith('/park/')
-  if (
-    !body ||
-    !(parkLocation || layoutPaths.has(path) || ['visit', 'timeline', 'foundation'].includes(template ?? ''))
-  )
-    return {body, sections: undefined}
-  const intro: RichText = []
-  const sections: PageSection[] = []
-  let section: PageSection | undefined
-  let item: LayoutItem | undefined
-  const anchors = new Set<string>()
-  for (const block of body) {
-    if (block._type === 'block' && block.style === 'h2') {
-      const base = headingAnchor(block)
-      let anchor = base
-      for (let suffix = 2; anchors.has(anchor); suffix++) anchor = `${base}-${suffix}`
-      anchors.add(anchor)
-      section = {
-        _key: block._key,
-        title: blockText(block),
-        anchor,
-        body: [],
-        links: [],
-        entries: [],
-        collapsible:
-          block._key.startsWith('disclosure-') ||
-          (path === '/support/olive-grove' &&
-            (anchor === 'past-initiatives' || sections.length === 1)),
-      }
-      sections.push(section)
-      item = undefined
-      continue
-    }
-    if (!section) {
-      intro.push(block)
-      continue
-    }
-    if (
-      block._type === 'block' &&
-      block.style === 'h3' &&
-      (template === 'foundation' ||
-        path === '/support' ||
-        section.collapsible ||
-        block._key.startsWith('entry-'))
-    ) {
-      item = {_key: block._key.replace(/^entry-/, ''), title: blockText(block), body: [], links: []}
-      section.entries.push(item)
-      continue
-    }
-    if (block._type === 'parkImage' && !item && !section.image && parkLocation) {
-      section.image = block
-      continue
-    }
-    const group = item ?? section
-    group.body.push(block)
-  }
-  for (const section of sections) {
-    for (const group of [section, ...section.entries]) {
-      // Only a run of links at the end becomes the designed list of actions. A link placed
-      // between two paragraphs stays exactly where the editor put it.
-      while (group.body.length) {
-        const last = group.body[group.body.length - 1]
-        const link = last._type === 'block' && last.style === 'normal' && standaloneLink(last)
-        if (!link) break
-        group.links.unshift({_key: last._key, href: link.href, label: link.label})
-        group.body.pop()
-      }
-    }
-  }
-  return {body: intro, sections}
+type StoredSection = NonNullable<Page['contentSections']>[number]
+function actions(links: StoredSection['links']): BodyLink[] {
+  return (links || []).flatMap((link) => {
+    const href = linkDestination(link)
+    return href && link.label ? [{_key: link._key, label: link.label, href}] : []
+  })
+}
+export function pageSections(stored: Page['contentSections']): PageSection[] | undefined {
+  return stored?.map((section) => ({
+    _key: section._key,
+    title: section.title || '',
+    anchor: section.anchor || section._key,
+    role: section.role || 'prose',
+    image: section.role === 'prose' || !section.role ? section.image : undefined,
+    body: section.body || [],
+    links: actions(section.links),
+    collapsible: section.role === 'accordion' || section.role === 'past',
+    entries: ['accordion', 'columns', 'past'].includes(section.role || '')
+      ? (section.entries || []).map((item) => ({
+          _key: item._key,
+          title: item.title || '',
+          body: item.body || [],
+          links: actions(item.links),
+        }))
+      : [],
+  }))
 }

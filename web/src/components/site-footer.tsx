@@ -9,6 +9,17 @@ const copyrightYear = new Intl.DateTimeFormat('en-US', {
   year: 'numeric',
 })
 
+function platformIcon(href: string) {
+  try {
+    const host = new URL(href).hostname.toLowerCase().replace(/^www\./, '')
+    for (const platform of ['instagram', 'facebook', 'linkedin']) {
+      if (host === platform + '.com' || host.endsWith('.' + platform + '.com'))
+        return '/identity/' + platform + '.svg'
+    }
+  } catch {
+    /* Incomplete drafts can contain an invalid URL. */
+  }
+}
 export function SiteFooter({settings}: {settings: SiteContent['settings']}) {
   return (
     <footer className="park-footer" id="connect">
@@ -29,10 +40,11 @@ export function SiteFooter({settings}: {settings: SiteContent['settings']}) {
               <ul aria-label="Social media">
                 {settings.socialLinks.map((link) => {
                   if (!link.href || !link.label) return null
+                  const icon = platformIcon(link.href)
                   return (
                     <li key={link._key}>
                       <a href={link.href} aria-label={link.label}>
-                        {link.icon ? <ParkImage image={link.icon} sizes="3rem" /> : link.label}
+                        {icon ? <ParkImage image={icon} sizes="3rem" /> : link.label}
                       </a>
                     </li>
                   )

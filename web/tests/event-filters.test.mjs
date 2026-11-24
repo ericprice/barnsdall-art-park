@@ -15,7 +15,6 @@ const exhibition = {
   title: 'Long exhibition',
   href: '/event',
   organization: 'Gallery',
-  kind: 'Exhibition',
   date: '2027-01-01T19:00:00Z',
   endsAt: '2027-04-01T00:00:00Z',
 }
@@ -24,7 +23,6 @@ const undated = {
   title: 'Community gathering',
   href: '/gathering',
   organization: 'Foundation',
-  kind: 'Community',
 }
 test('an exhibition is shown throughout its date span, including a month it began before', () => {
   assert.equal(overlapsDays(exhibition, '2027-02-01', '2027-02-28'), true)
@@ -48,12 +46,11 @@ test('undated events remain discoverable but do not appear on arbitrary calendar
   )
   assert.equal(overlapsDays(undated, '2027-02-01', '2027-02-28'), false)
 })
-test('organization search, event type, and dates combine instead of replacing one another', () => {
+test('organization search and dates combine instead of replacing one another', () => {
   assert.equal(
     filterEvents([exhibition, undated], {
       today: '2027-02-01',
-      q: 'long',
-      kind: 'Community',
+      q: 'no match',
       from: '2027-02-01',
       to: '2027-02-28',
     }).length,
@@ -63,7 +60,6 @@ test('organization search, event type, and dates combine instead of replacing on
     filterEvents([exhibition], {
       today: '2027-02-01',
       q: 'GALLERY',
-      kind: 'Exhibition',
       from: '2027-02-01',
       to: '2027-02-28',
     }).length,

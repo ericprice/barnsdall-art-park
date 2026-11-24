@@ -48,12 +48,15 @@ function PartnerMark({partner}: {partner: Partner}) {
         (svgAsset
           ? imageBuilder.image(logo).url()
           : imageBuilder.image(logo).width(540).auto('format').url())
-  const caption = typeof logo === 'object' ? logo?.caption : undefined
+  const alt =
+    typeof logo === 'object' && logo?.decorative
+      ? ''
+      : (typeof logo === 'object' && logo?.alt) || name
   const mark = src ? (
     <Image
       src={src}
       unoptimized={svgAsset}
-      alt={caption ?? ''}
+      alt={alt}
       width={400}
       height={200}
       sizes="(max-width: 44rem) 35vw, 16vw"
@@ -71,7 +74,7 @@ function PartnerMark({partner}: {partner: Partner}) {
 }
 
 export function FoundationDirectory({entry}: {entry: ContentEntry}) {
-  const headings = {...foundationHeadings, ...entry.foundationHeadings}
+  const headings = foundationHeadings
   return (
     <>
       {(Boolean(entry.boardMembers?.length) || Boolean(entry.staffMembers?.length)) && (

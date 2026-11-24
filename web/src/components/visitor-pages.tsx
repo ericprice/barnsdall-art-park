@@ -1,11 +1,11 @@
 import Link from 'next/link'
-import type {ContentEntry, ImageSource, PageSection, SiteContent} from '@/lib/content'
+import type {ContentEntry, ImageSource, SiteContent} from '@/lib/content'
 import {ParkImage} from './park-image'
 import {ActionLinks, SidebarLinks} from './action-links'
 import {QuoteBand} from './quote-band'
 import {StoryGallery} from './story-gallery'
 import {RichText} from './rich-text'
-import {PageSections} from './page-sections'
+import {PageSections, SectionContent} from './page-sections'
 import {PageHeading} from './page-heading'
 import {ContactSignup, LegacyPoliciesLink} from './visitor-forms'
 import {interfaceText} from '../../../shared/interface'
@@ -40,27 +40,20 @@ function Photo({
     </figure>
   )
 }
-function Block({section}: {section: PageSection}) {
-  return (
-    <>
-      <h2>{section.title}</h2>
-      <RichText value={section.body} />
-      <ActionLinks links={section.links} downloadPdf />
-    </>
-  )
-}
 export function VisitPage({entry, site}: Props) {
-  const policies = entry.href === '/visit/policies'
-  const map = entry.sections?.find((section) => section.anchor === 'map')
+  const policies = entry.template === 'policies'
+  const map = entry.sections?.find((section) => section.role === 'map')
   return (
     <main id="main-content" className={'visitor-arrival' + (policies ? ' visitor-policies' : '')}>
       <PageHeading title={entry.title} path={entry.href} settings={site.settings} />
-      {entry.summary && <p className={policies ? 'visitor-summary' : 'visitor-summary lead'}>{entry.summary}</p>}
+      {entry.summary && (
+        <p className={policies ? 'visitor-summary' : 'visitor-summary lead'}>{entry.summary}</p>
+      )}
       {!policies && (
         <>
           <LegacyPoliciesLink />
           {(entry.image || map) && (
-            <div id="map" className="visitor-map">
+            <div id={map?.anchor || 'map'} className="visitor-map">
               <Photo image={entry.image} priority />
               <RichText value={map?.body} />
               <ActionLinks links={map?.links} variant="display" downloadPdf />
@@ -71,14 +64,14 @@ export function VisitPage({entry, site}: Props) {
       <div className="visitor-prose">
         <RichText value={entry.body} />
         {entry.sections
-          ?.filter((section) => section.anchor !== 'map')
+          ?.filter((section) => section.role !== 'map')
           .map((section) => (
             <section key={section._key} id={section.anchor}>
-              <Block section={section} />
+              <SectionContent downloadPdf section={section} />
             </section>
           ))}
       </div>
-      <QuoteBand quote={site.home.quote} />
+      <QuoteBand quote={site.settings.quotes} />
     </main>
   )
 }
@@ -101,19 +94,20 @@ export function ParkLandscape({entry, site}: Props) {
           <RichText value={entry.body} />
           {entry.sections?.map((section) => (
             <section id={section.anchor} key={section._key}>
-              <Block section={section} />
+              <SectionContent downloadPdf section={{...section, image: undefined}} />
               {section.image && <Photo image={section.image} showCaption />}
             </section>
           ))}
         </div>
       </div>
-      <QuoteBand quote={site.home.quote} />
+      <QuoteBand quote={site.settings.quotes} />
     </main>
   )
 }
 
 export function RentalsPage({entry}: Pick<Props, 'entry'>) {
-  const [inquiries, ...venues] = entry.sections ?? []
+  const inquiries = entry.sections?.find((section) => section.role === 'inquiries')
+  const venues = entry.sections?.filter((section) => section !== inquiries) ?? []
   return (
     <main id="main-content" className="visitor-wire rentals-page">
       <h1>{entry.title}</h1>
@@ -123,14 +117,14 @@ export function RentalsPage({entry}: Pick<Props, 'entry'>) {
         <Photo image={entry.image} priority />
         {inquiries && (
           <section id={inquiries.anchor}>
-            <Block section={inquiries} />
+            <SectionContent downloadPdf section={inquiries} />
           </section>
         )}
       </div>
       <div className="rentals-page__venues">
         {venues.map((section) => (
           <section key={section._key} id={section.anchor}>
-            <Block section={section} />
+            <SectionContent downloadPdf section={section} />
           </section>
         ))}
       </div>
@@ -139,7 +133,8 @@ export function RentalsPage({entry}: Pick<Props, 'entry'>) {
 }
 
 export function CentennialPage({entry}: Pick<Props, 'entry'>) {
-  const [campaign, ...more] = entry.sections ?? []
+  const campaign = entry.sections?.find((section) => section.role === 'campaign')
+  const more = entry.sections?.filter((section) => section !== campaign)
   return (
     <main id="main-content" className="visitor-wire centennial-page">
       {campaign?.title && <p className="visitor-kicker">{campaign.title}</p>}
@@ -157,8 +152,7 @@ export function CentennialPage({entry}: Pick<Props, 'entry'>) {
 }
 
 export function ContactPage({entry}: Pick<Props, 'entry'>) {
-  const signup =
-    entry.sections?.find((section) => section.anchor === 'subscribe') ?? entry.sections?.at(-1)
+  const signup = entry.sections?.find((section) => section.role === 'signup')
   return (
     <main id="main-content" className="visitor-wire contact-page">
       <h1>{entry.title}</h1>
@@ -167,7 +161,7 @@ export function ContactPage({entry}: Pick<Props, 'entry'>) {
       <div className="contact-page__columns">
         {entry.sections?.map((section) => (
           <section key={section._key} id={section.anchor}>
-            <Block section={section} />
+            <SectionContent downloadPdf section={section} />
             {section === signup && <ContactSignup />}
           </section>
         ))}
@@ -177,7 +171,10 @@ export function ContactPage({entry}: Pick<Props, 'entry'>) {
 }
 
 export function OliveGrovePage({entry}: Pick<Props, 'entry'>) {
-  const [plan, past, news, ...more] = entry.sections ?? []
+  const plan = entry.sections?.find((s) => s.role === 'plan')
+  const past = entry.sections?.find((s) => s.role === 'past')
+  const news = entry.sections?.find((s) => s.role === 'news')
+  const more = entry.sections?.filter((s) => s !== plan && s !== past && s !== news)
   return (
     <main id="main-content" className="visitor-wire olive-restoration">
       <h1>{entry.title}</h1>
@@ -187,7 +184,7 @@ export function OliveGrovePage({entry}: Pick<Props, 'entry'>) {
         <Photo image={entry.image} priority showCaption />
         {plan && (
           <section id={plan.anchor}>
-            <Block section={plan} />
+            <SectionContent downloadPdf section={plan} />
           </section>
         )}
       </div>
@@ -215,7 +212,7 @@ export function OliveGrovePage({entry}: Pick<Props, 'entry'>) {
       )}
       {news && (
         <section className="olive-restoration__news" id={news.anchor}>
-          <Block section={news} />
+          <SectionContent downloadPdf section={news} />
         </section>
       )}
       <PageSections sections={more} />

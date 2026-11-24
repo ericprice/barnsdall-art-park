@@ -2,7 +2,8 @@ import assert from 'node:assert/strict'
 import test from 'node:test'
 import {createHistoryPage} from '../../shared/history-timeline.ts'
 import {migrateSectionsToBody} from '../../shared/migrate-sections.ts'
-import {bodyForLayout, standaloneLink} from '../src/lib/body-layout.ts'
+import {bodyForLayout} from '../../shared/migrations/legacy-layout.ts'
+import {standaloneLink} from '../src/lib/body-layout.ts'
 
 const paragraph = (_key, text, style = 'normal') => ({
   _type: 'block',
@@ -114,7 +115,10 @@ test('an explicitly dotted paragraph stays in the prose and resolves only a whol
   assert.deepEqual(sections[0].links, [])
   assert.deepEqual(standaloneLink(dotted), {href: '/visit', label: 'Read more', download: false})
 
-  const inline = {...dotted, children: [...paragraph('intro', 'For details, ').children, ...dotted.children]}
+  const inline = {
+    ...dotted,
+    children: [...paragraph('intro', 'For details, ').children, ...dotted.children],
+  }
   assert.equal(standaloneLink(inline), undefined)
 })
 

@@ -4,16 +4,17 @@ The standalone Studio and website use project `i18fhbsv`, dataset `production`. 
 
 ## Editing
 
-- **Site settings** holds navigation and section menus, contact details, social links, and footer content. Select and reorder pages under **Legal links** to update the footer.
-- **Homepage** holds the slides, anniversary callout, ordered story references, quotations and six overview milestones. Under **Explore the Park**, choose each location and the photograph shown on the homepage.
-- **History / Timeline** opens the chronology. Each milestone has a date or range, description and optional photo. Drag milestones to reorder them. Edit the introduction and preservation notes in Body. Each archival image has one caption, which also supplies its alt text.
-- **Support the park** includes the Foundation and its subpages. On the Foundation page, edit people under Board or Staff and edit partners’ names, logos and URLs individually. On Supporters, open a year, a recognition group, then an individual or organization. Donation amounts and benefits need Foundation approval.
-- **Organizations and colors** holds the color pairs used across park locations, events and stories. Select the organization on each event or story to set its category and color pair. The website applies event image colors in the browser. Homepage slides and news artwork also support the illustrated treatments in the design.
-- **Park locations** links to each facility’s own site. For **The Park**, edit the quotation in **Body**, the page actions in **Sidebar links**, and the slideshow under **Images**.
-- **What’s on** accepts a single event, an exhibition with an end date, or a weekly series with a final date. Use Content for the organization, body and ticket link, Schedule for dates and Images for photography. Times use Los Angeles local time. The design’s specimen dates are ready for editorial review.
-- **News** manages the story body, photography, captions, organization, related stories and optional link to an original source. The homepage selection and the featured story on the news index are independently editable.
+- **Homepage** holds the hero slides, anniversary callout, Explore photographs, and ordered featured cards. Choose an item and optionally override its homepage artwork or caption.
+- **Pages** contains All pages and shortcuts for Visit, Support the park, and History. Choose the page layout under Page settings. Use Body for prose and Sections for columns, accordions, links, and layout-specific features. Keep an existing page anchor when renaming a section that readers link to.
+- **History** contains the chronology. Drag milestones into chronological order. Select **Show on homepage** for the short overview. A selected milestone uses its date and description unless you supply shorter wording.
+- **Support the park** contains the Foundation directory and the Support pages. Edit people and partners under Directory. Under Supporters, open the year, group, and acknowledgment. Edit annual giving levels inside their donation section.
+- **Park locations** contains the facility websites. On The Park, use Body for the quote, Sidebar links for page actions, and Images for the slideshow.
+- **What’s On** holds events and exhibitions. Use Schedule for start, end, weekly recurrence, and ticket links. Times use Los Angeles local time.
+- **News** lists stories from all organizations. Partner stories open the External article URL. Foundation and Park stories can use Body, Images, See also, and a source link. Display date controls the visible date and order. A promotion can link to a page and appear on the homepage.
+- **Organizations** holds the highlight and shadow colors used for each organization’s artwork.
+- **Site settings** holds navigation, the footer address and copy, social links, legal pages, and sitewide quotes. Choose and reorder legal pages to set the footer links.
 
-Use headings and subheadings in Body to divide narrative content. A caption supplies the same text to image alt attributes. Existing photo acknowledgments are part of the caption.
+Choose a site page for an internal destination, or enter a URL for an external site, file path, or fragment. In Body, link the entire paragraph to use Dotted link. Add a Quote block for a quotation with optional attribution. Use Alternative text for an image description and Caption for visible wording or credit. Select Decorative image when screen readers can skip the image.
 
 ## Review and publication
 

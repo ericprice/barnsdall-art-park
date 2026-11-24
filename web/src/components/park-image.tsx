@@ -53,7 +53,7 @@ export function ParkImage({
       )}
       <Image
         src={src}
-        alt={typeof image === 'string' ? '' : (image.caption ?? '')}
+        alt={typeof image === 'string' ? '' : image.decorative ? '' : (image.alt ?? '')}
         fill
         unoptimized={svgAsset || (typeof image === 'string' && image.endsWith('.svg'))}
         className={className}

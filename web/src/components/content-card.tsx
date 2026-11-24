@@ -9,32 +9,29 @@ export function HomeFeatureCard({entry, index}: {entry: ContentEntry; index: num
   const image = entry.featureImage || entry.image
   const theme = themeForEntry(entry)
   return (
-    <article
-      style={themeStyle(theme, event ? undefined : image)}
-      className={`home-feature content-card--${index % 6}`}
-    >
+    <article style={themeStyle(theme, image)} className={`home-feature content-card--${index % 6}`}>
       <Link href={entry.href}>
         <div
           className="content-card__image"
-          data-treatment={!event && isCutout(image) ? 'cutout' : undefined}
+          data-treatment={isCutout(image) ? 'cutout' : undefined}
           style={
-            !event && !image && entry.featureBackground
+            !image && entry.featureBackground
               ? {backgroundColor: entry.featureBackground}
               : undefined
           }
         >
-          <ParkImage editorial={!event} orgTheme={theme} image={image} />
+          <ParkImage editorial orgTheme={theme} image={image} />
         </div>
         {entry.organization && <p className="home-feature__category">{entry.organization}</p>}
         <h2 className="card-heading">{entry.title}</h2>
-        {event && entry.date ? (
+        {event && entry.date && !entry.featureCaption ? (
           <time dateTime={entry.date}>{scheduleLabel(entry)}</time>
-        ) : (
+        ) : entry.featureCaption ? (
           <span className="home-feature__caption">
             <i className="small-seed" aria-hidden="true" />
             {entry.featureCaption}
           </span>
-        )}
+        ) : null}
       </Link>
     </article>
   )

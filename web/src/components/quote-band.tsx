@@ -3,8 +3,8 @@ import {connection} from 'next/server'
 import type {SiteContent} from '@/lib/content'
 import {QuoteCarousel} from './quote-carousel'
 
-export async function QuoteBand({quote}: {quote: SiteContent['home']['quote']}) {
-  const pool = [quote, ...(quote?.additional ?? [])].flatMap((item, dotIndex) =>
+export async function QuoteBand({quote}: {quote: SiteContent['settings']['quotes']}) {
+  const pool = (quote ?? []).flatMap((item, dotIndex) =>
     item?.text ? [{text: item.text, attribution: item.attribution, link: item.link, dotIndex}] : [],
   )
 

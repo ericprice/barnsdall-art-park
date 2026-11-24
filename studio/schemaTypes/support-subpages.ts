@@ -5,13 +5,25 @@ const summary = defineField({name: 'summary', type: 'text', rows: 3})
 const label = defineField({name: 'label', type: 'string'})
 const link = defineField({name: 'link', type: 'link'})
 const image = defineField({name: 'image', type: 'parkImage'})
+function logoGroup({document, path}: ConditionalPropertyCallbackContext) {
+  const [year, group] = [path?.[1], path?.[3]]
+  const years = document?.supporterYears as
+    {_key: string; groups?: {_key: string; layout?: string}[]}[] | undefined
+  return (
+    typeof year === 'object' &&
+    '_key' in year &&
+    typeof group === 'object' &&
+    '_key' in group &&
+    years
+      ?.find((value) => value._key === year._key)
+      ?.groups?.find((value) => value._key === group._key)?.layout === 'logos'
+  )
+}
 const preview = {select: {title: 'title', subtitle: 'label', media: 'image'}}
 
 function onlyOn(...slugs: string[]) {
   return ({document}: ConditionalPropertyCallbackContext) =>
-    !slugs.some(
-      (slug) => (document?.slug as {current?: string} | undefined)?.current === 'support/' + slug,
-    )
+    !slugs.includes(String(document?.template))
 }
 
 export const supportPageFields = [
@@ -71,9 +83,15 @@ export const supportPageFields = [
                           defineField({
                             name: 'note',
                             title: 'Recognition or dedication',
+                            description: 'Appears beneath the name when no logo is shown.',
+                            hidden: (ctx) => Boolean(logoGroup(ctx) && ctx.parent?.logo?.asset),
                             type: 'string',
                           }),
-                          defineField({name: 'logo', type: 'parkImage'}),
+                          defineField({
+                            name: 'logo',
+                            type: 'parkImage',
+                            hidden: (ctx) => !logoGroup(ctx),
+                          }),
                           defineField({name: 'url', title: 'Website', type: 'url'}),
                         ],
                         preview: {select: {title: 'name', subtitle: 'note', media: 'logo'}},
@@ -109,16 +127,20 @@ export const supportPageFields = [
           title,
           defineField({...label, title: 'Location or program'}),
           summary,
-          image,
-          link,
           defineField({
             name: 'completed',
             title: 'Completed initiative',
             type: 'boolean',
             initialValue: false,
           }),
+          {
+            ...image,
+            hidden: ({parent}: ConditionalPropertyCallbackContext) => Boolean(parent?.completed),
+          },
+          link,
           defineField({
             name: 'color',
+            hidden: ({parent}) => Boolean(parent?.completed),
             title: 'Shape color',
             type: 'string',
             initialValue: 'pale-green',
@@ -156,8 +178,25 @@ export const supportPageFields = [
           label,
           title,
           summary,
-          image,
+          {
+            ...image,
+            hidden: ({parent}: ConditionalPropertyCallbackContext) => parent?.kind !== 'feature',
+          },
           link,
+          defineField({
+            name: 'levels',
+            title: 'Annual giving levels',
+            type: 'array',
+            hidden: ({parent}) => parent?.kind !== 'levels',
+            of: [
+              defineArrayMember({
+                name: 'givingLevel',
+                type: 'object',
+                fields: [title, summary, link],
+                preview,
+              }),
+            ],
+          }),
           defineField({
             name: 'ways',
             title: 'Ways to give',
@@ -173,20 +212,6 @@ export const supportPageFields = [
             ],
           }),
         ],
-        preview,
-      }),
-    ],
-  }),
-  defineField({
-    name: 'volunteerOpportunities',
-    title: 'Volunteer opportunities',
-    type: 'array',
-    hidden: onlyOn('volunteer'),
-    of: [
-      defineArrayMember({
-        name: 'volunteerOpportunity',
-        type: 'object',
-        fields: [title, summary, image, link],
         preview,
       }),
     ],

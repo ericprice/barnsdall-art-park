@@ -548,24 +548,6 @@ figcaption {
     margin-top: 1rem;
   }
 }
-.giving-levels {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 1.5rem;
-  max-width: 75rem;
-  padding-inline: var(--gutter);
-  margin: 3rem auto;
-  > div {
-    background: var(--pale-green);
-    padding: 2rem;
-  }
-  h2 {
-    @include type-size(title);
-  }
-  p {
-    margin-block-end: 1rem;
-  }
-}
 .detail-page > .quote-band {
   margin-top: 4.5rem;
 }
@@ -646,9 +628,6 @@ figcaption {
     h3 {
       text-align: left;
     }
-  }
-  .giving-levels {
-    grid-template-columns: 1fr;
   }
 }
 @media (prefers-reduced-motion: reduce) {
