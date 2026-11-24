@@ -325,6 +325,9 @@ figcaption {
   inset: 0;
   pointer-events: none;
 }
+.story-gallery__photo {
+  aspect-ratio: var(--featured-image-ratio);
+}
 .story-gallery__frame {
   position: relative;
 }

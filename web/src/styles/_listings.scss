@@ -185,7 +185,6 @@
     position: relative;
     width: 64%;
     margin: 0 auto;
-    aspect-ratio: 3/2;
     img {
       object-fit: contain;
     }
@@ -223,7 +222,6 @@
   }
   .story-gallery__photo {
     width: 33%;
-    aspect-ratio: 0.72;
     border-radius: 42% 58% 34% 66% / 48% 50% 50% 52%;
     overflow: hidden;
     img {

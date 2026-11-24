@@ -2,7 +2,7 @@ import {contentSections} from './sections'
 import {destinationFields, quoteFields, validDestination} from './objects'
 import {FeatureColor} from './feature-color'
 import {footerFromPlainText} from '../../shared/footer-text'
-import {pageLayouts, pageHasMainImage, historyPageId} from '../../shared/page-layouts'
+import {pageLayouts, pageHasMainImage, historyPageId, rolesByLayout} from '../../shared/page-layouts'
 import {organizationReference} from './organization'
 import {hostsDetailPage, isExternalStoryUrl} from '../../shared/organizations'
 import {supportPageFields} from './support-subpages'
@@ -285,7 +285,11 @@ export const page = defineType({
     {...subtitle, group: 'content'},
     {...body, group: 'content'},
     {...slug, group: 'content'},
-    {...contentSections, group: 'content'},
+    {
+      ...contentSections,
+      group: 'content',
+      hidden: ({document}) => !rolesByLayout[String(document?.template)]?.length,
+    },
     {...mainImage, group: 'images', hidden: ({document}) => !pageHasMainImage(document?.template)},
     defineField({
       name: 'template',
@@ -389,14 +393,7 @@ export const place = defineType({
     }),
     {...body, group: 'content', hidden: linksOut},
     {...slug, group: 'content'},
-    {
-      ...contentSections,
-      group: 'content',
-      hidden: (context) =>
-        linksOut(context) ||
-        !Array.isArray(context.document?.contentSections) ||
-        !context.document.contentSections.length,
-    },
+    {...contentSections, group: 'content', hidden: true},
     {...sidebarLinks, group: 'content', hidden: linksOut},
     {...gallery, group: 'images', hidden: linksOut},
   ],

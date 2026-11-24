@@ -27,12 +27,12 @@
     margin-block-end: calc(2 * var(--prose-heading-gap));
     position: relative;
     inset-inline-start: 50%;
-    inline-size: calc(var(--story-photo-width) * min(1, var(--timeline-photo-ratio, 1)));
+    inline-size: var(--story-photo-width);
     translate: -50% 0;
   }
   &__photo {
     position: relative;
-    aspect-ratio: var(--timeline-photo-ratio, 1);
+    aspect-ratio: var(--featured-image-ratio);
     img {
       object-fit: contain;
     }

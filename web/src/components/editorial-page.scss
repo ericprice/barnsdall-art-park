@@ -7,14 +7,12 @@
   @include publisher-type;
 
   .story-gallery {
-    --story-frame-ratio: calc(1053 / 693);
     margin: 0;
   }
   .story-gallery__photo {
     position: relative;
     width: var(--story-photo-width);
     margin-inline: auto;
-    aspect-ratio: var(--story-frame-ratio);
     img {
       object-fit: contain;
     }
@@ -23,7 +21,7 @@
     // Match the visible photograph when its aspect ratio is narrower than the frame.
     width: calc(
       var(--story-photo-width) *
-        min(1, var(--story-image-ratio, var(--story-frame-ratio)) / var(--story-frame-ratio))
+        min(1, var(--story-image-ratio, var(--featured-image-ratio)) / var(--featured-image-ratio))
     );
     margin: 0.35em auto 0;
   }

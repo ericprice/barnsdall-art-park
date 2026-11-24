@@ -1,6 +1,4 @@
-import type {CSSProperties} from 'react'
 import type {ContentEntry, ImageSource} from '@/lib/content'
-import {imageAspectRatio} from '@/sanity/image'
 import {EditorialPage} from './editorial-page'
 import {PageSections} from './page-sections'
 import {ParkImage} from './park-image'
@@ -9,9 +7,8 @@ import {DotLink} from './action-links'
 function TimelinePhoto({image}: {image: ImageSource}) {
   if (!image || (typeof image !== 'string' && !image.asset)) return null
   const caption = typeof image === 'string' ? undefined : image.caption
-  const ratio = imageAspectRatio(image)
   return (
-    <figure style={ratio ? ({'--timeline-photo-ratio': ratio} as CSSProperties) : undefined}>
+    <figure>
       <div className="timeline-chronology__photo">
         <ParkImage image={image} sizes="(max-width: 44rem) 78vw, 66vw" />
       </div>

@@ -11,20 +11,16 @@ import {rolesByLayout, sectionRoles} from '../../shared/page-layouts'
 
 function SectionLayout({elementProps, value, onChange}: StringInputProps) {
   const template = useFormValue(['template'])
-  const choices = [
-    'prose',
-    'columns',
-    'accordion',
-    ...(rolesByLayout[String(template)] || []),
-  ] as (keyof typeof sectionRoles)[]
+  const choices = rolesByLayout[String(template)] || []
   return (
     <Select
       {...elementProps}
-      value={value || 'prose'}
+      value={value || ''}
       onChange={(event) =>
         onChange(event.currentTarget.value ? set(event.currentTarget.value) : unset())
       }
     >
+      <option value="">Choose a layout</option>
       {choices.map((choice) => (
         <option key={choice} value={choice}>
           {sectionRoles[choice]}
@@ -64,18 +60,14 @@ export const contentSections = defineField({
           name: 'role',
           title: 'Layout',
           type: 'string',
-          initialValue: 'prose',
           components: {input: SectionLayout},
           validation: (rule) =>
-            rule.custom(
+            rule.required().custom(
               (role, ctx) =>
                 !role ||
-                [
-                  'prose',
-                  'columns',
-                  'accordion',
-                  ...(rolesByLayout[String(ctx.document?.template)] || []),
-                ].includes(role) ||
+                (rolesByLayout[String(ctx.document?.template)] || []).includes(
+                  role as keyof typeof sectionRoles,
+                ) ||
                 'Choose a layout available on this page.',
             ),
         }),

@@ -33,17 +33,21 @@ function linkBlock(key: string, link: StoredObject) {
   return block
 }
 
-export function migrateSectionsToBody<T extends StoredObject>(document: T): StoredObject {
-  if (!Array.isArray(document.sections)) return document
-  const {sections, ...rest} = document
-  const body: StoredObject[] = [...((rest.body as StoredObject[] | undefined) || [])]
+function appendToBody(body: StoredObject[]) {
   const keys = new Set(body.map((block) => block._key))
-  function append(block: StoredObject, preferredKey: string) {
+  return (block: StoredObject, preferredKey: string) => {
     let key = preferredKey
     for (let suffix = 2; keys.has(key); suffix++) key = `${preferredKey}-${suffix}`
     keys.add(key)
     body.push({...block, _key: key})
   }
+}
+
+export function migrateSectionsToBody<T extends StoredObject>(document: T): StoredObject {
+  if (!Array.isArray(document.sections)) return document
+  const {sections, ...rest} = document
+  const body: StoredObject[] = [...((rest.body as StoredObject[] | undefined) || [])]
+  const append = appendToBody(body)
 
   for (const [i, section] of (sections as StoredSection[]).entries()) {
     const anchor = section.anchor || section._key || `section-${i + 1}`
@@ -67,4 +71,45 @@ export function migrateSectionsToBody<T extends StoredObject>(document: T): Stor
     }
   }
   return body.length || Array.isArray(document.body) ? {...rest, body} : rest
+}
+
+type ContentSection = StoredSection & {role?: string}
+
+export function moveProseSections(document: StoredObject) {
+  if (!Array.isArray(document.contentSections) || !document.contentSections.length) return
+
+  const sections = document.contentSections as ContentSection[]
+  // Getting Here renders its map above the body, regardless of its position in Sections.
+  const map = document.template === 'visit' ? sections.find(({role}) => role === 'map') : undefined
+  const afterBody = sections.filter((section) => section !== map)
+  const firstStructured = afterBody.findIndex(
+    ({role, entries}) => (role && !['prose', 'inquiries', 'plan'].includes(role)) || entries?.length,
+  )
+  const prose = firstStructured < 0 ? afterBody : afterBody.slice(0, firstStructured)
+  if (!prose.length) return
+
+  const body = Array.isArray(document.body) ? [...document.body] : []
+  const append = appendToBody(body)
+
+  for (const section of prose) {
+    const anchor = section.anchor || section._key
+    if (!anchor || !section.title) throw new Error(`Untitled section on ${document._id}`)
+    const headingKey = 'heading-' + anchor
+    append(textBlock(headingKey, 'h2', section.title), headingKey)
+    for (const [index, block] of (section.body || []).entries()) {
+      append(block, String(block._key || `${anchor}-text-${index}`))
+    }
+    for (const [index, link] of (section.links || []).entries()) {
+      const {_key, label, ...destination} = link
+      if (typeof label !== 'string' || !label) throw new Error(`Unlabeled link on ${document._id}`)
+      const key = `${anchor}-link-${_key || index}`
+      const action = textBlock(key, 'dotLink', label)
+      action.children[0].marks.push('destination')
+      action.markDefs.push({...destination, _key: 'destination'})
+      append(action, key)
+    }
+    if (section.image) append(section.image, `image-${anchor}`)
+  }
+
+  return {body, contentSections: sections.filter((section) => !prose.includes(section))}
 }

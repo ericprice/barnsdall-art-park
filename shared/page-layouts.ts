@@ -28,10 +28,9 @@ export const sectionRoles = {
 
 export const rolesByLayout: Record<string, (keyof typeof sectionRoles)[]> = {
   visit: ['map'],
-  rentals: ['inquiries'],
+  foundation: ['columns', 'accordion'],
   centennial: ['campaign'],
   contact: ['signup'],
-  restoration: ['plan'],
 }
 
 export function pageHasMainImage(template?: unknown) {
