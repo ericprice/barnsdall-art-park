@@ -1,5 +1,5 @@
 import Link from './route-link'
-import type {ContentEntry, SiteContent, InterfaceText} from '@/lib/content'
+import type {ContentEntry, InterfaceText} from '@/lib/content'
 import {eventDay, eventMonths, readableMonth} from '@/lib/event-filters'
 import {ListingGrid} from './listing-card'
 import {QuoteBand} from './quote-band'
@@ -19,13 +19,11 @@ export function listingUrl(path: string, params: ListingParams) {
 export function EventsBrowser({
   events,
   params,
-  quote,
   text,
 }: {
   events: ContentEntry[]
   params: ListingParams
   text: InterfaceText
-  quote: SiteContent['settings']['quotes']
 }) {
   const today = eventDay(new Date().toISOString())!
   const archive = params.period === 'archive'
@@ -81,7 +79,7 @@ export function EventsBrowser({
           </Link>
         )}
       </nav>
-      <QuoteBand quote={quote} />
+      <QuoteBand />
     </main>
   )
 }

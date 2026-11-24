@@ -13,6 +13,7 @@ type Quote = Pick<
   text: string
   dotIndex: number
 }
+export type QuoteColors = {light: string; dark: string}
 const quoteDots = [6, 13, 1, 9, 4, 12, 2, 7, 3, 11, 5, 10, 8, 14]
 
 function QuoteText({quote}: {quote: Quote}) {
@@ -42,10 +43,12 @@ function QuoteText({quote}: {quote: Quote}) {
   )
 }
 
-export function QuoteCarousel({quotes}: {quotes: Quote[]}) {
-  const [slide, setSlide] = useState({index: 0, previous: -1, sequence: 0})
+export function QuoteCarousel({quotes, palette}: {quotes: Quote[]; palette: QuoteColors[]}) {
+  const [slide, setSlide] = useState({index: 0, previous: -1, sequence: 0, paletteIndex: 0})
   const content = useRef<HTMLDivElement>(null)
   const current = useRef<HTMLQuoteElement>(null)
+  const paletteSize = Math.max(1, palette.length)
+  const colors = palette[slide.paletteIndex % paletteSize]
 
   useLayoutEffect(() => {
     const frame = content.current
@@ -69,16 +72,22 @@ export function QuoteCarousel({quotes}: {quotes: Quote[]}) {
 
   function advance(direction: number) {
     const motion = !window.matchMedia('(prefers-reduced-motion: reduce)').matches
-    setSlide(({index, sequence}) => ({
+    setSlide(({index, sequence, paletteIndex}) => ({
       index: (index + direction + quotes.length) % quotes.length,
       previous: motion ? index % quotes.length : -1,
       sequence: sequence + 1,
+      paletteIndex: (paletteIndex + direction + paletteSize) % paletteSize,
     }))
   }
   const swipe = useCarouselSwipe(quotes.length, advance)
 
   return (
-    <section className="quote-band" aria-label="Quotations" {...swipe}>
+    <section
+      className="quote-band"
+      aria-label="Quotations"
+      style={colors && ({'--quote-background': colors.light, color: colors.dark} as CSSProperties)}
+      {...swipe}
+    >
       {quotes.length > 1 && (
         <button type="button" aria-label="Previous quotation" onClick={() => advance(-1)}>
           <CarouselChevron direction="previous" />

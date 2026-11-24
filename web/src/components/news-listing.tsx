@@ -1,6 +1,6 @@
 import {isCutout, themeForEntry, themeStyle} from '@/lib/image-theme'
 import Link from './route-link'
-import type {ContentEntry, SiteContent, InterfaceText} from '@/lib/content'
+import type {ContentEntry, InterfaceText} from '@/lib/content'
 import {listingUrl, type ListingParams} from './events-browser'
 import {ListingGrid} from './listing-card'
 import {EntryDate} from './entry-meta'
@@ -11,13 +11,11 @@ import {ParkImage} from './park-image'
 export function NewsListing({
   articles,
   params,
-  quote,
   text,
 }: {
   articles: ContentEntry[]
   params: ListingParams
   text: InterfaceText
-  quote: SiteContent['settings']['quotes']
 }) {
   const pageSize = 6
   const [lead, ...otherArticles] = articles
@@ -70,7 +68,7 @@ export function NewsListing({
           )}
         </nav>
       )}
-      <QuoteBand quote={quote} />
+      <QuoteBand />
     </main>
   )
 }

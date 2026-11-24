@@ -66,6 +66,7 @@ export type NavItem = {
   children?: {label: string; href: string}[]
 }
 export type SiteContent = {
+  organizationColors: SITE_QUERY_RESULT['organizationColors']
   settings: {
     footerLinks?: {label?: string; href?: string; _key?: string}[]
     title: string
@@ -182,6 +183,7 @@ function settingsFor(s: SITE_QUERY_RESULT['settings']): SiteContent['settings'] 
 export const getSite = cache(async (): Promise<SiteContent> => {
   const data = await withLinks(await readContent(SITE_QUERY, {historyId: historyPageId}))
   return {
+    organizationColors: data.organizationColors,
     settings: settingsFor(data.settings),
     events: data.events.map(toEntry),
     articles: data.articles.filter(contentDestination).map(toEntry),

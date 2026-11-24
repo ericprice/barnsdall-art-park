@@ -1,10 +1,12 @@
 import {randomInt} from 'node:crypto'
 import {connection} from 'next/server'
-import type {SiteContent} from '@/lib/content'
-import {QuoteCarousel} from './quote-carousel'
+import {getSite} from '@/lib/content'
+import {hexColor} from '../../../shared/organizations'
+import {QuoteCarousel, type QuoteColors} from './quote-carousel'
 
-export async function QuoteBand({quote}: {quote: SiteContent['settings']['quotes']}) {
-  const pool = (quote ?? []).flatMap((item, dotIndex) =>
+export async function QuoteBand() {
+  const {settings, organizationColors} = await getSite()
+  const pool = (settings.quotes ?? []).flatMap((item, dotIndex) =>
     item?.text ? [{text: item.text, attribution: item.attribution, link: item.link, dotIndex}] : [],
   )
 
@@ -19,5 +21,12 @@ export async function QuoteBand({quote}: {quote: SiteContent['settings']['quotes
     }
   }
 
-  return <QuoteCarousel quotes={pool} />
+  const palette = new Map<string, QuoteColors>()
+  for (const organization of organizationColors) {
+    const light = hexColor(organization.light)
+    const dark = hexColor(organization.dark)
+    if (light && dark) palette.set(`${light}/${dark}`.toLowerCase(), {light, dark})
+  }
+
+  return <QuoteCarousel quotes={pool} palette={[...palette.values()]} />
 }

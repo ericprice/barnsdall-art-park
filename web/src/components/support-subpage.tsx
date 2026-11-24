@@ -215,7 +215,7 @@ export function SupportSubpage({
       {entry.template === 'initiatives' && <Initiatives entry={entry} />}
       {entry.template === 'donate' && <Donate entry={entry} />}
       {!!entry.sections?.length && <PageSections sections={entry.sections} />}
-      <QuoteBand quote={site.settings.quotes} />
+      <QuoteBand />
     </main>
   )
 }

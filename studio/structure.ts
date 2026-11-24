@@ -7,6 +7,7 @@ import {HeartIcon} from '@sanity/icons/Heart'
 import {ClockIcon} from '@sanity/icons/Clock'
 import {historyPageId} from '../shared/page-layouts'
 import {interfaceText} from '../shared/interface'
+import {organizationDisplayOrder} from './schemaTypes/organization'
 
 export const singletonTypes = new Set(['siteSettings', 'homePage'])
 
@@ -60,7 +61,13 @@ export const structure: StructureResolver = (S) => {
       S.documentTypeListItem('event').title(interfaceText.whatsOn),
       S.documentTypeListItem('article').title('News'),
       S.divider(),
-      S.documentTypeListItem('organization').title('Organizations'),
+      S.documentTypeListItem('organization')
+        .title('Organizations')
+        .child(
+          S.documentTypeList('organization')
+            .title('Organizations')
+            .defaultOrdering(organizationDisplayOrder.by),
+        ),
       S.listItem()
         .title('Site Settings')
         .icon(CogIcon)

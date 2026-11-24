@@ -43,28 +43,18 @@ export default async function ContentPage({params, searchParams}: Props) {
   const site = await getSite()
   if (path === '/whats-on')
     return (
-      <EventsBrowser
-        text={interfaceText}
-        events={site.events}
-        params={await searchParams}
-        quote={site.settings.quotes}
-      />
+      <EventsBrowser text={interfaceText} events={site.events} params={await searchParams} />
     )
   if (path === '/news')
     return (
-      <NewsListing
-        text={interfaceText}
-        articles={site.articles}
-        params={await searchParams}
-        quote={site.settings.quotes}
-      />
+      <NewsListing text={interfaceText} articles={site.articles} params={await searchParams} />
     )
   const entry = await getEntry(path)
   if (!entry) notFound()
   const external = /^https?:\/\//.test(entry.href)
   if (path.startsWith('/park/') && !external)
     return (
-      <EditorialPage entry={entry} afterBody={<QuoteBand quote={site.settings.quotes} />}>
+      <EditorialPage entry={entry} afterBody={<QuoteBand />}>
         <PageSections sections={entry.sections} downloadPdf />
       </EditorialPage>
     )
@@ -95,7 +85,7 @@ export default async function ContentPage({params, searchParams}: Props) {
       afterBody={
         <>
           {foundation && <FoundationDirectory entry={entry} />}
-          <QuoteBand quote={site.settings.quotes} />
+          <QuoteBand />
         </>
       }
     >

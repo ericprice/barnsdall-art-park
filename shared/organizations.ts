@@ -73,6 +73,6 @@ export function organizationTheme(
   }
 }
 
-function hexColor(value?: string | null) {
+export function hexColor(value?: string | null) {
   return value && /^#[a-f0-9]{6}$/i.test(value) ? value : undefined
 }

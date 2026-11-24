@@ -1,9 +1,10 @@
 import {ParkImage} from './park-image'
 import Link from './route-link'
-import type {SiteContent} from '@/lib/content'
+import {getSite} from '@/lib/content'
 import {NewsletterSignup} from './newsletter-signup'
 import {FooterText} from './rich-text'
 import {interfaceText} from '../../../shared/interface'
+import {hexColor} from '../../../shared/organizations'
 
 const copyrightYear = new Intl.DateTimeFormat('en-US', {
   timeZone: 'America/Los_Angeles',
@@ -21,7 +22,9 @@ function platformIcon(href: string) {
     /* Incomplete drafts can contain an invalid URL. */
   }
 }
-export function SiteFooter({settings}: {settings: SiteContent['settings']}) {
+export async function SiteFooter() {
+  const {settings, organizationColors} = await getSite()
+  const foundation = organizationColors.find(({_id}) => _id === 'organization.foundation')
   return (
     <footer className="park-footer" id="connect">
       <div className="park-footer__foundation">
@@ -57,7 +60,7 @@ export function SiteFooter({settings}: {settings: SiteContent['settings']}) {
               </ul>
             )}
           </div>
-          <NewsletterSignup />
+          <NewsletterSignup background={hexColor(foundation?.light)} />
           <div className="park-footer__details">
             <address>
               <FooterText value={settings.footer.address} />

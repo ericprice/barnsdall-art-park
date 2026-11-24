@@ -7,13 +7,7 @@ import {HomeFeatureCard} from './content-card'
 import {ExplorePark} from './explore-park'
 import {interfaceText as labels} from '../../../shared/interface'
 
-export function HomeSections({
-  home,
-  quotes,
-}: {
-  home: SiteContent['home']
-  quotes: SiteContent['settings']['quotes']
-}) {
+export function HomeSections({home}: {home: SiteContent['home']}) {
   const dots = drawDots(home.timeline.length)
   return (
     <>
@@ -25,7 +19,7 @@ export function HomeSections({
           ))}
         </section>
       )}
-      <QuoteBand quote={quotes} />
+      <QuoteBand />
       {home.timeline.length > 0 && (
         <section className="history" aria-labelledby="history-heading">
           <div className="section-heading">

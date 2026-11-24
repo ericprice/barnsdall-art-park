@@ -6,6 +6,7 @@ export const DESTINATIONS_QUERY = defineQuery(
   `*[_id in $ids]{_id, _type, slug, organizationRef, externalUrl, "targetPageId":targetPage._ref, "targetSlug":targetPage->slug.current}`,
 )
 export const SITE_QUERY = defineQuery(`{
+  "organizationColors": *[_type == "organization"] | order(_id asc){_id, light, dark},
   "settings": *[_type == "siteSettings" && _id == "siteSettings"][0]{
     title, description, footer, address, socialLinks, footerText, landAcknowledgment, quotes,
     navigation, footerLinks, legalPages[]->{_id, title, "slug": slug.current}

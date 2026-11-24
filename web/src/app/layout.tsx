@@ -36,7 +36,7 @@ export default async function RootLayout({children}: {children: React.ReactNode}
             initialSunset={getParkSunset(new Date()).toISOString()}
           />
           {children}
-          <SiteFooter settings={settings} />
+          <SiteFooter />
         </SiteShell>
         <Suspense>
           <SanityLive />

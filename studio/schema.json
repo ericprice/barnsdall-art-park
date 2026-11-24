@@ -3486,6 +3486,13 @@
           "type": "string"
         },
         "optional": true
+      },
+      "displayOrder": {
+        "type": "objectAttribute",
+        "value": {
+          "type": "number"
+        },
+        "optional": true
       }
     }
   },

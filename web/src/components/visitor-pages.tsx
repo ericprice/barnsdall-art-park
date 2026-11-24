@@ -49,7 +49,7 @@ export function VisitPage({entry, site}: Props) {
             </section>
           ))}
       </div>
-      <QuoteBand quote={site.settings.quotes} />
+      <QuoteBand />
     </main>
   )
 }

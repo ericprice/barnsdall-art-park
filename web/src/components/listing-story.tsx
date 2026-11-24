@@ -87,7 +87,7 @@ export function ListingStory({entry, site}: {entry: ContentEntry; site: SiteCont
           )}
         </nav>
       )}
-      <QuoteBand quote={site.settings.quotes} />
+      <QuoteBand />
     </main>
   )
 }

@@ -428,7 +428,7 @@ $compact-nav-height: $compact-nav-start + $compact-mark-height + $compact-nav-en
     letter-spacing: inherit;
     block-size: 1cap;
     padding: calc(0.18 * var(--type-label));
-    background: var(--green-tint);
+    background: color-mix(in srgb, var(--newsletter-background, var(--pale-green)) 50%, transparent);
   }
   input,
   button {

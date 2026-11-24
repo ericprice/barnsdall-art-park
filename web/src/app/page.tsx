@@ -6,11 +6,11 @@ import {HomeSections} from '@/components/home-sections'
 export default async function Home() {
   // The homepage header includes today's sunset even on the first HTML response.
   await connection()
-  const {home, settings} = await getSite()
+  const {home} = await getSite()
   return (
     <main className="home-page" id="main-content">
       <Hero slides={home.slides} celebration={home.celebration} />
-      <HomeSections quotes={settings.quotes} home={home} />
+      <HomeSections home={home} />
     </main>
   )
 }
