@@ -4,7 +4,6 @@ import Link from './route-link'
 import {useRef, useState, type CSSProperties} from 'react'
 import type {ContentEntry} from '@/lib/content'
 import {themeForEntry, themeStyle} from '@/lib/image-theme'
-import {DotLink} from './action-links'
 import {ParkImage} from './park-image'
 
 const dots = [1, 7, 9, 10, 11, 2, 5, 6, 8, 12, 3, 4, 13, 14]
@@ -25,7 +24,6 @@ export function ExplorePark({places, title}: {places: ContentEntry[]; title: str
   const column = selectedIndex % 3
   const rowSize = Math.min(3, places.length - selectedIndex + column)
   const photoPosition = rowSize === 1 ? 1 : rowSize === 2 ? column + 3 : column
-  const descriptionDot = dots[(ids.indexOf(selected.id) + 10) % dots.length]
 
   return (
     <section className="explore" aria-labelledby="explore-heading">
@@ -84,13 +82,9 @@ export function ExplorePark({places, title}: {places: ContentEntry[]; title: str
         ))}
       </ul>
       <p className="explore__description" id="explore-description">
-        <DotLink
-          className="caption"
-          href={selected.href}
-          style={{'--olive-dot': `url("/identity/dots/${descriptionDot}.svg")`} as CSSProperties}
-        >
+        <Link className="caption" href={selected.href}>
           {selected.subtitle || selected.title}
-        </DotLink>
+        </Link>
       </p>
     </section>
   )

@@ -1,5 +1,8 @@
 import type {ContentEntry, SiteContent} from '@/lib/content'
-import {DotLink} from './action-links'
+import {interfaceText} from '../../../shared/interface'
+import {Tile} from './tile'
+import {EntryLabel} from './entry-meta'
+import {DotLink, DotLinkContent} from './action-links'
 import {ParkImage} from './park-image'
 import {PageHeading} from './page-heading'
 import {PageSections} from './page-sections'
@@ -70,19 +73,43 @@ function Initiatives({entry}: {entry: ContentEntry}) {
     if (!items.length) return null
     const grid = (
       <div className="support-card-grid">
-        {items.map((card) => (
-          <article key={card._key}>
-            {!completed && (
-              <div className="initiative-shape" data-color={card.color || 'pale-green'}>
-                <ParkImage image={card.image} />
-              </div>
-            )}
-            {card.label && <p className="support-label">{card.label}</p>}
-            <h3 className="card-heading">{card.title}</h3>
-            {card.summary && <p>{card.summary}</p>}
-            <ActionLink action={card.link} />
-          </article>
-        ))}
+        {items.map((card) => {
+          const detail = card.detail
+          if (card.page && !detail?.slug) return null
+          const href = detail?.slug ? '/' + detail.slug : card.link?.href
+          const summary = card.summary || detail?.summary
+          return (
+            <Tile
+              key={card._key}
+              className="initiative-tile"
+              href={href}
+              title={detail?.title || card.title || ''}
+              label={card.label || detail?.organization}
+              media={
+                !completed && (
+                  <div
+                    className="tile__media initiative-shape"
+                    data-color={card.color || 'pale-green'}
+                  >
+                    <ParkImage image={card.image} />
+                  </div>
+                )
+              }
+              caption={
+                <>
+                  {summary && <p className="tile__summary">{summary}</p>}
+                  {href && (
+                    <span className="dot-link">
+                      <DotLinkContent>
+                        {detail ? interfaceText.readMore : card.link?.label}
+                      </DotLinkContent>
+                    </span>
+                  )}
+                </>
+              }
+            />
+          )
+        })}
       </div>
     )
     return completed ? (
@@ -114,7 +141,7 @@ function Donate({entry}: {entry: ContentEntry}) {
             </div>
           )}
           <div className="donation-heading">
-            {section.label && <p className="support-label">{section.label}</p>}
+            <EntryLabel label={section.label} large />
             <h2>{section.title}</h2>
           </div>
           {section.summary && <p className="donation-copy">{section.summary}</p>}
@@ -126,11 +153,10 @@ function Donate({entry}: {entry: ContentEntry}) {
           {section.kind === 'levels' && section.levels?.length ? (
             <div className="donation-level-grid">
               {section.levels.map((level) => (
-                <article key={level._key}>
-                  <h3 className="card-heading">{level.title}</h3>
+                <Tile key={level._key} title={level.title || ''}>
                   {level.summary && <p>{level.summary}</p>}
                   <ActionLink action={level.link} />
-                </article>
+                </Tile>
               ))}
             </div>
           ) : null}

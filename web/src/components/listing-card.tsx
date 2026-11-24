@@ -1,21 +1,11 @@
 import {themeForEntry, themeStyle} from '@/lib/image-theme'
 import {drawDots} from '@/lib/identity-dots'
-import Link from './route-link'
+import {Tile} from './tile'
 import type {CSSProperties} from 'react'
 import type {ContentEntry} from '@/lib/content'
-import {readableDate, scheduleLabel} from '@/lib/event-filters'
+import {EntryDate} from './entry-meta'
 import {ParkImage} from './park-image'
 import {DotLink} from './action-links'
-
-export function NewsCredit({entry}: {entry: ContentEntry}) {
-  const {organization} = entry
-  return (
-    <p className="listing-credit">
-      {organization && <span>{organization}</span>}
-      {entry.date && <time dateTime={entry.date}>{readableDate(entry.date)}</time>}
-    </p>
-  )
-}
 
 export function ListingGrid({
   entries,
@@ -53,41 +43,30 @@ function ListingCard({
   news: boolean
   readMore?: string
 }) {
-  const heading = (
-    <>
-      <div
-        className="listing-card__photo"
-        style={{'--olive-dot': `url('/identity/dots/${dot}.svg')`} as CSSProperties}
-      >
-        <ParkImage editorial={news} orgTheme={themeForEntry(entry)} image={entry.image} />
-      </div>
-      <h3>{entry.title}</h3>
-    </>
-  )
+  const theme = themeForEntry(entry)
   return (
-    <article
+    <Tile
       className="listing-card"
-      style={themeStyle(themeForEntry(entry), news ? entry.image : undefined)}
+      style={themeStyle(theme, news ? entry.image : undefined)}
+      href={entry.href}
+      title={entry.title}
+      label={entry.organization}
+      media={
+        <div
+          className="tile__media listing-card__photo"
+          style={{'--olive-dot': `url('/identity/dots/${dot}.svg')`} as CSSProperties}
+        >
+          <ParkImage editorial={news} orgTheme={theme} image={entry.image} />
+        </div>
+      }
     >
-      {entry.href ? (
-        <Link href={entry.href} className="listing-card__link card-heading">
-          {heading}
-        </Link>
-      ) : (
-        <div className="listing-card__link card-heading">{heading}</div>
-      )}
-      {news ? (
+      <EntryDate entry={entry} />
+      {news && (
         <>
-          <NewsCredit entry={entry} />
-          {entry.summary && <p className="listing-card__summary">{entry.summary}</p>}
-          <DotLink href={entry.href}>{readMore}</DotLink>
+          {entry.summary && <p className="tile__summary">{entry.summary}</p>}
+          {entry.href && readMore && <DotLink href={entry.href}>{readMore}</DotLink>}
         </>
-      ) : (
-        <p className="listing-credit listing-credit--event">
-          {entry.organization && <span>{entry.organization}</span>}
-          {entry.date && <time dateTime={entry.date}>{scheduleLabel(entry)}</time>}
-        </p>
       )}
-    </article>
+    </Tile>
   )
 }

@@ -21,7 +21,9 @@ export default defineConfig({
   document: {
     newDocumentOptions: (items, {creationContext}) =>
       creationContext.type === 'global'
-        ? items.filter((item) => !['support-page', 'visit-page'].includes(item.templateId))
+        ? items.filter(
+            (item) => !['support-page', 'visit-page', 'initiative-page'].includes(item.templateId),
+          )
         : items,
     actions: (actions, context) =>
       singletonTypes.has(context.schemaType)
@@ -33,6 +35,12 @@ export default defineConfig({
     types: schemaTypes,
     templates: (templates) => [
       ...templates.filter(({schemaType}) => !singletonTypes.has(schemaType)),
+      {
+        id: 'initiative-page',
+        title: 'Initiative page',
+        schemaType: 'page',
+        value: {template: 'initiative', slug: {_type: 'slug', current: 'support/initiatives/'}},
+      },
       ...['visit', 'support'].map((prefix) => ({
         id: prefix + '-page',
         title: prefix === 'visit' ? 'Visit page' : 'Support page',

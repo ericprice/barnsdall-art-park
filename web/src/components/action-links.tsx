@@ -1,14 +1,22 @@
 import Link from './route-link'
-import type {ComponentProps} from 'react'
+import type {ComponentProps, ReactNode} from 'react'
 import type {PageSection} from '@/lib/content'
 
 type LinkProps = ComponentProps<typeof Link>
 
+export function DotLinkContent({children}: {children: ReactNode}) {
+  return (
+    <>
+      <span className="small-seed" aria-hidden="true" />
+      <span>{children}</span>
+    </>
+  )
+}
+
 export function DotLink({children, className, ...props}: LinkProps) {
   return (
     <Link {...props} className={className ? `dot-link ${className}` : 'dot-link'}>
-      <span className="small-seed" aria-hidden="true" />
-      <span>{children}</span>
+      <DotLinkContent>{children}</DotLinkContent>
     </Link>
   )
 }
@@ -30,19 +38,17 @@ export function SidebarLinks({
   links,
   label,
   className,
-  linkClassName,
 }: {
   links?: {_key: string; label?: string; href?: string}[]
   label: string
   className?: string
-  linkClassName?: string
 }) {
   const items = links?.filter((link) => link.label && link.href)
   if (!items?.length) return null
   return (
     <nav className={className} aria-label={label}>
       {items.map((link) => (
-        <DisplayLink key={link._key} href={link.href!} className={linkClassName}>
+        <DisplayLink key={link._key} href={link.href!}>
           {link.label}
         </DisplayLink>
       ))}

@@ -2,7 +2,9 @@ import {isCutout, themeForEntry, themeStyle} from '@/lib/image-theme'
 import Link from './route-link'
 import type {ContentEntry, SiteContent, InterfaceText} from '@/lib/content'
 import {listingUrl, type ListingParams} from './events-browser'
-import {ListingGrid, NewsCredit} from './listing-card'
+import {ListingGrid} from './listing-card'
+import {EntryDate, EntryLabel} from './entry-meta'
+import {DisplayLink} from './action-links'
 import {QuoteBand} from './quote-band'
 import {ParkImage} from './park-image'
 
@@ -47,15 +49,14 @@ export function NewsListing({
               priority
             />
           </div>
+          <EntryLabel label={featured.organization} large />
           <h2>
             <Link href={featured.href}>{featured.title}</Link>
           </h2>
-          <NewsCredit entry={featured} />
+          <EntryDate entry={featured} />
           <div className="news-feature__copy">
             {featured.summary && <p className="news-feature__summary">{featured.summary}</p>}
-            <Link className="news-feature__read" href={featured.href}>
-              {text.readMore} <span aria-hidden="true">»</span>
-            </Link>
+            <DisplayLink href={featured.href}>{text.readMore}</DisplayLink>
           </div>
         </article>
       )}

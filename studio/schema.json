@@ -2273,10 +2273,11 @@
           "of": {
             "type": "object",
             "attributes": {
-              "title": {
+              "page": {
                 "type": "objectAttribute",
                 "value": {
-                  "type": "string"
+                  "type": "inline",
+                  "name": "page.reference"
                 },
                 "optional": true
               },
@@ -2288,6 +2289,13 @@
                 "optional": true
               },
               "summary": {
+                "type": "objectAttribute",
+                "value": {
+                  "type": "string"
+                },
+                "optional": true
+              },
+              "title": {
                 "type": "objectAttribute",
                 "value": {
                   "type": "string"

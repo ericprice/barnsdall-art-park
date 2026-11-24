@@ -115,7 +115,7 @@ test('dates, weekly hours, and full season bounds are readable without conflatin
   const detail = scheduleLabel(fridays, true)
   assert.match(detail, /Mar 5/)
   assert.match(detail, /May 28, 2027/)
-  assert.match(detail, /6pm–10pm/)
+  assert.match(detail, /\n6pm–10pm$/)
   assert.match(scheduleLabel(exhibition), /Jan 1.*Mar 31, 2027/)
 })
 

@@ -5,6 +5,10 @@ $site-width: 75rem;
   @return min($percent * 1vw, $site-width * $percent * 0.01);
 }
 
+@mixin content-grid-gap($row, $column: $row) {
+  gap: calc(2 * #{$row}) $column;
+}
+
 @mixin type-size($step) {
   font-size: var(--type-#{$step});
   line-height: var(--leading-#{$step});

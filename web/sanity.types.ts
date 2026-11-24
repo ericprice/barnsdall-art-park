@@ -373,9 +373,10 @@ export type Page = {
   }>
   completedHeading?: string
   initiativeCards?: Array<{
-    title?: string
+    page?: PageReference
     label?: string
     summary?: string
+    title?: string
     completed?: boolean
     image?: ParkImage
     link?: Link
@@ -1008,7 +1009,7 @@ export type SITE_QUERY_RESULT = {
 
 // Source: ../web/src/sanity/queries.ts
 // Variable: CONTENT_QUERY
-// Query: *[_type == $type && slug.current == $slug && _type in ["page","place","event","article"]][0]{..., "orgTheme": organizationRef->{title, light, dark}, "targetPageId":targetPage._ref, "targetSlug":targetPage->slug.current}
+// Query: *[_type == $type && slug.current == $slug && _type in ["page","place","event","article"]][0]{..., _type == "page" => {initiativeCards[]{..., "detail": page->{title, "slug": slug.current, summary, "organization": organizationRef->title}}}, "orgTheme": organizationRef->{title, light, dark}, "targetPageId":targetPage._ref, "targetSlug":targetPage->slug.current}
 export type CONTENT_QUERY_RESULT =
   | {
       _id: string
@@ -1194,17 +1195,24 @@ export type CONTENT_QUERY_RESULT =
         _key: string
       }>
       completedHeading?: string
-      initiativeCards?: Array<{
-        title?: string
+      initiativeCards: Array<{
+        page?: PageReference
         label?: string
         summary?: string
+        title?: string
         completed?: boolean
         image?: ParkImage
         link?: Link
         color?: 'green' | 'lavender' | 'olive' | 'pale-green' | 'pink' | 'yellow'
         _type: 'initiativeCard'
         _key: string
-      }>
+        detail: {
+          title: string | null
+          slug: string | null
+          summary: string | null
+          organization: string | null
+        } | null
+      }> | null
       donationSections?: Array<{
         kind?: 'feature' | 'levels' | 'text' | 'ways'
         label?: string
@@ -1310,7 +1318,7 @@ export type CONTENT_QUERY_RESULT =
 
 // Source: ../web/src/sanity/queries.ts
 // Variable: SEARCH_QUERY
-// Query: *[_type in ["page", "place", "event", "article"] && (defined(slug.current) || (_type == "event" && defined(externalUrl))) && (title match $searchTerm || organizationRef->title match $searchTerm || summary match $searchTerm || subtitle match $searchTerm || (!defined(externalUrl) && !defined(targetPage) && pt::text(body) match $searchTerm) || contentSections[].title match $searchTerm || contentSections[].links[].label match $searchTerm || contentSections[].entries[].title match $searchTerm || contentSections[].entries[].links[].label match $searchTerm || count(contentSections[pt::text(body) match $searchTerm || count(entries[pt::text(body) match $searchTerm]) > 0]) > 0 || boardMembers[].name match $searchTerm || boardMembers[].role match $searchTerm || boardMembers[].affiliation match $searchTerm || boardMembers[].bio match $searchTerm || staffMembers[].name match $searchTerm || staffMembers[].role match $searchTerm || staffMembers[].affiliation match $searchTerm || staffMembers[].bio match $searchTerm || partners[].name match $searchTerm || supporterYears[].groups[].supporters[].name match $searchTerm || initiativeCards[].title match $searchTerm || donationSections[].title match $searchTerm || timelineEntries[].dateLabel match $searchTerm || timelineEntries[].description match $searchTerm)] | order(title asc)[0...100]{_id, _type, title, slug, summary, image, organizationRef, "orgTheme": organizationRef->{title, light, dark}, externalUrl, "targetPageId":targetPage._ref, "targetSlug":targetPage->slug.current}
+// Query: *[_type in ["page", "place", "event", "article"] && (defined(slug.current) || (_type == "event" && defined(externalUrl))) && (title match $searchTerm || organizationRef->title match $searchTerm || summary match $searchTerm || subtitle match $searchTerm || (!defined(externalUrl) && !defined(targetPage) && pt::text(body) match $searchTerm) || contentSections[].title match $searchTerm || contentSections[].links[].label match $searchTerm || contentSections[].entries[].title match $searchTerm || contentSections[].entries[].links[].label match $searchTerm || count(contentSections[pt::text(body) match $searchTerm || count(entries[pt::text(body) match $searchTerm]) > 0]) > 0 || boardMembers[].name match $searchTerm || boardMembers[].role match $searchTerm || boardMembers[].affiliation match $searchTerm || boardMembers[].bio match $searchTerm || staffMembers[].name match $searchTerm || staffMembers[].role match $searchTerm || staffMembers[].affiliation match $searchTerm || staffMembers[].bio match $searchTerm || partners[].name match $searchTerm || supporterYears[].groups[].supporters[].name match $searchTerm || initiativeCards[!defined(page)].title match $searchTerm || donationSections[].title match $searchTerm || timelineEntries[].dateLabel match $searchTerm || timelineEntries[].description match $searchTerm)] | order(title asc)[0...100]{_id, _type, title, slug, summary, image, organizationRef, "orgTheme": organizationRef->{title, light, dark}, externalUrl, "targetPageId":targetPage._ref, "targetSlug":targetPage->slug.current}
 export type SEARCH_QUERY_RESULT = Array<
   | {
       _id: string
@@ -1387,8 +1395,8 @@ declare global {
   interface SanityQueries {
     '*[_id in $ids]{_id, _type, slug, organizationRef, externalUrl, "targetPageId":targetPage._ref, "targetSlug":targetPage->slug.current}': DESTINATIONS_QUERY_RESULT
     '{\n  "settings": *[_type == "siteSettings" && _id == "siteSettings"][0]{\n    title, description, footer, address, socialLinks, footerText, landAcknowledgment, quotes,\n    navigation, footerLinks, legalPages[]->{_id, title, "slug": slug.current}\n  },\n  "home": *[_type == "homePage" && _id == "homePage"][0]{\n    historyLink, heroSlides[]{..., "orgTheme": organizationRef->{title, light, dark}}, celebration,\n    features[]{image,caption,background,entry->{_id,_type,title,slug,summary,image,organizationRef,"orgTheme":organizationRef->{title,light,dark},externalUrl,"targetPageId":targetPage._ref, "targetSlug":targetPage->slug.current,startsAt,endsAt,repeatsUntil,allDay,publishedAt}},\n    exploreLocations[]{image, location->{_id, _type, title, slug, subtitle, "orgTheme": organizationRef->{title, light, dark}, externalUrl}}\n  },\n  "milestones": *[_id == $historyId][0].timelineEntries[showOnHomepage == true]{_key, "year":coalesce(homeHighlight.year,dateLabel), "summary":coalesce(homeHighlight.summary,description),"link":homeHighlight.link},\n  "events": *[_type == "event"] | order(startsAt asc){_id, _type, title, slug, summary, image, organizationRef, externalUrl, "orgTheme": organizationRef->{title, light, dark}, startsAt, endsAt, repeatsUntil, allDay},\n  "articles": *[_type == "article" && defined(slug.current) && excludeFromNews != true] | order(defined(publishedAt) desc, publishedAt desc, title asc){_id, _type, title, slug, summary, image, organizationRef, "orgTheme": organizationRef->{title, light, dark}, externalUrl, publishedAt}\n}': SITE_QUERY_RESULT
-    '*[_type == $type && slug.current == $slug && _type in ["page","place","event","article"]][0]{..., "orgTheme": organizationRef->{title, light, dark}, "targetPageId":targetPage._ref, "targetSlug":targetPage->slug.current}': CONTENT_QUERY_RESULT
-    '*[_type in ["page", "place", "event", "article"] && (defined(slug.current) || (_type == "event" && defined(externalUrl))) && (title match $searchTerm || organizationRef->title match $searchTerm || summary match $searchTerm || subtitle match $searchTerm || (!defined(externalUrl) && !defined(targetPage) && pt::text(body) match $searchTerm) || contentSections[].title match $searchTerm || contentSections[].links[].label match $searchTerm || contentSections[].entries[].title match $searchTerm || contentSections[].entries[].links[].label match $searchTerm || count(contentSections[pt::text(body) match $searchTerm || count(entries[pt::text(body) match $searchTerm]) > 0]) > 0 || boardMembers[].name match $searchTerm || boardMembers[].role match $searchTerm || boardMembers[].affiliation match $searchTerm || boardMembers[].bio match $searchTerm || staffMembers[].name match $searchTerm || staffMembers[].role match $searchTerm || staffMembers[].affiliation match $searchTerm || staffMembers[].bio match $searchTerm || partners[].name match $searchTerm || supporterYears[].groups[].supporters[].name match $searchTerm || initiativeCards[].title match $searchTerm || donationSections[].title match $searchTerm || timelineEntries[].dateLabel match $searchTerm || timelineEntries[].description match $searchTerm)] | order(title asc)[0...100]{_id, _type, title, slug, summary, image, organizationRef, "orgTheme": organizationRef->{title, light, dark}, externalUrl, "targetPageId":targetPage._ref, "targetSlug":targetPage->slug.current}': SEARCH_QUERY_RESULT
+    '*[_type == $type && slug.current == $slug && _type in ["page","place","event","article"]][0]{..., _type == "page" => {initiativeCards[]{..., "detail": page->{title, "slug": slug.current, summary, "organization": organizationRef->title}}}, "orgTheme": organizationRef->{title, light, dark}, "targetPageId":targetPage._ref, "targetSlug":targetPage->slug.current}': CONTENT_QUERY_RESULT
+    '*[_type in ["page", "place", "event", "article"] && (defined(slug.current) || (_type == "event" && defined(externalUrl))) && (title match $searchTerm || organizationRef->title match $searchTerm || summary match $searchTerm || subtitle match $searchTerm || (!defined(externalUrl) && !defined(targetPage) && pt::text(body) match $searchTerm) || contentSections[].title match $searchTerm || contentSections[].links[].label match $searchTerm || contentSections[].entries[].title match $searchTerm || contentSections[].entries[].links[].label match $searchTerm || count(contentSections[pt::text(body) match $searchTerm || count(entries[pt::text(body) match $searchTerm]) > 0]) > 0 || boardMembers[].name match $searchTerm || boardMembers[].role match $searchTerm || boardMembers[].affiliation match $searchTerm || boardMembers[].bio match $searchTerm || staffMembers[].name match $searchTerm || staffMembers[].role match $searchTerm || staffMembers[].affiliation match $searchTerm || staffMembers[].bio match $searchTerm || partners[].name match $searchTerm || supporterYears[].groups[].supporters[].name match $searchTerm || initiativeCards[!defined(page)].title match $searchTerm || donationSections[].title match $searchTerm || timelineEntries[].dateLabel match $searchTerm || timelineEntries[].description match $searchTerm)] | order(title asc)[0...100]{_id, _type, title, slug, summary, image, organizationRef, "orgTheme": organizationRef->{title, light, dark}, externalUrl, "targetPageId":targetPage._ref, "targetSlug":targetPage->slug.current}': SEARCH_QUERY_RESULT
   }
 }
 // Lets @sanity/client releases that predate the global registry read it too

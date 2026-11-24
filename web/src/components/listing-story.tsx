@@ -3,7 +3,8 @@ import Link from './route-link'
 import type {ContentEntry, SiteContent} from '@/lib/content'
 import {scheduleLabel} from '@/lib/event-filters'
 import {SidebarLinks} from './action-links'
-import {ListingGrid, NewsCredit} from './listing-card'
+import {ListingGrid} from './listing-card'
+import {EntryDate, EntryLabel} from './entry-meta'
 import {QuoteBand} from './quote-band'
 import {RichText} from './rich-text'
 import {StoryGallery} from './story-gallery'
@@ -36,12 +37,9 @@ export function ListingStory({
     >
       <article>
         <header className="listing-head">
+          <EntryLabel label={entry.organization} large />
           <h1>{entry.title}</h1>
-          {event ? (
-            entry.organization && <h2>{entry.organization}</h2>
-          ) : (
-            <NewsCredit entry={entry} />
-          )}
+          {!event && <EntryDate entry={entry} />}
         </header>
         <StoryGallery
           text={text}
@@ -58,11 +56,7 @@ export function ListingStory({
                   <time dateTime={entry.date}>{scheduleLabel(entry, true)}</time>
                 </p>
               )}
-              <SidebarLinks
-                label={text.getTickets}
-                linkClassName="programme-story__tickets"
-                links={ticketLinks}
-              />
+              <SidebarLinks label={text.getTickets} links={ticketLinks} />
             </aside>
           )}
           <div className="listing-story__body">

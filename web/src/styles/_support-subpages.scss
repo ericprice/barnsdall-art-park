@@ -15,10 +15,6 @@
   > .quote-band {
     margin-top: 4rem;
   }
-  .support-label {
-    @include display-type(label);
-    margin: 0;
-  }
 }
 
 .supporter-years,
@@ -65,7 +61,7 @@
   .supporter-groups {
     display: grid;
     grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: 2rem var(--gutter);
+    @include content-grid-gap(2rem, var(--gutter));
     padding: 0.65rem 0 3.5rem;
   }
   h2 {
@@ -95,7 +91,7 @@
   .supporter-logos {
     display: grid;
     grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: var(--gutter);
+    @include content-grid-gap(var(--gutter));
     li {
       position: relative;
       min-height: 5rem;
@@ -130,26 +126,17 @@
 .donation-level-grid {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 4rem var(--gutter);
-  article {
-    text-align: center;
-    min-width: 0;
-  }
-  h2,
-  h3 {
-    @include type-size(title);
-  }
-  article > p:not(.support-label) {
-    margin-block-end: 0.65em;
-    margin-inline: auto;
-    max-width: 20em;
-  }
+  @include content-grid-gap(4rem, var(--gutter));
+}
+.donation-level-grid .tile > p {
+  margin-block-end: 0.65em;
+  margin-inline: auto;
+  max-width: 20em;
 }
 .initiative-shape {
   width: 67%;
   max-width: 14rem;
   aspect-ratio: 0.74;
-  margin: 0 auto 0.9rem;
   position: relative;
   overflow: hidden;
   background: var(--pale-green);
@@ -175,6 +162,7 @@
   }
   img {
     object-fit: cover;
+    filter: var(--duotone-adjustment);
     mix-blend-mode: multiply;
   }
 }
@@ -195,11 +183,10 @@
     @include type-size(title);
     text-align: center;
   }
-  .donation-heading .support-label {
-    @include type-size(title);
+  .donation-heading {
     text-align: center;
   }
-  .donation-heading .support-label + h2 {
+  .donation-heading .entry-label + h2 {
     color: var(--olive);
   }
   .donation-copy,
@@ -222,10 +209,7 @@
     .donation-heading {
       max-width: 78%;
     }
-    .support-label {
-      margin-block-end: 0.16em;
-    }
-    .support-label + h2 {
+    .entry-label + h2 {
       color: var(--ink);
       @include type-size(display);
     }
@@ -245,6 +229,7 @@
       width: 70% !important;
       object-fit: cover;
       object-position: 30% center;
+      filter: var(--duotone-adjustment);
       mix-blend-mode: multiply;
       opacity: 0.7;
     }
@@ -254,9 +239,6 @@
   }
   .donation-level-grid {
     margin-top: 2rem;
-  }
-  .donation-level-grid h3 {
-    @include type-size(label);
   }
   .donation-section--ways {
     margin-top: 4rem;
@@ -281,7 +263,7 @@
   .support-card-grid,
   .donation-level-grid {
     grid-template-columns: 1fr;
-    gap: 2.5rem;
+    @include content-grid-gap(2.5rem);
   }
   .support-initiatives {
     margin-top: 2rem;

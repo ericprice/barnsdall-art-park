@@ -124,9 +124,26 @@ export const supportPageFields = [
         name: 'initiativeCard',
         type: 'object',
         fields: [
-          title,
-          defineField({...label, title: 'Location or program'}),
-          summary,
+          defineField({
+            name: 'page',
+            title: 'Detail page',
+            type: 'reference',
+            to: [{type: 'page'}],
+            options: {filter: 'template != "initiatives" || !defined(template)'},
+            validation: (rule) => rule.required(),
+          }),
+          defineField({
+            ...label,
+            title: 'Label override',
+            description: 'Defaults to the organization on the detail page.',
+          }),
+          defineField({
+            ...summary,
+            title: 'Tile description',
+            description: 'Defaults to the introduction on the detail page.',
+          }),
+          // Keep earlier tiles readable while existing drafts and published versions coexist.
+          defineField({name: 'title', type: 'string', hidden: true, readOnly: true}),
           defineField({
             name: 'completed',
             title: 'Completed initiative',
@@ -137,7 +154,7 @@ export const supportPageFields = [
             ...image,
             hidden: ({parent}: ConditionalPropertyCallbackContext) => Boolean(parent?.completed),
           },
-          link,
+          defineField({...link, hidden: true, readOnly: true}),
           defineField({
             name: 'color',
             hidden: ({parent}) => Boolean(parent?.completed),
@@ -147,7 +164,7 @@ export const supportPageFields = [
             options: {list: ['pale-green', 'lavender', 'green', 'yellow', 'olive', 'pink']},
           }),
         ],
-        preview,
+        preview: {select: {title: 'page.title', subtitle: 'label', media: 'image'}},
       }),
     ],
   }),

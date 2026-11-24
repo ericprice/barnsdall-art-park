@@ -16,13 +16,12 @@
     @include type-size(display);
     text-wrap: balance;
   }
-  h2 {
-    @include type-size(section);
-    margin-top: 0.12em;
-  }
   a {
     pointer-events: auto;
   }
+}
+:is(.listing-head, .news-feature) > .entry-label {
+  margin-block-end: 0.5em;
 }
 .news-index > .listing-head:not(:has(+ .news-feature)) {
   margin-block-end: 2rem;
@@ -79,7 +78,7 @@
   }
 }
 .programme-month {
-  margin: site-size(3.5) var(--gutter) 0;
+  margin: var(--page-heading-gap) var(--gutter) 0;
 }
 .programme-month > h2 {
   @include type-size(section);
@@ -89,19 +88,7 @@
 .listing-grid {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: max(1.5rem, site-size(2.4)) var(--gutter);
-}
-.listing-card {
-  text-align: center;
-  h3 {
-    @include type-size(title);
-    margin: 0.46em 0 0;
-    text-wrap: balance;
-  }
-}
-.listing-card__link {
-  display: block;
-  text-decoration: none;
+  @include content-grid-gap(max(1.5rem, site-size(2.4)), var(--gutter));
 }
 .listing-card__photo {
   position: relative;
@@ -118,24 +105,20 @@
     background-color: var(--org-light);
   }
 }
-.listing-credit {
-  display: flex;
-  justify-content: center;
-  gap: 0 0.7em;
-  flex-wrap: wrap;
+.entry-date {
   @include publisher-type;
-  &--event {
-    flex-direction: column;
-    white-space: pre-wrap;
-  }
+  display: block;
+  white-space: pre-wrap;
 }
-.listing-head > .listing-credit,
-.news-feature > .listing-credit {
+.listing-head > .entry-date,
+.news-feature > .entry-date {
   margin-block-start: 0.85em;
 }
-.listing-card__summary,
+.listing-card .tile__summary,
 .news-feature__summary {
   margin: 0.8em 0;
+}
+.news-feature__summary {
   text-align: left;
 }
 .listing-empty {
@@ -145,7 +128,7 @@
 .listing-paging {
   display: flex;
   justify-content: space-between;
-  margin: max(2rem, site-size(4)) var(--gutter);
+  margin: var(--page-heading-gap) var(--gutter) max(2rem, site-size(4));
   gap: var(--gutter);
   @include display-type(title);
   a {
@@ -194,12 +177,6 @@
   }
   &__copy {
     width: min(100%, 20em);
-    text-align: left;
-  }
-  &__read {
-    @include display-type(label);
-    text-decoration: none;
-    margin-top: 0.6em;
   }
 }
 .news-index > .listing-grid {
@@ -243,6 +220,17 @@
   }
 }
 .programme-story {
+  @media (width > 44rem) {
+    .listing-story__columns {
+      align-items: start;
+      > * {
+        text-box: trim-start cap alphabetic;
+      }
+    }
+    .listing-story__body > .rich-text:first-child > :first-child {
+      margin-block-start: 0;
+    }
+  }
   .story-gallery {
     margin-top: calc(-1 * var(--type-section));
   }
@@ -256,44 +244,24 @@
     }
   }
   &__schedule {
+    @include display-type(label);
     text-align: center;
-    font: 400 var(--type-title)/var(--leading-title) var(--display);
-    text-transform: uppercase;
     text-wrap: balance;
-    > p {
-      font-family: var(--lead);
-      text-transform: none;
+    time {
+      white-space-collapse: preserve-breaks;
     }
-  }
-  &__tickets {
-    @include type-size(title);
-    display: block;
-    margin-top: 1em;
+    p + nav {
+      margin-block-start: 1em;
+    }
   }
 }
 .home-feature {
-  text-align: center;
-  min-width: 0;
-  > a {
-    display: block;
-    text-decoration: none;
-  }
-  h2 {
-    @include type-size(title);
-    text-wrap: balance;
+  .tile__title {
     max-width: 13em;
     margin: 0 auto;
   }
-  time {
-    display: inline-block;
-    white-space: pre-wrap;
-  }
   .dot-link {
     margin-inline: auto;
-  }
-  &__category {
-    @include display-type(label);
-    margin-block-end: 0.1em;
   }
   .content-card__image {
     width: 51%;
@@ -303,7 +271,6 @@
     background: none;
     overflow: visible;
     width: 55%;
-    margin-block: 0 0.9rem;
     &::before {
       content: '';
       position: absolute;
@@ -321,9 +288,6 @@
 @media (max-width: 44rem) {
   .listing-grid {
     grid-template-columns: repeat(2, minmax(0, 1fr));
-  }
-  .programme-month {
-    margin-top: 2.25rem;
   }
   .news-feature {
     min-height: 22rem;
@@ -354,7 +318,7 @@
 @media (max-width: 32rem) {
   .listing-grid {
     grid-template-columns: 1fr;
-    gap: 2rem;
+    @include content-grid-gap(2rem);
   }
   .home-feature .content-card__image {
     max-width: 12rem;

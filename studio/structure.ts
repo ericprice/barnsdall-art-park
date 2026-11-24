@@ -22,7 +22,10 @@ export const structure: StructureResolver = (S) => {
             '_type == "page" && (slug.current == $prefix || string::startsWith(slug.current, $prefix + "/"))',
           )
           .params({prefix})
-          .initialValueTemplates([S.initialValueTemplateItem(prefix + '-page')]),
+          .initialValueTemplates([
+            S.initialValueTemplateItem(prefix + '-page'),
+            ...(prefix === 'support' ? [S.initialValueTemplateItem('initiative-page')] : []),
+          ]),
       )
   return S.list()
     .title('Barnsdall')

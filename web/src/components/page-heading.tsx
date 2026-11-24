@@ -15,6 +15,9 @@ export function PageHeading({
   const current =
     links?.find((link) => link.href === path) ??
     links?.find((link) => link.href?.split('#')[0] === path)
+  const parent = links
+    ?.filter((link) => link.href && link.href !== section && path.startsWith(link.href + '/'))
+    .sort((a, b) => b.href.length - a.href.length)[0]
   return (
     <header className="page-heading">
       <h1>{title}</h1>
@@ -26,7 +29,9 @@ export function PageHeading({
                 <Link
                   key={link.href}
                   href={link.href}
-                  aria-current={link === current ? 'page' : undefined}
+                  aria-current={
+                    link === current ? 'page' : !current && link === parent ? 'location' : undefined
+                  }
                 >
                   {link.label}
                 </Link>

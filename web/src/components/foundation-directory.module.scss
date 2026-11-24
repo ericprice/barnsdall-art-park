@@ -52,7 +52,7 @@
   display: flex;
   justify-content: center;
   flex-wrap: wrap;
-  gap: var(--gutter);
+  @include content-grid-gap(var(--gutter));
 
   li {
     width: min(100%, 25ch);
@@ -69,7 +69,7 @@
   flex-wrap: wrap;
   align-items: center;
   justify-content: center;
-  gap: max(1.5rem, site-size(3.8));
+  @include content-grid-gap(max(1.5rem, site-size(3.8)));
   padding-top: max(1rem, site-size(1.8));
 
   li {

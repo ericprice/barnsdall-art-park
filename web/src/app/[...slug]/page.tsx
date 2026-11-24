@@ -97,6 +97,9 @@ export default async function ContentPage({params, searchParams}: Props) {
           path={path}
           settings={site.settings}
         />
+        {entry.template === 'initiative' && path.startsWith('/support/') && (
+          <h2 className="mission-heading">{entry.title}</h2>
+        )}
         {foundation && <h2 className="mission-heading">{foundationHeadings.mission}</h2>}
         {entry.summary && <p className="interior__intro lead">{entry.summary}</p>}
         {entry.image && (

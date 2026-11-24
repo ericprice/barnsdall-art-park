@@ -1,6 +1,7 @@
 import {isCutout, themeForEntry, themeStyle} from '@/lib/image-theme'
-import Link from './route-link'
-import {scheduleLabel} from '@/lib/event-filters'
+import {DotLinkContent} from './action-links'
+import {Tile} from './tile'
+import {EntryDate} from './entry-meta'
 import {ParkImage} from './park-image'
 import type {ContentEntry} from '@/lib/content'
 
@@ -8,10 +9,16 @@ export function HomeFeatureCard({entry, index}: {entry: ContentEntry; index: num
   const image = entry.featureImage || entry.image
   const theme = themeForEntry(entry)
   return (
-    <article style={themeStyle(theme, image)} className={`home-feature content-card--${index % 6}`}>
-      <Link href={entry.href}>
+    <Tile
+      title={entry.title}
+      label={entry.organization}
+      heading="h2"
+      href={entry.href}
+      className={`home-feature content-card--${index % 6}`}
+      style={themeStyle(theme, image)}
+      media={
         <div
-          className="content-card__image"
+          className="tile__media content-card__image"
           data-treatment={isCutout(image) ? 'cutout' : undefined}
           style={
             !image && entry.featureBackground
@@ -21,17 +28,16 @@ export function HomeFeatureCard({entry, index}: {entry: ContentEntry; index: num
         >
           <ParkImage editorial orgTheme={theme} image={image} />
         </div>
-        {entry.organization && <p className="home-feature__category">{entry.organization}</p>}
-        <h2 className="card-heading">{entry.title}</h2>
-        {entry.type === 'event' && entry.date && !entry.featureCaption ? (
-          <time dateTime={entry.date}>{scheduleLabel(entry)}</time>
-        ) : entry.featureCaption ? (
+      }
+      caption={
+        entry.featureCaption ? (
           <span className="dot-link">
-            <span className="small-seed" aria-hidden="true" />
-            <span>{entry.featureCaption}</span>
+            <DotLinkContent>{entry.featureCaption}</DotLinkContent>
           </span>
-        ) : null}
-      </Link>
-    </article>
+        ) : (
+          entry.type === 'event' && <EntryDate entry={entry} />
+        )
+      }
+    />
   )
 }

@@ -113,7 +113,7 @@ export function scheduleLabel(event: Schedule, full = false) {
   if (!event.allDay) {
     const clock = (v: string) =>
       localTime.format(new Date(v)).replace(':00', '').replace(/\s/g, '').toLowerCase()
-    label += '  ' + clock(event.date)
+    label += (full ? '\n' : '  ') + clock(event.date)
     if (full && event.endsAt && event.endsAt !== event.date) label += '–' + clock(event.endsAt)
   }
   return label

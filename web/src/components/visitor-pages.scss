@@ -82,7 +82,7 @@
 .contact-page__columns {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 2.5rem 2rem;
+  @include content-grid-gap(2.5rem, 2rem);
   margin-top: 2.5rem;
 }
 .rentals-page__inquiries {
@@ -146,7 +146,7 @@
   .rentals-page__venues,
   .contact-page__columns {
     grid-template-columns: 1fr;
-    gap: 1.5rem;
+    @include content-grid-gap(1.5rem);
   }
   .centennial-page .visitor-photo {
     aspect-ratio: 1.6;

@@ -59,7 +59,7 @@ export function ParkImage({
         className={className}
         sizes={sizes}
         priority={priority}
-        style={tint ? {filter: `url(#${filterId})`} : undefined}
+        style={tint ? {filter: `var(--duotone-adjustment) url(#${filterId})`} : undefined}
       />
     </>
   )

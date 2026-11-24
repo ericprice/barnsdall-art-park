@@ -57,7 +57,7 @@ export type ContentEntry = {
   supportLink?: Page['supportLink']
   supporterYears?: Page['supporterYears']
   completedHeading?: Page['completedHeading']
-  initiativeCards?: Page['initiativeCards']
+  initiativeCards?: Extract<NonNullable<CONTENT_QUERY_RESULT>, {_type: 'page'}>['initiativeCards']
   donationSections?: Page['donationSections']
 }
 export type NavItem = {

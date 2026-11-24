@@ -178,8 +178,6 @@ $home-base-gap: max(2rem, site-size(4));
   text-align: center;
   h2 {
     @include type-size(section);
-    font-family: var(--lead);
-    text-transform: none;
   }
 }
 .explore__picture {
@@ -226,7 +224,7 @@ $home-base-gap: max(2rem, site-size(4));
   grid-template-columns: repeat(6, minmax(0, 1fr));
   align-items: center;
   justify-items: center;
-  gap: 1.8rem 1rem;
+  @include content-grid-gap(1.8rem, 1rem);
   padding: 0;
   margin: max(1.25rem, site-size(2.9)) auto;
   list-style: none;
@@ -275,7 +273,6 @@ $home-base-gap: max(2rem, site-size(4));
 .explore__description {
   min-height: 1.4em;
   a {
-    margin-inline: auto;
     color: var(--ink);
     text-decoration: none;
   }
@@ -286,7 +283,7 @@ $home-base-gap: max(2rem, site-size(4));
 @media (max-width: 44rem) {
   .explore__places {
     grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: 1rem 0.4rem;
+    @include content-grid-gap(1rem, 0.4rem);
     li,
     li:nth-last-child(2):nth-child(3n + 1) {
       grid-column: auto;
@@ -313,10 +310,9 @@ $home-base-gap: max(2rem, site-size(4));
 @media (min-width: 44.001rem) {
   .feature-grid:has(.home-feature) {
     grid-template-columns: repeat(3, minmax(0, 1fr));
-    gap: site-size(2.4) var(--gutter);
+    @include content-grid-gap(site-size(2.4), var(--gutter));
   }
   .home-feature .content-card__image {
-    margin-block: 0 site-size(0.8);
     width: auto;
     height: site-size(21.8);
     max-width: 100%;
@@ -324,7 +320,6 @@ $home-base-gap: max(2rem, site-size(4));
   .home-feature .content-card__image[data-treatment='cutout'] {
     height: site-size(21.8);
     width: 73%;
-    margin-block: 0 site-size(0.8);
   }
   .explore {
     padding-block: site-size(3.5);
@@ -349,7 +344,7 @@ $home-base-gap: max(2rem, site-size(4));
     }
     ol {
       grid-template-columns: repeat(6, minmax(0, 1fr));
-      gap: var(--gutter);
+      @include content-grid-gap(var(--gutter));
     }
   }
 }
