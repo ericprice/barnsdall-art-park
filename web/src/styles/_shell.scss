@@ -446,6 +446,12 @@ $compact-nav-height: $compact-nav-start + $compact-mark-height + $compact-nav-en
     // The native email control places the capital letters slightly above center.
     padding-block-start: 0.1em;
     text-transform: none;
+    @media (forced-colors: none) {
+      &:focus-visible {
+        outline: none;
+        background: color-mix(in srgb, var(--paper) 40%, transparent);
+      }
+    }
     &::placeholder {
       color: var(--green);
       opacity: 0.5;
