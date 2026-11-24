@@ -1,13 +1,9 @@
 import {historyPageId} from '../../../shared/page-layouts'
-import {contentPath, resolveInternalLinks} from './internal-links'
+import {footerFromPlainText} from '../../../shared/footer-text'
+import {contentDestination, contentPath, resolveInternalLinks} from './internal-links'
 import {pageSections, type PageSection} from './body-layout'
 export type {PageSection} from './body-layout'
-import {
-  hostsNewsPage,
-  isExternalNewsLink,
-  organizationTheme,
-  type OrganizationTheme,
-} from '../../../shared/organizations'
+import {organizationTheme, type OrganizationTheme} from '../../../shared/organizations'
 export type {InterfaceText} from '../../../shared/interface'
 import 'server-only'
 import {cache} from 'react'
@@ -30,6 +26,7 @@ export type TimelineEntry = Omit<NonNullable<Page['timelineEntries']>[number], '
 }
 export type Partner = Omit<NonNullable<Page['partners']>[number], 'logo'> & {logo?: ImageSource}
 export type ContentEntry = {
+  type: DocumentEntry['_type']
   id: string
   title: string
   href: string
@@ -73,12 +70,10 @@ export type SiteContent = {
     footerLinks?: {label?: string; href?: string; _key?: string}[]
     title: string
     description: string
-    address: string
+    footer: NonNullable<NonNullable<SITE_QUERY_RESULT['settings']>['footer']>
     navigation: NavItem[]
     legalLinks: {id: string; label: string; href: string}[]
     quotes: NonNullable<SITE_QUERY_RESULT['settings']>['quotes']
-    footerText?: string
-    landAcknowledgment?: string
     socialLinks?: {label?: string; href?: string; _key: string}[]
   }
   home: {
@@ -117,24 +112,14 @@ type DocumentEntry =
   | SITE_QUERY_RESULT['events'][number]
   | SITE_QUERY_RESULT['articles'][number]
   | SEARCH_QUERY_RESULT[number]
-function hasStoryDestination(doc: DocumentEntry) {
-  if (doc._type !== 'article') return true
-  if ('targetPageId' in doc && doc.targetPageId) return Boolean(doc.targetSlug)
-  const organization = 'organizationRef' in doc ? doc.organizationRef?._ref : undefined
-  const href = 'externalUrl' in doc ? doc.externalUrl : undefined
-  return hostsNewsPage(organization) || isExternalNewsLink(href)
-}
-
 function toEntry(doc: DocumentEntry): ContentEntry {
   const owner = doc.orgTheme
   return {
     id: doc._id,
+    type: doc._type,
     title: doc.title || 'Untitled',
-    href:
-      ('externalUrl' in doc && doc.externalUrl) ||
-      ('targetSlug' in doc && doc.targetSlug && contentPath('page', doc.targetSlug)) ||
-      contentPath(doc._type, doc.slug?.current),
-    summary: doc.summary,
+    href: contentDestination(doc) ?? '',
+    summary: 'summary' in doc ? doc.summary : undefined,
     image: 'image' in doc ? doc.image : undefined,
     body: 'body' in doc ? doc.body : undefined,
     sections: 'contentSections' in doc ? pageSections(doc.contentSections) : undefined,
@@ -174,15 +159,13 @@ function settingsFor(s: SITE_QUERY_RESULT['settings']): SiteContent['settings'] 
     footerLinks: s?.footerLinks ?? undefined,
     title: s?.title || '',
     description: s?.description || '',
-    address: s?.address || '',
+    footer: s?.footer ?? footerFromPlainText(s ?? {}),
     quotes: s?.quotes ?? [],
     legalLinks: (s?.legalPages ?? []).flatMap((page) =>
       page?.slug && page.title
         ? [{id: page._id, label: page.title, href: contentPath('page', page.slug)}]
         : [],
     ),
-    footerText: s?.footerText ?? undefined,
-    landAcknowledgment: s?.landAcknowledgment ?? undefined,
     socialLinks: s?.socialLinks ?? [],
     navigation: s?.navigation?.length
       ? s.navigation.map((n) => ({
@@ -201,7 +184,7 @@ export const getSite = cache(async (): Promise<SiteContent> => {
   return {
     settings: settingsFor(data.settings),
     events: data.events.map(toEntry),
-    articles: data.articles.filter(hasStoryDestination).map(toEntry),
+    articles: data.articles.filter(contentDestination).map(toEntry),
     home: {
       historyLink: data.home?.historyLink || undefined,
       slides:
@@ -222,7 +205,7 @@ export const getSite = cache(async (): Promise<SiteContent> => {
           link: t.link ?? undefined,
         })) || [],
       features: (data.home?.features || []).flatMap(({entry, image, background, caption}) =>
-        entry && hasStoryDestination(entry)
+        entry && contentDestination(entry)
           ? [
               {
                 ...toEntry(entry),
@@ -248,10 +231,10 @@ export const getEntry = cache(async (path: string): Promise<ContentEntry | undef
   const data = await readContent(CONTENT_QUERY, {type, slug})
   if (!data && path === '/history')
     return (await getEntry('/timeline')) ?? getEntry('/grove-history')
-  return data && hasStoryDestination(data) ? toEntry(await withLinks(data)) : undefined
+  return data && contentDestination(data) ? toEntry(await withLinks(data)) : undefined
 })
 
 export async function searchContent(query: string): Promise<ContentEntry[]> {
   const data = await readContent(SEARCH_QUERY, {searchTerm: `${query}*`})
-  return data.filter(hasStoryDestination).map(toEntry)
+  return data.filter(contentDestination).map(toEntry)
 }

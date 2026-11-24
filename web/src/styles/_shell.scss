@@ -1,14 +1,47 @@
 @use 'tokens' as *;
 @use 'dots' as *;
 
+$compact-header-start: 0.2rem;
+$home-nav-start: 0.43;
+$desktop-nav-end: 0.45;
+$nav-search-size: 0.85;
+$compact-nav-start: 0.16;
+$compact-nav-end: 0.23;
+$home-mobile-nav-start: 0.06;
+$mobile-nav-padding: 0.22;
+$mobile-nav-control-size: 1.7;
+$compact-mark-height: 1.24;
+$home-nav-height: $home-nav-start + $nav-search-size + $desktop-nav-end;
+$compact-nav-height: $compact-nav-start + $compact-mark-height + $compact-nav-end;
+
+@mixin green-panel-fill {
+  // Extend the paint horizontally without changing the layout or scroll width.
+  border-image: linear-gradient(var(--green) 0 0) fill 0 / 0 / 0 100vmax;
+}
+
+:root {
+  --compact-header-height: calc(
+    #{$compact-header-start} + #{$compact-nav-height} * var(--type-title)
+  );
+}
 .park-header {
-  position: relative;
+  position: sticky;
+  inset-block-start: 0;
   z-index: 20;
   padding: 0 var(--gutter);
   container-type: inline-size;
   --menu-fade: 150ms;
-  transition: background-color var(--menu-fade) ease-out;
   @include display;
+
+  &::before {
+    @include green-panel-fill;
+    content: '';
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    pointer-events: none;
+    opacity: 0;
+  }
 
   a,
   button {
@@ -21,7 +54,9 @@
     padding: 0;
   }
   &[data-expanded='true'] {
-    background: var(--green);
+    &::before {
+      opacity: 1;
+    }
 
     :focus-visible {
       outline-color: var(--paper);
@@ -58,7 +93,10 @@
   display: block;
   position: relative;
   aspect-ratio: 988.1 / 85;
-  margin-block-end: calc(var(--type-title) * 0.06);
+}
+.park-header__intro {
+  position: relative;
+  padding-block-end: calc(var(--type-title) * 0.06);
 }
 .park-navigation {
   display: flex;
@@ -73,7 +111,7 @@
     justify-content: space-between;
     min-width: 0;
     gap: 0.08em;
-    padding: 0.36em 0 0.45em;
+    padding: 0.36em 0 #{$desktop-nav-end}em;
 
     :is(a, .park-navigation__label button):focus-visible {
       outline: none;
@@ -88,8 +126,8 @@
   }
   svg {
     display: block;
-    width: 0.85em;
-    height: 0.85em;
+    width: #{$nav-search-size}em;
+    height: #{$nav-search-size}em;
     fill: none;
     stroke: currentColor;
     stroke-width: 3.2;
@@ -114,16 +152,21 @@
   }
 }
 .park-header--compact {
-  padding-block-start: 0.2rem;
+  padding-block-start: $compact-header-start;
+  background: var(--paper);
+}
+.park-header__intro + .park-header--compact {
+  // Keep the hero and the rest of the page stationary when the row changes size.
+  margin-block-end: calc(#{$home-nav-height} * var(--type-title) - var(--compact-header-height));
 }
 .park-header--home .park-navigation nav {
-  padding-block-start: 0.43em;
+  padding-block-start: #{$home-nav-start}em;
 }
 .compact-home {
   display: grid;
   place-items: center;
   width: 1.1em;
-  height: 1.24em;
+  height: #{$compact-mark-height}em;
   flex: none;
   background: var(--ink);
   color: var(--paper) !important;
@@ -153,7 +196,9 @@
   }
   position: absolute;
   inset: 100% 0 auto;
-  background: var(--green);
+  @media (width > 48rem) {
+    @include green-panel-fill;
+  }
   display: flex;
   flex-wrap: wrap;
   justify-content: center;
@@ -177,9 +222,9 @@
   }
 }
 .header-search {
+  @include green-panel-fill;
   position: absolute;
   inset: 100% 0 auto;
-  background: var(--green);
   padding: 0.75em var(--gutter) 1.55em;
   color: var(--paper);
   @include type-size(label);
@@ -281,7 +326,11 @@
     grid-row: span 2;
     align-items: start;
   }
-  &__foundation > p,
+  &__copy,
+  &__fineprint {
+    @include small-text;
+  }
+  &__copy > p:first-child,
   &__fineprint > p:first-child {
     margin-top: 0;
   }
@@ -338,9 +387,14 @@
     @include display-type(label);
     address {
       font-style: normal;
-      white-space: pre-line;
+      p {
+        margin: 0;
+      }
+      em {
+        font-synthesis: style;
+      }
     }
-    a {
+    ul a {
       text-decoration: none;
     }
   }
@@ -399,10 +453,6 @@
       text-box-edge: cap alphabetic;
     }
   }
-  [role='status'] {
-    @include publisher-type;
-    text-transform: none;
-  }
   @media (max-width: 22rem) {
     input,
     button {
@@ -413,10 +463,26 @@
 @media (width > 48rem) {
   .park-header--compact .park-navigation nav {
     // The B mark is taller than the labels and now shares their flex row.
-    padding-block: 0.16em 0.23em;
+    padding-block: #{$compact-nav-start}em #{$compact-nav-end}em;
   }
 }
 @media (max-width: 48rem) {
+  :root {
+    --compact-header-height: calc(
+      #{$compact-header-start} + #{$mobile-nav-control-size + 2 * $mobile-nav-padding} *
+        var(--type-title)
+    );
+  }
+  .park-header__intro + .park-header--compact {
+    margin-block-end: calc(
+      #{$home-mobile-nav-start + $mobile-nav-padding + $mobile-nav-control-size} *
+        var(--type-title) - var(--compact-header-height)
+    );
+  }
+  .park-header--compact .park-navigation nav[data-open='true'] {
+    max-block-size: calc(100dvh - var(--compact-header-height));
+    overflow-y: auto;
+  }
   .compact-home--desktop {
     display: none;
   }
@@ -426,13 +492,29 @@
   .park-utility {
     @include type-size(compact-label);
     padding-block: 0.25em 0.15em;
+
+    &__info {
+      display: grid;
+
+      > span {
+        grid-area: 1 / 1;
+        transition: opacity var(--menu-fade) ease-in calc(var(--menu-fade) + 150ms);
+
+        &[data-active='false'] {
+          opacity: 0;
+          pointer-events: none;
+          transition-timing-function: ease-out;
+          transition-delay: 0s;
+        }
+      }
+    }
   }
   .park-header--home .park-navigation {
-    padding-block-start: 0.06em;
+    padding-block-start: #{$home-mobile-nav-start}em;
   }
   .park-navigation {
     flex-wrap: wrap;
-    padding: 0.22em 0;
+    padding: #{$mobile-nav-padding}em 0;
     &__mobile {
       display: flex;
       align-items: center;
@@ -442,7 +524,7 @@
         translate: 0 -0.065em;
       }
       button {
-        min-height: 1.7em;
+        min-height: #{$mobile-nav-control-size}em;
       }
     }
     nav {
@@ -455,16 +537,14 @@
       background: var(--green);
       padding-inline: var(--gutter);
       display: flex;
-      align-items: start;
+      align-items: stretch;
       flex-direction: column;
       gap: 0.55em;
-      padding-bottom: 0.75em;
+      padding-block: 0 0.75em;
+      text-align: center;
     }
     &__search {
       display: none;
-    }
-    &__group {
-      align-self: stretch;
     }
   }
   .park-navigation__links {
@@ -485,6 +565,8 @@
     }
   }
   .header-search {
+    padding-block-start: 0;
+
     form,
     ul,
     [role='status']:not(.sr-only) {

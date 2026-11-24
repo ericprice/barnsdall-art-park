@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict'
 import test from 'node:test'
-import {resolveInternalLinks} from '../src/lib/internal-links.ts'
+import {contentDestination, resolveInternalLinks} from '../src/lib/internal-links.ts'
 import {pageSections} from '../src/lib/body-layout.ts'
 
 test('nested links follow a changed slug, preserve fragments and handle an unpublished target', async () => {
@@ -17,11 +17,11 @@ test('nested links follow a changed slug, preserve fragments and handle an unpub
     requests++
     assert.deepEqual(ids, ['visit', 'gone', 'promotion'])
     return [
-      {_id: 'visit', _type: 'page', slug: 'visitor-information'},
+      {_id: 'visit', _type: 'page', slug: {current: 'visitor-information'}},
       {
         _id: 'promotion',
         _type: 'article',
-        slug: 'campaign',
+        slug: {current: 'campaign'},
         targetPageId: 'unpublished',
         targetSlug: null,
       },
@@ -35,6 +35,33 @@ test('nested links follow a changed slug, preserve fragments and handle an unpub
   assert.equal(result.children[3].href, undefined)
   assert.equal(source.children[0].href, undefined)
 })
+test('event ownership controls the destination across cards, search and internal references', async () => {
+  const externalUrl = 'https://gallery.example/exhibition'
+  const partner = {_type: 'event', organizationRef: {_ref: 'organization.gallery'}, externalUrl}
+  const slug = {current: 'exhibition'}
+  assert.equal(contentDestination(partner), externalUrl)
+  assert.equal(contentDestination({...partner, slug, externalUrl: null}), undefined)
+  assert.equal(contentDestination({...partner, slug, externalUrl: '/wrong-page'}), undefined)
+  for (const owner of ['organization.park', 'organization.foundation']) {
+    assert.equal(
+      contentDestination({...partner, slug, organizationRef: {_ref: owner}}),
+      '/whats-on/exhibition',
+    )
+  }
+
+  const links = await resolveInternalLinks(
+    [{internal: {_ref: 'show'}}, {internal: {_ref: 'unfinished'}}],
+    async () => [
+      {...partner, _id: 'show'},
+      {...partner, _id: 'unfinished', slug, externalUrl: null},
+    ],
+  )
+  assert.deepEqual(
+    links.map((link) => link.href),
+    [externalUrl, undefined],
+  )
+})
+
 test('section roles and anchors survive reordering and renaming', () => {
   const sections = pageSections([
     {

@@ -13,11 +13,11 @@ export const organizationDocuments = [
   {_id: 'organization.foundation', title: 'The Foundation', light: '#99D289', dark: '#458933'},
 ].map((org) => ({...org, _type: 'organization' as const}))
 
-export function hostsNewsPage(organizationId?: string | null) {
+export function hostsDetailPage(organizationId?: string | null) {
   return organizationId === 'organization.foundation' || organizationId === 'organization.park'
 }
 
-export function isExternalNewsLink(href?: string | null) {
+export function isExternalStoryUrl(href?: string | null): href is string {
   if (!href || !/^https?:\/\//.test(href)) return false
   try {
     const url = new URL(href)

@@ -36,7 +36,7 @@ export async function generateMetadata({params}: Props): Promise<Metadata> {
   const entry = listingTitle ? undefined : await getEntry(path)
   return {
     title: listingTitle || entry?.title || interfaceText.notFound,
-    description: entry?.summary || site.settings.description,
+    description: entry?.summary || entry?.subtitle || site.settings.description,
     ...(entry?.image && typeof entry.image !== 'string' && entry.image.asset
       ? {
           openGraph: {
@@ -93,7 +93,7 @@ export default async function ContentPage({params, searchParams}: Props) {
     >
       <article>
         <PageHeading
-          title={path.startsWith('/support/') ? 'Support the park' : entry.title}
+          title={path.startsWith('/support/') ? interfaceText.support : entry.title}
           path={path}
           settings={site.settings}
         />

@@ -17,3 +17,9 @@ $site-width: 75rem;
   font: 400 var(--type-#{$step})/var(--leading-body) var(--body);
   text-wrap: pretty;
 }
+
+@mixin small-text {
+  font: 400 var(--type-small)/var(--leading-body) var(--body-sans);
+  letter-spacing: 0.02em;
+  text-wrap: pretty;
+}

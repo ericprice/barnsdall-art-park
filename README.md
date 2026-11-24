@@ -63,7 +63,7 @@ The dates and giving levels are staging content. When adding new references, pub
 
 ## Design and assets
 
-The supplied interface plates determine the desktop layout, header overlays, feature crops and type scale. The site uses Barnsdall Low for display type and Barnsdall High for leads. Publisher Rounded Slab is used for body text, captions and display glyph fallback.
+The supplied interface plates determine the desktop layout, header overlays, feature crops and type scale. The site uses Barnsdall Low for display type and Barnsdall High for leads. Publisher Rounded Slab is used for body text and display glyph fallback. Captions and footer fine print share the `small-text` mixin, which uses Publisher Rounded Sans at 0.875 times the body size with 0.02em letter spacing.
 
 The licensed Publisher webfonts are included in `web/src/fonts/`.
 

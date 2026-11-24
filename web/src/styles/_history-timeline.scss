@@ -2,7 +2,6 @@
 
 .timeline-page {
   padding-inline: var(--gutter);
-  padding-block-end: 5rem;
   width: min(100%, 76rem);
   margin-inline: auto;
 
@@ -45,7 +44,6 @@
     aspect-ratio: 2.35;
   }
   figcaption {
-    @include publisher-type;
     margin-top: 0.4rem;
   }
 }
@@ -97,7 +95,6 @@
 
 @media (max-width: 44rem) {
   .timeline-page {
-    padding-block-end: 3rem;
     .timeline-intro {
       grid-template-columns: 1fr;
       gap: 1.25rem;

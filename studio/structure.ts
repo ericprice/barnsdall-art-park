@@ -6,6 +6,7 @@ import {PinIcon} from '@sanity/icons/Pin'
 import {HeartIcon} from '@sanity/icons/Heart'
 import {ClockIcon} from '@sanity/icons/Clock'
 import {historyPageId} from '../shared/page-layouts'
+import {interfaceText} from '../shared/interface'
 
 export const singletonTypes = new Set(['siteSettings', 'homePage'])
 
@@ -38,27 +39,27 @@ export const structure: StructureResolver = (S) => {
             .title('Pages')
             .items([
               S.documentTypeListItem('page')
-                .title('All pages')
+                .title('All Pages')
                 .child(
                   S.documentTypeList('page')
-                    .title('All pages')
+                    .title('All Pages')
                     .initialValueTemplates([S.initialValueTemplateItem('page')]),
                 ),
               section('visit', 'Visit', PinIcon),
-              section('support', 'Support the park', HeartIcon),
+              section('support', interfaceText.support, HeartIcon),
               S.listItem()
                 .title('History')
                 .icon(ClockIcon)
                 .child(S.document().schemaType('page').documentId(historyPageId)),
             ]),
         ),
-      S.documentTypeListItem('place').title('Park locations'),
-      S.documentTypeListItem('event').title('What’s On'),
+      S.documentTypeListItem('place').title('Park Locations'),
+      S.documentTypeListItem('event').title(interfaceText.whatsOn),
       S.documentTypeListItem('article').title('News'),
       S.divider(),
       S.documentTypeListItem('organization').title('Organizations'),
       S.listItem()
-        .title('Site settings')
+        .title('Site Settings')
         .icon(CogIcon)
         .child(S.document().schemaType('siteSettings').documentId('siteSettings')),
     ])

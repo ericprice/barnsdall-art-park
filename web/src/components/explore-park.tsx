@@ -85,10 +85,11 @@ export function ExplorePark({places, title}: {places: ContentEntry[]; title: str
       </ul>
       <p className="explore__description" id="explore-description">
         <DotLink
+          className="caption"
           href={selected.href}
           style={{'--olive-dot': `url("/identity/dots/${descriptionDot}.svg")`} as CSSProperties}
         >
-          {selected.summary || selected.title}
+          {selected.subtitle || selected.title}
         </DotLink>
       </p>
     </section>

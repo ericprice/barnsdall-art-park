@@ -83,7 +83,7 @@ export function ParkLandscape({entry, site}: Props) {
         <h1>{entry.title}</h1>
         {entry.subtitle && <p className="park-landscape__subtitle">{entry.subtitle}</p>}
       </header>
-      <StoryGallery images={entry.gallery ?? []} text={interfaceText} showCaption chevrons />
+      <StoryGallery images={entry.gallery ?? []} text={interfaceText} showCaption />
       <div className="park-landscape__columns">
         <SidebarLinks
           links={entry.sidebarLinks}

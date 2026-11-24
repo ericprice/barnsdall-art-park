@@ -1,6 +1,6 @@
 export const pageLayouts = {
   standard: 'Standard page',
-  visit: 'Getting here',
+  visit: 'Getting Here',
   policies: 'Visit policies',
   rentals: 'Rentals',
   foundation: 'Foundation',

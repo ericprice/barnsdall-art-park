@@ -1,7 +1,7 @@
 import {defineArrayMember, defineField, defineType} from 'sanity'
 import {LinkIcon} from '@sanity/icons/Link'
 import {ImageIcon} from '@sanity/icons/Image'
-import {BlockquoteIcon} from '@sanity/icons/Blockquote'
+import {DottedLinkStyle, LeadStyle} from './body-styles'
 
 const label = defineField({name: 'label', type: 'string', validation: (rule) => rule.required()})
 const destinationPattern = /^(\/(?!\/)|#|https?:\/\/|mailto:|tel:)/
@@ -114,6 +114,30 @@ export const quoteFields = [
   defineField({name: 'text', type: 'text', rows: 3, validation: (rule) => rule.required()}),
   defineField({name: 'attribution', type: 'string'}),
 ]
+const inlineLink = defineArrayMember({
+  name: 'link',
+  title: 'Link',
+  icon: LinkIcon,
+  type: 'object',
+  fields: destinationFields,
+  validation: (rule) => rule.custom(validDestination),
+})
+const emphasis = {title: 'Italic', value: 'em'}
+
+export const footerProse = defineType({
+  name: 'footerProse',
+  title: 'Footer text',
+  type: 'array',
+  of: [
+    defineArrayMember({
+      type: 'block',
+      styles: [{title: 'Paragraph', value: 'normal'}],
+      lists: [],
+      marks: {decorators: [emphasis], annotations: [inlineLink]},
+    }),
+  ],
+})
+
 export const richText = defineType({
   name: 'richText',
   title: 'Body',
@@ -123,23 +147,20 @@ export const richText = defineType({
       type: 'block',
       styles: [
         {title: 'Paragraph', value: 'normal'},
-        {title: 'Dotted link (link the entire paragraph)', value: 'dotLink'},
+        {title: 'Lead', value: 'lead', component: LeadStyle},
+        {
+          title: 'Dotted link (link the entire paragraph)',
+          value: 'dotLink',
+          component: DottedLinkStyle,
+        },
         {title: 'Heading', value: 'h2'},
         {title: 'Subheading', value: 'h3'},
       ],
       marks: {
-        decorators: [
-          {title: 'Strong', value: 'strong'},
-          {title: 'Emphasis', value: 'em'},
-        ],
+        decorators: [{title: 'Strong', value: 'strong'}, emphasis],
         annotations: [
           defineArrayMember({name: 'download', title: 'File download', type: 'file'}),
-          defineArrayMember({
-            name: 'link',
-            type: 'object',
-            fields: destinationFields,
-            validation: (rule) => rule.custom(validDestination),
-          }),
+          inlineLink,
         ],
       },
       validation: (rule) =>
@@ -164,14 +185,6 @@ export const richText = defineType({
             ) || 'Link the entire paragraph to one destination.'
           )
         }),
-    }),
-    defineArrayMember({
-      name: 'quotation',
-      title: 'Quote',
-      icon: BlockquoteIcon,
-      type: 'object',
-      fields: quoteFields,
-      preview: {select: {title: 'text', subtitle: 'attribution'}},
     }),
     defineArrayMember({type: 'parkImage'}),
   ],

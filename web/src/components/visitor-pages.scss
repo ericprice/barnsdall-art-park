@@ -14,7 +14,6 @@
   width: min(100%, 76rem);
   margin-inline: auto;
   padding-inline: var(--gutter);
-  padding-block-end: 6rem;
   @include publisher-type;
   h1 {
     @include type-size(display);
@@ -25,7 +24,6 @@
   }
   figcaption {
     margin-top: 0.4rem;
-    @include publisher-type;
   }
   section {
     scroll-margin-top: 2rem;
@@ -36,7 +34,6 @@
   max-width: 42rem;
 }
 .visitor-arrival {
-  padding-block-end: 3rem;
   .page-heading {
     text-align: center;
   }
@@ -138,11 +135,7 @@
   }
 }
 @media (max-width: 44rem) {
-  .visitor-wire {
-    padding-block-end: 3rem;
-  }
   .visitor-arrival {
-    padding-block-end: 2rem;
     .visitor-summary,
     .visitor-prose,
     .visitor-map {
@@ -198,12 +191,10 @@
     text-align: center;
   }
   &__subtitle {
-    font: 400 var(--type-section)/var(--leading-section) var(--display);
-    text-transform: uppercase;
+    font: 400 var(--type-section)/var(--leading-section) var(--lead);
     margin-top: 0.12em;
   }
   .story-gallery {
-    position: relative;
     margin: 0;
   }
   .story-gallery__photo {
@@ -213,25 +204,6 @@
     aspect-ratio: 1053 / 693;
     img {
       object-fit: contain;
-    }
-  }
-  .story-gallery__buttons {
-    position: absolute;
-    inset: 50% 3% auto;
-    translate: 0 -50%;
-    display: flex;
-    justify-content: space-between;
-    pointer-events: none;
-    button {
-      display: grid;
-      place-items: center;
-      min-width: 2.75rem;
-      min-height: 2.75rem;
-      color: var(--green);
-      pointer-events: auto;
-    }
-    svg {
-      height: 1.85rem;
     }
   }
   .story-gallery figcaption {
@@ -264,6 +236,23 @@
       text-wrap: balance;
       @include type-size(title);
     }
+    > .rich-text {
+      > h2:not(:first-child) {
+        margin-block-start: 2.1rem;
+      }
+      > h2 {
+        scroll-margin-block-start: 2rem;
+      }
+      > p:has(> .dot-link:only-child) {
+        margin-block-start: 1rem;
+      }
+      > p:has(+ p > .dot-link:only-child) {
+        margin-block-end: 0;
+      }
+      > p:has(> .dot-link:only-child) + p:has(> .dot-link:only-child) {
+        margin-block-start: 0.4rem;
+      }
+    }
   }
   > .quote-band {
     margin-inline: 0;
@@ -274,12 +263,6 @@
     .story-gallery__photo,
     .story-gallery figcaption {
       width: 78%;
-    }
-    .story-gallery__buttons {
-      inset-inline: -0.5rem;
-      svg {
-        height: 1.25rem;
-      }
     }
     &__columns {
       grid-template-columns: minmax(0, 1fr);

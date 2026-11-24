@@ -1,9 +1,10 @@
 import {contentSections} from './sections'
 import {destinationFields, quoteFields, validDestination} from './objects'
 import {FeatureColor} from './feature-color'
+import {footerFromPlainText} from '../../shared/footer-text'
 import {pageLayouts, pageHasMainImage, historyPageId} from '../../shared/page-layouts'
 import {organizationReference} from './organization'
-import {hostsNewsPage, isExternalNewsLink} from '../../shared/organizations'
+import {hostsDetailPage, isExternalStoryUrl} from '../../shared/organizations'
 import {supportPageFields} from './support-subpages'
 import {directoryFields} from './foundation'
 import {
@@ -12,6 +13,7 @@ import {
   defineField,
   defineType,
   type ConditionalPropertyCallback,
+  type SanityDocument,
 } from 'sanity'
 import {CogIcon} from '@sanity/icons/Cog'
 import {HomeIcon} from '@sanity/icons/Home'
@@ -21,6 +23,9 @@ import {CalendarIcon} from '@sanity/icons/Calendar'
 import {DocumentTextIcon} from '@sanity/icons/DocumentText'
 
 const title = defineField({name: 'title', type: 'string', validation: (r) => r.required()})
+const validSlug = (value?: {current?: string}) =>
+  (value?.current && /^[^/?#]+(?:\/[^/?#]+)*$/.test(value.current)) ||
+  'Generate a complete page path.'
 const slug = defineField({
   name: 'slug',
   type: 'slug',
@@ -37,15 +42,7 @@ const slug = defineField({
         .replace(/[^a-z0-9/]+/g, '-')
         .replace(/^-+|-+$/g, ''),
   },
-  validation: (r) =>
-    r
-      .required()
-      .custom(
-        (v) =>
-          !v?.current ||
-          /^[^/?#]+(?:\/[^/?#]+)*$/.test(v.current) ||
-          'Generate a complete page path.',
-      ),
+  validation: (r) => r.required().custom(validSlug),
 })
 const summary = defineField({name: 'summary', type: 'text', rows: 3})
 const image = defineField({name: 'image', type: 'parkImage'})
@@ -74,7 +71,7 @@ export const siteSettings = defineType({
   icon: CogIcon,
   initialValue: {
     title: 'Barnsdall Art Park Foundation',
-    address: '4800 Hollywood Blvd\nLos Angeles, CA 90027',
+    footer: footerFromPlainText({address: '4800 Hollywood Blvd\nLos Angeles, CA 90027'}),
   },
   title: 'Site settings',
   type: 'document',
@@ -108,7 +105,6 @@ export const siteSettings = defineType({
       of: [defineArrayMember({type: 'reference', to: [{type: 'page'}]})],
       validation: (rule) => rule.unique(),
     }),
-    defineField({name: 'address', type: 'text', rows: 2}),
     defineField({
       name: 'quotes',
       title: 'Sitewide quotes',
@@ -127,8 +123,19 @@ export const siteSettings = defineType({
       type: 'array',
       of: [defineArrayMember({type: 'socialLink'})],
     }),
-    defineField({name: 'footerText', type: 'text', rows: 5}),
-    defineField({name: 'landAcknowledgment', type: 'text', rows: 4}),
+    defineField({
+      name: 'footer',
+      type: 'object',
+      fields: [
+        defineField({name: 'footerText', title: 'Footer text', type: 'footerProse'}),
+        defineField({name: 'address', type: 'footerProse'}),
+        defineField({name: 'landAcknowledgment', type: 'footerProse'}),
+      ],
+    }),
+    // Older site builds still read the original plain-text fields.
+    defineField({name: 'address', type: 'text', hidden: true, readOnly: true}),
+    defineField({name: 'footerText', type: 'text', hidden: true, readOnly: true}),
+    defineField({name: 'landAcknowledgment', type: 'text', hidden: true, readOnly: true}),
   ],
 })
 
@@ -266,7 +273,7 @@ export const page = defineType({
   fields: [
     {...title, group: 'content'},
     {...organizationReference, group: 'content'},
-    {...summary, group: 'content'},
+    {...summary, title: 'Introduction', group: 'content'},
     {...body, group: 'content'},
     {...slug, group: 'content'},
     {...contentSections, group: 'content'},
@@ -357,7 +364,6 @@ export const place = defineType({
   fields: [
     {...title, group: 'content'},
     {...organizationReference, group: 'content'},
-    {...summary, group: 'content'},
     defineField({
       name: 'externalUrl',
       title: 'Website',
@@ -366,18 +372,57 @@ export const place = defineType({
       description: 'Enter the destination for a location with its own website.',
       validation: (rule) => rule.uri({scheme: ['http', 'https']}),
     }),
-    defineField({name: 'subtitle', group: 'content', type: 'string', hidden: linksOut}),
+    defineField({
+      name: 'subtitle',
+      group: 'content',
+      type: 'string',
+      description: 'Shown in Explore the Park and beneath the title on an on-site location page.',
+    }),
     {...body, group: 'content', hidden: linksOut},
     {...slug, group: 'content'},
-    {...contentSections, group: 'content', hidden: linksOut},
+    {
+      ...contentSections,
+      group: 'content',
+      hidden: (context) =>
+        linksOut(context) ||
+        !Array.isArray(context.document?.contentSections) ||
+        !context.document.contentSections.length,
+    },
     {...sidebarLinks, group: 'content', hidden: linksOut},
     {...gallery, group: 'images', hidden: linksOut},
   ],
   preview: {select: {title: 'title', subtitle: 'externalUrl', media: 'gallery.0'}},
 })
-const offsiteArticle: ConditionalPropertyCallback = ({document}) => {
-  const owner = (document?.organizationRef as {_ref?: string})?._ref
-  return Boolean(document?.externalUrl || document?.targetPage || (owner && !hostsNewsPage(owner)))
+function partnerOwned(document?: SanityDocument) {
+  const owner = (document?.organizationRef as {_ref?: string} | undefined)?._ref
+  return Boolean(owner && !hostsDetailPage(owner))
+}
+const partnerEvent: ConditionalPropertyCallback = ({document}) => partnerOwned(document)
+const offsiteArticle: ConditionalPropertyCallback = ({document}) =>
+  Boolean(document?.externalUrl || document?.targetPage || partnerOwned(document))
+
+function externalStoryUrl(kind: 'event' | 'article') {
+  return defineField({
+    name: 'externalUrl',
+    title: `External ${kind} URL`,
+    type: 'url',
+    group: 'content',
+    description:
+      kind === 'event'
+        ? 'Link directly to the event on the organizer’s website.'
+        : 'Required for partner news. Leave empty for an on-site Foundation or Park story.',
+    hidden: ({document}) =>
+      kind === 'event' ? !partnerOwned(document) : Boolean(document?.targetPage),
+    validation: (rule) =>
+      rule
+        .uri({scheme: ['https', 'http']})
+        .custom(
+          (url, {document}) =>
+            !partnerOwned(document) ||
+            isExternalStoryUrl(url) ||
+            `Enter the partner ${kind}’s URL.`,
+        ),
+  })
 }
 const eventClock = {displayTimeZone: 'America/Los_Angeles'}
 
@@ -394,26 +439,13 @@ export const article = defineType({
       group: 'content',
       validation: (rule) => rule.required(),
     }),
-    {...summary, group: 'content'},
-    defineField({
-      name: 'externalUrl',
-      title: 'External article URL',
-      type: 'url',
+    {
+      ...summary,
+      title: 'Card summary',
+      description: 'Shown on News cards and above the article body.',
       group: 'content',
-      description:
-        'Required for partner news. Leave empty for an on-site Foundation or Park story.',
-      hidden: ({document}) => Boolean(document?.targetPage),
-      validation: (rule) =>
-        rule.uri({scheme: ['https', 'http']}).custom((url, ctx) => {
-          const owner = (ctx.document?.organizationRef as {_ref?: string})?._ref
-          return (
-            !owner ||
-            hostsNewsPage(owner) ||
-            isExternalNewsLink(url) ||
-            'Enter the partner article’s URL.'
-          )
-        }),
-    }),
+    },
+    externalStoryUrl('article'),
     defineField({
       name: 'targetPage',
       title: 'Promotion destination',
@@ -432,7 +464,7 @@ export const article = defineType({
         !document?.targetPage &&
         (!document?.excludeFromNews ||
           Boolean(document?.externalUrl) ||
-          !hostsNewsPage((document?.organizationRef as {_ref?: string})?._ref)),
+          !hostsDetailPage((document?.organizationRef as {_ref?: string})?._ref)),
     }),
     {...body, group: 'content', hidden: offsiteArticle},
     {...slug, group: 'content'},
@@ -504,11 +536,17 @@ export const event = defineType({
       group: 'content',
       validation: (rule) => rule.required(),
     }),
-    {...summary, group: 'content'},
-    {...body, group: 'content'},
-    {...slug, group: 'content'},
+    externalStoryUrl('event'),
+    {...body, group: 'content', hidden: partnerEvent},
+    defineField({
+      ...slug,
+      group: 'content',
+      hidden: partnerEvent,
+      validation: (rule) =>
+        rule.custom((value, {document}) => partnerOwned(document) || validSlug(value)),
+    }),
     {...mainImage, group: 'images'},
-    {...gallery, group: 'images'},
+    {...gallery, group: 'images', hidden: partnerEvent},
     defineField({
       name: 'startsAt',
       group: 'schedule',
@@ -564,6 +602,7 @@ export const event = defineType({
     }),
     defineField({
       name: 'ticketLink',
+      hidden: partnerEvent,
       title: 'Ticket link',
       group: 'schedule',
       type: 'object',

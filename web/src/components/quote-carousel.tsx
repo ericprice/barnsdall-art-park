@@ -4,6 +4,7 @@ import {useLayoutEffect, useRef, useState, type CSSProperties} from 'react'
 import type {SiteContent} from '@/lib/content'
 import {DotLink} from './action-links'
 import {CarouselChevron} from './carousel-chevron'
+import {useCarouselSwipe} from './use-carousel-swipe'
 
 type Quote = Pick<
   NonNullable<SiteContent['settings']['quotes']>[number],
@@ -74,12 +75,13 @@ export function QuoteCarousel({quotes}: {quotes: Quote[]}) {
       sequence: sequence + 1,
     }))
   }
+  const swipe = useCarouselSwipe(quotes.length, advance)
 
   return (
-    <section className="quote-band" aria-label="Quotations">
+    <section className="quote-band" aria-label="Quotations" {...swipe}>
       {quotes.length > 1 && (
         <button type="button" aria-label="Previous quotation" onClick={() => advance(-1)}>
-          <CarouselChevron direction="previous" bold />
+          <CarouselChevron direction="previous" />
         </button>
       )}
       <div className="quote-band__content" ref={content} aria-live="polite" aria-atomic="true">
@@ -104,7 +106,7 @@ export function QuoteCarousel({quotes}: {quotes: Quote[]}) {
       </div>
       {quotes.length > 1 && (
         <button type="button" aria-label="Next quotation" onClick={() => advance(1)}>
-          <CarouselChevron direction="next" bold />
+          <CarouselChevron direction="next" />
         </button>
       )}
     </section>

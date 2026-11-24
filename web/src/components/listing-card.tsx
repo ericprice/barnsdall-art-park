@@ -30,7 +30,13 @@ export function ListingGrid({
   return (
     <div className="listing-grid">
       {entries.map((entry, index) => (
-        <ListingCard key={entry.id} entry={entry} dot={dots[index]} news={news} readMore={readMore} />
+        <ListingCard
+          key={entry.id}
+          entry={entry}
+          dot={dots[index]}
+          news={news}
+          readMore={readMore}
+        />
       ))}
     </div>
   )
@@ -47,20 +53,29 @@ function ListingCard({
   news: boolean
   readMore?: string
 }) {
+  const heading = (
+    <>
+      <div
+        className="listing-card__photo"
+        style={{'--olive-dot': `url('/identity/dots/${dot}.svg')`} as CSSProperties}
+      >
+        <ParkImage editorial={news} orgTheme={themeForEntry(entry)} image={entry.image} />
+      </div>
+      <h3>{entry.title}</h3>
+    </>
+  )
   return (
     <article
       className="listing-card"
       style={themeStyle(themeForEntry(entry), news ? entry.image : undefined)}
     >
-      <Link href={entry.href} className="listing-card__link card-heading">
-        <div
-          className="listing-card__photo"
-          style={{'--olive-dot': `url('/identity/dots/${dot}.svg')`} as CSSProperties}
-        >
-          <ParkImage editorial={news} orgTheme={themeForEntry(entry)} image={entry.image} />
-        </div>
-        <h3>{entry.title}</h3>
-      </Link>
+      {entry.href ? (
+        <Link href={entry.href} className="listing-card__link card-heading">
+          {heading}
+        </Link>
+      ) : (
+        <div className="listing-card__link card-heading">{heading}</div>
+      )}
       {news ? (
         <>
           <NewsCredit entry={entry} />

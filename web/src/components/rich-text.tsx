@@ -1,4 +1,4 @@
-import type {CSSProperties} from 'react'
+import type {CSSProperties, ReactNode} from 'react'
 import {drawDots} from '@/lib/identity-dots'
 import {PortableText} from 'next-sanity'
 import {DotLink} from './action-links'
@@ -6,7 +6,28 @@ import Link from './route-link'
 import {ParkImage} from './park-image'
 import {headingAnchor, linkDestination, standaloneLink} from '@/lib/body-layout'
 import type {OrganizationTheme} from '../../../shared/organizations'
-import type {ParkImage as ImageValue, RichText as RichTextValue} from '../../sanity.types'
+import type {
+  FooterProse,
+  ParkImage as ImageValue,
+  RichText as RichTextValue,
+} from '../../sanity.types'
+
+function InlineLink({
+  value,
+  children,
+}: {
+  value?: NonNullable<FooterProse[number]['markDefs']>[number]
+  children: ReactNode
+}) {
+  const href = value && linkDestination(value)
+  return href ? <Link href={href}>{children}</Link> : <>{children}</>
+}
+
+const footerComponents = {marks: {link: InlineLink}}
+
+export function FooterText({value}: {value?: FooterProse}) {
+  return value?.length ? <PortableText value={value} components={footerComponents} /> : null
+}
 
 export function RichText({value, orgTheme}: {value?: RichTextValue; orgTheme?: OrganizationTheme}) {
   if (!value?.length) return null
@@ -31,6 +52,7 @@ export function RichText({value, orgTheme}: {value?: RichTextValue; orgTheme?: O
             },
           },
           block: {
+            lead: ({children}) => <p className="lead">{children}</p>,
             h2: ({value, children}) => <h2 id={headingAnchor(value)}>{children}</h2>,
             h3: ({value, children}) => <h3 id={headingAnchor(value)}>{children}</h3>,
             dotLink: ({value, children}) => {
@@ -49,13 +71,6 @@ export function RichText({value, orgTheme}: {value?: RichTextValue; orgTheme?: O
             },
           },
           types: {
-            quotation: ({value}) =>
-              value.text ? (
-                <blockquote className="attributed-quote lead">
-                  <p>“{value.text}”</p>
-                  {value.attribution && <footer>{value.attribution}</footer>}
-                </blockquote>
-              ) : null,
             parkImage: ({value}: {value: ImageValue}) => (
               <figure>
                 <div className="rich-text__image">
@@ -80,10 +95,7 @@ export function RichText({value, orgTheme}: {value?: RichTextValue; orgTheme?: O
                 <>{children}</>
               )
             },
-            link: ({value, children}) => {
-              const href = value && linkDestination(value)
-              return href ? <Link href={href}>{children}</Link> : <>{children}</>
-            },
+            link: InlineLink,
           },
         }}
       />

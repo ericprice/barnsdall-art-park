@@ -5,16 +5,16 @@ The standalone Studio and website use project `i18fhbsv`, dataset `production`. 
 ## Editing
 
 - **Homepage** holds the hero slides, anniversary callout, Explore photographs, and ordered featured cards. Choose an item and optionally override its homepage artwork or caption.
-- **Pages** contains All pages and shortcuts for Visit, Support the park, and History. Choose the page layout under Page settings. Use Body for prose and Sections for columns, accordions, links, and layout-specific features. Keep an existing page anchor when renaming a section that readers link to.
+- **Pages** contains All Pages and shortcuts for Visit, Support the Park, and History. Choose the page layout under Page settings. Use Body for prose and Sections for columns, accordions, links, and layout-specific features. Keep an existing page anchor when renaming a section that readers link to.
 - **History** contains the chronology. Drag milestones into chronological order. Select **Show on homepage** for the short overview. A selected milestone uses its date and description unless you supply shorter wording.
-- **Support the park** contains the Foundation directory and the Support pages. Edit people and partners under Directory. Under Supporters, open the year, group, and acknowledgment. Edit annual giving levels inside their donation section.
-- **Park locations** contains the facility websites. On The Park, use Body for the quote, Sidebar links for page actions, and Images for the slideshow.
-- **What’s On** holds events and exhibitions. Use Schedule for start, end, weekly recurrence, and ticket links. Times use Los Angeles local time.
+- **Support the Park** contains the Foundation directory and the Support pages. Edit people and partners under Directory. Under Supporters, open the year, group, and acknowledgment. Edit annual giving levels inside their donation section.
+- **Park Locations** contains The Park and the facility websites. Subtitle supplies the short text in the homepage’s Explore the Park section and beneath the title on an on-site location page. On The Park, use Body for prose and quotations, Sidebar links for page actions, and Images for the slideshow.
+- **What’s On** holds events and exhibitions. Choose the organization first. For partner events, enter the external event URL. The Park and The Foundation have on-site event pages with body text and an optional ticket link. Use Schedule for dates and weekly recurrence. Times use Los Angeles local time.
 - **News** lists stories from all organizations. Partner stories open the External article URL. Foundation and Park stories can use Body, Images, See also, and a source link. Display date controls the visible date and order. A promotion can link to a page and appear on the homepage.
 - **Organizations** holds the highlight and shadow colors used for each organization’s artwork.
-- **Site settings** holds navigation, the footer address and copy, social links, legal pages, and sitewide quotes. Choose and reorder legal pages to set the footer links.
+- **Site Settings** holds navigation, the footer address and copy, social links, legal pages, and sitewide quotes. Choose and reorder legal pages to set the footer links.
 
-Choose a site page for an internal destination, or enter a URL for an external site, file path, or fragment. In Body, link the entire paragraph to use Dotted link. Add a Quote block for a quotation with optional attribution. Use Alternative text for an image description and Caption for visible wording or credit. Select Decorative image when screen readers can skip the image.
+Choose a site page for an internal destination, or enter a URL for an external site, file path, or fragment. In Body, choose Lead from the style dropdown for a larger paragraph. For a quotation, use Lead and Italic and put the attribution on its own line. To add a Dotted link, link the entire paragraph and select Dotted link from the style dropdown. Studio highlights those paragraphs with a tint. Use Alternative text for an image description and Caption for visible wording or credit. Select Decorative image when screen readers can skip the image.
 
 ## Review and publication
 

@@ -1,6 +1,5 @@
 import {randomInt} from 'node:crypto'
 import type {Metadata} from 'next'
-import localFont from 'next/font/local'
 import {Suspense} from 'react'
 import {getSite} from '@/lib/content'
 import {getParkSunset} from '@/lib/park-sunset'
@@ -10,16 +9,6 @@ import {SiteFooter} from '@/components/site-footer'
 import {SanityLive} from '@/sanity/live'
 import {interfaceText} from '../../../shared/interface'
 import './globals.scss'
-
-const publisher = localFont({
-  src: [
-    {path: '../fonts/publisher.woff2', style: 'normal', weight: '400'},
-    {path: '../fonts/publisher-italic.woff2', style: 'italic', weight: '400'},
-    {path: '../fonts/publisher-bold.woff2', style: 'normal', weight: '700'},
-  ],
-  variable: '--font-publisher',
-  display: 'swap',
-})
 
 export async function generateMetadata(): Promise<Metadata> {
   const {settings} = await getSite()
@@ -36,7 +25,7 @@ export async function generateMetadata(): Promise<Metadata> {
 export default async function RootLayout({children}: {children: React.ReactNode}) {
   const {settings} = await getSite()
   return (
-    <html lang="en" data-scroll-behavior="smooth" className={publisher.variable}>
+    <html lang="en" data-scroll-behavior="smooth">
       <body>
         <a href="#main-content" className="skip-link">
           {interfaceText.skip}

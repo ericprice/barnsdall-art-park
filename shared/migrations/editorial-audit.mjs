@@ -1,7 +1,7 @@
 import assert from 'node:assert/strict'
 import {bodyForLayout} from './legacy-layout.ts'
 import {contentPath} from '../../web/src/lib/internal-links.ts'
-import {hostsNewsPage} from '../organizations.ts'
+import {hostsDetailPage} from '../organizations.ts'
 import {historyPageId} from '../page-layouts.ts'
 
 const existingLayouts = {
@@ -177,7 +177,7 @@ export function editorialDocuments(documents) {
         delete doc.kind
         if (doc.ticketLink) doc.ticketLink._type = 'ticketLink'
       } else {
-        const partner = doc.organizationRef && !hostsNewsPage(doc.organizationRef._ref)
+        const partner = doc.organizationRef && !hostsDetailPage(doc.organizationRef._ref)
         const href = doc.storyDestination?.href || (partner && doc.sourceLink?.href)
         if (href && /^https?:\/\//.test(href)) doc.externalUrl ??= href
         else if (href) {

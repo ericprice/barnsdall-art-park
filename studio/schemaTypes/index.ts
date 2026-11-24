@@ -1,6 +1,6 @@
 import {organization} from './organization'
 import {foundationPerson, foundationPartner} from './foundation'
-import {link, socialLink, editorialImage, parkImage, richText} from './objects'
+import {link, socialLink, editorialImage, parkImage, richText, footerProse} from './objects'
 import {siteSettings, homePage, page, place, event, article} from './documents'
 
 export const schemaTypes = [
@@ -9,6 +9,7 @@ export const schemaTypes = [
   editorialImage,
   parkImage,
   richText,
+  footerProse,
   foundationPerson,
   foundationPartner,
   organization,

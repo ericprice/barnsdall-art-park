@@ -6,6 +6,7 @@ import {usePathname} from 'next/navigation'
 import {
   useCallback,
   useEffect,
+  useLayoutEffect,
   useRef,
   useState,
   useSyncExternalStore,
@@ -46,9 +47,50 @@ function currentSunset() {
 function Sunset({initialSunset}: {initialSunset: string}) {
   const sunset = useSyncExternalStore(subscribeToClock, currentSunset, () => initialSunset)
   return (
-    <span>
+    <>
       <time dateTime={sunset}>{formatParkSunset(new Date(sunset))}</time> Sunset
-    </span>
+    </>
+  )
+}
+
+function ParkUtilityInfo({initialSunset}: {initialSunset: string}) {
+  const [active, setActive] = useState(0)
+  const items = [
+    {id: 'city-run', content: 'City-run since 1927'},
+    {id: 'hours', content: 'Open Until 10 PM'},
+    {id: 'sunset', content: <Sunset initialSunset={initialSunset} />},
+  ]
+  const itemCount = items.length
+
+  useEffect(() => {
+    const mobile = window.matchMedia('(max-width: 48rem)')
+    let timer: number | undefined
+    function updateTimer() {
+      window.clearInterval(timer)
+      if (mobile.matches) {
+        timer = window.setInterval(() => setActive((item) => (item + 1) % itemCount), 4000)
+      }
+    }
+    function onViewportChange() {
+      setActive(0)
+      updateTimer()
+    }
+    updateTimer()
+    mobile.addEventListener('change', onViewportChange)
+    return () => {
+      window.clearInterval(timer)
+      mobile.removeEventListener('change', onViewportChange)
+    }
+  }, [itemCount])
+
+  return (
+    <div className="park-utility__info">
+      {items.map(({id, content}, index) => (
+        <span data-active={index === active} key={id}>
+          {content}
+        </span>
+      ))}
+    </div>
   )
 }
 
@@ -66,10 +108,14 @@ export function SiteHeader({settings, initialSunset}: HeaderProps) {
 
 function Navigation({pathname, settings, initialSunset}: HeaderProps & {pathname: string}) {
   const isHome = pathname === '/'
+  const [pinned, setPinned] = useState(false)
+  const compact = !isHome || pinned
   const [open, setOpen] = useState<number | 'search' | null>(null)
   const [mobile, setMobile] = useState(false)
   const [initialQuery, setInitialQuery] = useState('')
   const header = useRef<HTMLElement>(null)
+  const intro = useRef<HTMLDivElement>(null)
+  const previousNavPositions = useRef<Map<HTMLElement, number> | null>(null)
   const opener = useRef<HTMLElement | null>(null)
   const mobileButton = useRef<HTMLButtonElement>(null)
 
@@ -78,6 +124,52 @@ function Navigation({pathname, settings, initialSunset}: HeaderProps & {pathname
     setMobile(false)
     setInitialQuery('')
   }, [])
+
+  useEffect(() => {
+    if (!intro.current) return
+    let wasPinned: boolean | undefined
+    const observer = new IntersectionObserver(([entry]) => {
+      const nextPinned = entry.boundingClientRect.bottom < 0
+      if (nextPinned === wasPinned) return
+      if (
+        wasPinned !== undefined &&
+        !window.matchMedia('(prefers-reduced-motion: reduce)').matches
+      ) {
+        const labels = header.current?.querySelectorAll<HTMLElement>(
+          '.park-navigation__label, .park-navigation__mobile > button:first-child',
+        )
+        previousNavPositions.current = new Map(
+          Array.from(labels ?? [], (label) => [label, label.getBoundingClientRect().left]),
+        )
+      }
+      wasPinned = nextPinned
+      setPinned(nextPinned)
+    })
+    observer.observe(intro.current)
+    return () => observer.disconnect()
+  }, [])
+
+  useLayoutEffect(() => {
+    const previous = previousNavPositions.current
+    previousNavPositions.current = null
+    if (!previous) return
+
+    // Let flexbox set the final spacing, then ease each label from its previous position.
+    const moves = Array.from(
+      previous,
+      ([label, left]) => [label, left - label.getBoundingClientRect().left] as const,
+    )
+    const timing = {duration: 260, easing: 'ease-out'}
+    const animations = moves.flatMap(([label, distance]) =>
+      distance ? [label.animate({transform: [`translateX(${distance}px)`, 'none']}, timing)] : [],
+    )
+    if (pinned) {
+      header.current?.querySelectorAll('.compact-home').forEach((mark) => {
+        animations.push(mark.animate({opacity: [0, 1]}, {...timing, easing: 'ease-in'}))
+      })
+    }
+    return () => animations.forEach((animation) => animation.cancel())
+  }, [pinned])
 
   useEffect(() => {
     function openFromFooter(event: MouseEvent) {
@@ -89,7 +181,6 @@ function Navigation({pathname, settings, initialSunset}: HeaderProps & {pathname
       opener.current = link
       setOpen('search')
       setMobile(false)
-      header.current?.scrollIntoView({behavior: 'instant', block: 'start'})
     }
     function openFromLocation() {
       const [fragment, params] = window.location.hash.slice(1).split('?')
@@ -121,7 +212,7 @@ function Navigation({pathname, settings, initialSunset}: HeaderProps & {pathname
         : opener.current?.offsetParent
           ? opener.current
           : header.current?.querySelector<HTMLButtonElement>('.park-navigation__search')
-      target?.focus()
+      target?.focus({preventScroll: true})
     }
     function dismissFromOutside(event: MouseEvent) {
       const target = event.target
@@ -153,29 +244,22 @@ function Navigation({pathname, settings, initialSunset}: HeaderProps & {pathname
     setOpen(open === 'search' ? null : 'search')
   }
 
+  function returnHome(event: {preventDefault: () => void}) {
+    close()
+    if (!isHome) return
+    event.preventDefault()
+    window.scrollTo({top: 0})
+    intro.current?.querySelector<HTMLAnchorElement>('.park-masthead')?.focus({preventScroll: true})
+  }
+
+  const expanded = open !== null || mobile
+  const mobileExpanded = mobile || open === 'search'
   return (
-    <header
-      ref={header}
-      className={`park-header ${isHome ? 'park-header--home' : 'park-header--compact'}`}
-      data-expanded={open !== null || mobile}
-      onBlur={(event) => {
-        if (
-          typeof open !== 'number' &&
-          event.relatedTarget &&
-          !event.currentTarget.contains(event.relatedTarget)
-        ) {
-          close()
-        }
-      }}
-    >
+    <>
       {isHome && (
-        <>
+        <div className="park-header park-header__intro" ref={intro} data-expanded={expanded}>
           <div className="park-utility">
-            <div className="park-utility__info">
-              <span>City-run since 1927</span>
-              <span>Open Until 10 PM</span>
-              <Sunset initialSunset={initialSunset} />
-            </div>
+            <ParkUtilityInfo initialSunset={initialSunset} />
             <Link className="park-utility__donate" href="/support/donate">
               Donate
             </Link>
@@ -183,150 +267,166 @@ function Navigation({pathname, settings, initialSunset}: HeaderProps & {pathname
           <Link href="/" className="park-masthead" aria-label={settings.title} onClick={close}>
             <ParkImage image="/identity/barnsdall-art-park.svg" sizes="96vw" priority />
           </Link>
-        </>
-      )}
-      <div className="park-navigation">
-        {!isHome && (
-          <Link
-            href="/"
-            className="compact-home compact-home--mobile"
-            onClick={close}
-            aria-label={settings.title}
-          >
-            B
-          </Link>
-        )}
-        <div className="park-navigation__mobile">
-          <button
-            type="button"
-            ref={mobileButton}
-            aria-expanded={mobile}
-            aria-controls="primary-navigation"
-            onClick={(event) => {
-              opener.current = event.currentTarget
-              setMobile(!mobile)
-              setOpen(null)
-            }}
-          >
-            {mobile ? interfaceText.close : interfaceText.menu}
-          </button>
-          <button
-            type="button"
-            aria-label={interfaceText.search}
-            aria-expanded={open === 'search'}
-            aria-controls="site-search-panel"
-            onClick={(event) => toggleSearch(event.currentTarget)}
-          >
-            <Magnifier />
-          </button>
         </div>
-        <nav id="primary-navigation" aria-label="Main navigation" data-open={mobile}>
-          {!isHome && (
+      )}
+      <header
+        ref={header}
+        className={`park-header ${compact ? 'park-header--compact' : 'park-header--home'}`}
+        data-expanded={expanded}
+        onBlur={(event) => {
+          if (
+            typeof open !== 'number' &&
+            event.relatedTarget &&
+            !event.currentTarget.contains(event.relatedTarget)
+          ) {
+            close()
+          }
+        }}
+      >
+        <div className="park-navigation">
+          {compact && (
             <Link
               href="/"
-              className="compact-home compact-home--desktop"
-              onClick={close}
+              className="compact-home compact-home--mobile"
+              onNavigate={returnHome}
               aria-label={settings.title}
             >
               B
             </Link>
           )}
-          {settings.navigation.map((item, index) => {
-            const panelId = `navigation-panel-${index}`
-            const hasChildren = Boolean(item.children?.length)
-            if (!item.href && !hasChildren) return null
-            const current = item.href
-              ? pathname === item.href || pathname.startsWith(item.href + '/')
-              : item.children?.some((child) => {
-                  const target = child.href.split(/[?#]/)[0]
-                  return pathname === target || pathname.startsWith(target + '/')
-                })
-
-            function toggleSubmenu(trigger: HTMLElement) {
-              opener.current = trigger
-              setOpen(open === index ? null : index)
-            }
-
-            function focusSubmenu(event: ReactKeyboardEvent<HTMLElement>) {
-              if (event.key !== 'ArrowDown' || !hasChildren) return
-              event.preventDefault()
-              opener.current = event.currentTarget
-              setOpen(index)
-              requestAnimationFrame(() => {
-                header.current?.querySelector<HTMLAnchorElement>(`#${panelId} a`)?.focus()
-              })
-            }
-            return (
-              <div
-                key={item.title}
-                className="park-navigation__group"
-                data-open={open === index}
-                data-current={current}
+          <div className="park-navigation__mobile">
+            <button
+              type="button"
+              ref={mobileButton}
+              aria-expanded={mobileExpanded}
+              aria-controls={open === 'search' ? 'site-search-panel' : 'primary-navigation'}
+              onClick={(event) => {
+                if (mobileExpanded) {
+                  close()
+                  return
+                }
+                opener.current = event.currentTarget
+                setMobile(true)
+                setOpen(null)
+              }}
+            >
+              {mobileExpanded ? interfaceText.close : interfaceText.menu}
+            </button>
+            <button
+              type="button"
+              aria-label={interfaceText.search}
+              aria-expanded={open === 'search'}
+              aria-controls="site-search-panel"
+              onClick={(event) => toggleSearch(event.currentTarget)}
+            >
+              <Magnifier />
+            </button>
+          </div>
+          <nav id="primary-navigation" aria-label="Main navigation" data-open={mobile}>
+            {compact && (
+              <Link
+                href="/"
+                className="compact-home compact-home--desktop"
+                onNavigate={returnHome}
+                aria-label={settings.title}
               >
-                <span className="park-navigation__label">
-                  {item.href ? (
-                    <Link
-                      href={item.href}
-                      aria-current={current ? 'page' : undefined}
-                      aria-expanded={hasChildren ? open === index : undefined}
-                      aria-controls={hasChildren ? panelId : undefined}
-                      onClick={(event) => {
-                        if (event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return
-                        if (hasChildren) {
-                          event.preventDefault()
-                          toggleSubmenu(event.currentTarget)
-                        } else {
-                          close()
-                        }
-                      }}
-                      onKeyDown={focusSubmenu}
-                    >
-                      {item.title}
-                    </Link>
-                  ) : (
-                    <button
-                      type="button"
-                      aria-current={current ? 'true' : undefined}
-                      aria-expanded={open === index}
-                      aria-controls={panelId}
-                      onClick={(event) => toggleSubmenu(event.currentTarget)}
-                      onKeyDown={focusSubmenu}
-                    >
-                      {item.title}
-                    </button>
-                  )}
-                </span>
-                {!!item.children?.length && (
-                  <div className="park-navigation__links" id={panelId} inert={open !== index}>
-                    {item.children.map((child) => (
-                      <Link key={child.href} href={child.href} onClick={close}>
-                        {child.label}
+                B
+              </Link>
+            )}
+            {settings.navigation.map((item, index) => {
+              const panelId = `navigation-panel-${index}`
+              const hasChildren = Boolean(item.children?.length)
+              if (!item.href && !hasChildren) return null
+              const current = item.href
+                ? pathname === item.href || pathname.startsWith(item.href + '/')
+                : item.children?.some((child) => {
+                    const target = child.href.split(/[?#]/)[0]
+                    return pathname === target || pathname.startsWith(target + '/')
+                  })
+
+              function toggleSubmenu(trigger: HTMLElement) {
+                opener.current = trigger
+                setOpen(open === index ? null : index)
+              }
+
+              function focusSubmenu(event: ReactKeyboardEvent<HTMLElement>) {
+                if (event.key !== 'ArrowDown' || !hasChildren) return
+                event.preventDefault()
+                opener.current = event.currentTarget
+                setOpen(index)
+                requestAnimationFrame(() => {
+                  header.current?.querySelector<HTMLAnchorElement>(`#${panelId} a`)?.focus()
+                })
+              }
+              return (
+                <div
+                  key={item.title}
+                  className="park-navigation__group"
+                  data-open={open === index}
+                  data-current={current}
+                >
+                  <span className="park-navigation__label">
+                    {item.href ? (
+                      <Link
+                        href={item.href}
+                        aria-current={current ? 'page' : undefined}
+                        aria-expanded={hasChildren ? open === index : undefined}
+                        aria-controls={hasChildren ? panelId : undefined}
+                        onClick={(event) => {
+                          if (event.metaKey || event.ctrlKey || event.shiftKey || event.altKey)
+                            return
+                          if (hasChildren) {
+                            event.preventDefault()
+                            toggleSubmenu(event.currentTarget)
+                          } else {
+                            close()
+                          }
+                        }}
+                        onKeyDown={focusSubmenu}
+                      >
+                        {item.title}
                       </Link>
-                    ))}
-                  </div>
-                )}
-              </div>
-            )
-          })}
-          <button
-            className="park-navigation__search"
-            type="button"
-            aria-label={interfaceText.search}
-            aria-expanded={open === 'search'}
-            aria-controls="site-search-panel"
-            onClick={(event) => toggleSearch(event.currentTarget)}
-          >
-            <Magnifier />
-          </button>
-        </nav>
-      </div>
-      {open === 'search' && (
-        <HeaderSearch
-          labels={interfaceText}
-          initialQuery={initialQuery}
-          onNavigate={close}
-        />
-      )}
-    </header>
+                    ) : (
+                      <button
+                        type="button"
+                        aria-current={current ? 'true' : undefined}
+                        aria-expanded={open === index}
+                        aria-controls={panelId}
+                        onClick={(event) => toggleSubmenu(event.currentTarget)}
+                        onKeyDown={focusSubmenu}
+                      >
+                        {item.title}
+                      </button>
+                    )}
+                  </span>
+                  {!!item.children?.length && (
+                    <div className="park-navigation__links" id={panelId} inert={open !== index}>
+                      {item.children.map((child) => (
+                        <Link key={child.href} href={child.href} onClick={close}>
+                          {child.label}
+                        </Link>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              )
+            })}
+            <button
+              className="park-navigation__search"
+              type="button"
+              aria-label={interfaceText.search}
+              aria-expanded={open === 'search'}
+              aria-controls="site-search-panel"
+              onClick={(event) => toggleSearch(event.currentTarget)}
+            >
+              <Magnifier />
+            </button>
+          </nav>
+        </div>
+        {open === 'search' && (
+          <HeaderSearch labels={interfaceText} initialQuery={initialQuery} onNavigate={close} />
+        )}
+      </header>
+    </>
   )
 }

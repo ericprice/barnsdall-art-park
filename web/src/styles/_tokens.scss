@@ -15,8 +15,9 @@
   --display-tracking: -0.03em;
   --gutter: max(1rem, #{site-size(2)});
   --display: 'Barnsdall Low', var(--body);
-  --lead: 'Barnsdall High', var(--font-publisher), serif;
-  --body: var(--font-publisher), Georgia, serif;
+  --lead: 'Barnsdall High', var(--body);
+  --body: 'Publisher Rounded Slab', Georgia, serif;
+  --body-sans: 'Publisher Rounded Sans', Arial, sans-serif;
   --prose-heading-gap: calc(2lh / 3);
   --small-seed-width: 0.5em;
   --small-seed-gap: 0.6em;
@@ -42,7 +43,8 @@
   --type-label: max(1.1rem, #{site-size(2.15)});
   --publisher-scale: 0.75;
   --type-body: calc(max(1rem, #{site-size(1.465)}) * var(--publisher-scale) + 0.125rem);
-  --type-publisher-lead: calc(var(--type-label) * var(--publisher-scale));
+  --type-publisher-lead: calc(var(--type-body) * 4 / 3);
+  --type-small: calc(var(--type-body) * 0.875);
   --type-compact-label: clamp(0.875rem, 4.4vw, var(--type-label));
 
   // Baseline distances divided by type sizes on the original design plates.

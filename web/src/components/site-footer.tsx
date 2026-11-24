@@ -2,6 +2,7 @@ import {ParkImage} from './park-image'
 import Link from './route-link'
 import type {SiteContent} from '@/lib/content'
 import {NewsletterSignup} from './newsletter-signup'
+import {FooterText} from './rich-text'
 import {interfaceText} from '../../../shared/interface'
 
 const copyrightYear = new Intl.DateTimeFormat('en-US', {
@@ -30,7 +31,11 @@ export function SiteFooter({settings}: {settings: SiteContent['settings']}) {
             sizes="(max-width: 44rem) 70vw, 40vw"
           />
         </Link>
-        {settings.footerText && <p>{settings.footerText}</p>}
+        {!!settings.footer.footerText?.length && (
+          <div className="park-footer__copy">
+            <FooterText value={settings.footer.footerText} />
+          </div>
+        )}
       </div>
       <div className="park-footer__connect">
         <div>
@@ -54,7 +59,9 @@ export function SiteFooter({settings}: {settings: SiteContent['settings']}) {
           </div>
           <NewsletterSignup />
           <div className="park-footer__details">
-            <address>{settings.address}</address>
+            <address>
+              <FooterText value={settings.footer.address} />
+            </address>
             <ul>
               {settings.footerLinks?.map(
                 (link) =>
@@ -68,7 +75,7 @@ export function SiteFooter({settings}: {settings: SiteContent['settings']}) {
           </div>
         </div>
         <div className="park-footer__fineprint">
-          {settings.landAcknowledgment && <p>{settings.landAcknowledgment}</p>}
+          <FooterText value={settings.footer.landAcknowledgment} />
           <p>©{copyrightYear.format(new Date())} Barnsdall Art Park Foundation</p>
           {settings.legalLinks.length > 0 && (
             <div className="park-footer__legal">

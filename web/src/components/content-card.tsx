@@ -5,7 +5,6 @@ import {ParkImage} from './park-image'
 import type {ContentEntry} from '@/lib/content'
 
 export function HomeFeatureCard({entry, index}: {entry: ContentEntry; index: number}) {
-  const event = entry.href.startsWith('/whats-on/')
   const image = entry.featureImage || entry.image
   const theme = themeForEntry(entry)
   return (
@@ -24,12 +23,12 @@ export function HomeFeatureCard({entry, index}: {entry: ContentEntry; index: num
         </div>
         {entry.organization && <p className="home-feature__category">{entry.organization}</p>}
         <h2 className="card-heading">{entry.title}</h2>
-        {event && entry.date && !entry.featureCaption ? (
+        {entry.type === 'event' && entry.date && !entry.featureCaption ? (
           <time dateTime={entry.date}>{scheduleLabel(entry)}</time>
         ) : entry.featureCaption ? (
-          <span className="home-feature__caption">
-            <i className="small-seed" aria-hidden="true" />
-            {entry.featureCaption}
+          <span className="dot-link">
+            <span className="small-seed" aria-hidden="true" />
+            <span>{entry.featureCaption}</span>
           </span>
         ) : null}
       </Link>

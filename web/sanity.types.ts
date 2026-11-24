@@ -153,7 +153,6 @@ export type SiteSettings = {
       _key: string
     } & PageReference
   >
-  address?: string
   quotes?: Array<{
     text?: string
     attribution?: string
@@ -166,9 +165,35 @@ export type SiteSettings = {
       _key: string
     } & SocialLink
   >
+  footer?: {
+    footerText?: FooterProse
+    address?: FooterProse
+    landAcknowledgment?: FooterProse
+  }
+  address?: string
   footerText?: string
   landAcknowledgment?: string
 }
+
+export type FooterProse = Array<{
+  children?: Array<{
+    marks?: Array<string>
+    text?: string
+    _type: 'span'
+    _key: string
+  }>
+  style?: 'normal'
+  listItem?: never
+  markDefs?: Array<{
+    internal?: PageReference | PlaceReference | EventReference | ArticleReference
+    href?: string
+    _type: 'link'
+    _key: string
+  }>
+  level?: number
+  _type: 'block'
+  _key: string
+}>
 
 export type FoundationPartner = {
   _type: 'foundationPartner'
@@ -201,7 +226,7 @@ export type RichText = Array<
         _type: 'span'
         _key: string
       }>
-      style?: 'normal' | 'dotLink' | 'h2' | 'h3'
+      style?: 'normal' | 'lead' | 'dotLink' | 'h2' | 'h3'
       listItem?: 'bullet' | 'number'
       markDefs?: Array<
         | {
@@ -219,12 +244,6 @@ export type RichText = Array<
       >
       level?: number
       _type: 'block'
-      _key: string
-    }
-  | {
-      text?: string
-      attribution?: string
-      _type: 'quotation'
       _key: string
     }
   | ({
@@ -404,7 +423,6 @@ export type Place = {
   _rev: string
   title?: string
   organizationRef?: OrganizationReference
-  summary?: string
   externalUrl?: string
   subtitle?: string
   body?: RichText
@@ -468,7 +486,7 @@ export type Event = {
   _rev: string
   title?: string
   organizationRef?: OrganizationReference
-  summary?: string
+  externalUrl?: string
   body?: RichText
   slug?: Slug
   image?: ParkImage
@@ -653,6 +671,7 @@ export type AllSanitySchemaTypes =
   | EditorialImage
   | ParkImage
   | SiteSettings
+  | FooterProse
   | FoundationPartner
   | FoundationPerson
   | SanityFileAssetReference
@@ -677,12 +696,13 @@ export type AllSanitySchemaTypes =
 
 // Source: ../web/src/sanity/queries.ts
 // Variable: DESTINATIONS_QUERY
-// Query: *[_id in $ids]{_id, _type, "slug":slug.current, externalUrl, "targetPageId":targetPage._ref, "targetSlug":targetPage->slug.current}
+// Query: *[_id in $ids]{_id, _type, slug, organizationRef, externalUrl, "targetPageId":targetPage._ref, "targetSlug":targetPage->slug.current}
 export type DESTINATIONS_QUERY_RESULT = Array<
   | {
       _id: string
       _type: 'article'
-      slug: string | null
+      slug: Slug | null
+      organizationRef: OrganizationReference | null
       externalUrl: string | null
       targetPageId: string | null
       targetSlug: string | null
@@ -690,8 +710,9 @@ export type DESTINATIONS_QUERY_RESULT = Array<
   | {
       _id: string
       _type: 'event'
-      slug: string | null
-      externalUrl: null
+      slug: Slug | null
+      organizationRef: OrganizationReference | null
+      externalUrl: string | null
       targetPageId: null
       targetSlug: null
     }
@@ -699,6 +720,7 @@ export type DESTINATIONS_QUERY_RESULT = Array<
       _id: string
       _type: 'homePage'
       slug: null
+      organizationRef: null
       externalUrl: null
       targetPageId: null
       targetSlug: null
@@ -707,6 +729,7 @@ export type DESTINATIONS_QUERY_RESULT = Array<
       _id: string
       _type: 'organization'
       slug: null
+      organizationRef: null
       externalUrl: null
       targetPageId: null
       targetSlug: null
@@ -714,7 +737,8 @@ export type DESTINATIONS_QUERY_RESULT = Array<
   | {
       _id: string
       _type: 'page'
-      slug: string | null
+      slug: Slug | null
+      organizationRef: OrganizationReference | null
       externalUrl: null
       targetPageId: null
       targetSlug: null
@@ -722,7 +746,8 @@ export type DESTINATIONS_QUERY_RESULT = Array<
   | {
       _id: string
       _type: 'place'
-      slug: string | null
+      slug: Slug | null
+      organizationRef: OrganizationReference | null
       externalUrl: string | null
       targetPageId: null
       targetSlug: null
@@ -731,6 +756,7 @@ export type DESTINATIONS_QUERY_RESULT = Array<
       _id: string
       _type: 'sanity.fileAsset'
       slug: null
+      organizationRef: null
       externalUrl: null
       targetPageId: null
       targetSlug: null
@@ -739,6 +765,7 @@ export type DESTINATIONS_QUERY_RESULT = Array<
       _id: string
       _type: 'sanity.imageAsset'
       slug: null
+      organizationRef: null
       externalUrl: null
       targetPageId: null
       targetSlug: null
@@ -747,6 +774,7 @@ export type DESTINATIONS_QUERY_RESULT = Array<
       _id: string
       _type: 'siteSettings'
       slug: null
+      organizationRef: null
       externalUrl: null
       targetPageId: null
       targetSlug: null
@@ -755,11 +783,16 @@ export type DESTINATIONS_QUERY_RESULT = Array<
 
 // Source: ../web/src/sanity/queries.ts
 // Variable: SITE_QUERY
-// Query: {  "settings": *[_type == "siteSettings" && _id == "siteSettings"][0]{    title, description, address, socialLinks, footerText, landAcknowledgment, quotes,    navigation, footerLinks, legalPages[]->{_id, title, "slug": slug.current}  },  "home": *[_type == "homePage" && _id == "homePage"][0]{    historyLink, heroSlides[]{..., "orgTheme": organizationRef->{title, light, dark}}, celebration,    features[]{image,caption,background,entry->{_id,_type,title,slug,summary,image,organizationRef,"orgTheme":organizationRef->{title,light,dark},externalUrl,"targetPageId":targetPage._ref, "targetSlug":targetPage->slug.current,startsAt,endsAt,repeatsUntil,allDay,publishedAt}},    exploreLocations[]{image, location->{_id, _type, title, slug, summary, "orgTheme": organizationRef->{title, light, dark}, externalUrl}}  },  "milestones": *[_id == $historyId][0].timelineEntries[showOnHomepage == true]{_key, "year":coalesce(homeHighlight.year,dateLabel), "summary":coalesce(homeHighlight.summary,description),"link":homeHighlight.link},  "events": *[_type == "event" && defined(slug.current)] | order(startsAt asc){_id, _type, title, slug, summary, image, "orgTheme": organizationRef->{title, light, dark}, startsAt, endsAt, repeatsUntil, allDay},  "articles": *[_type == "article" && defined(slug.current) && excludeFromNews != true] | order(defined(publishedAt) desc, publishedAt desc, title asc){_id, _type, title, slug, summary, image, organizationRef, "orgTheme": organizationRef->{title, light, dark}, externalUrl, publishedAt}}
+// Query: {  "settings": *[_type == "siteSettings" && _id == "siteSettings"][0]{    title, description, footer, address, socialLinks, footerText, landAcknowledgment, quotes,    navigation, footerLinks, legalPages[]->{_id, title, "slug": slug.current}  },  "home": *[_type == "homePage" && _id == "homePage"][0]{    historyLink, heroSlides[]{..., "orgTheme": organizationRef->{title, light, dark}}, celebration,    features[]{image,caption,background,entry->{_id,_type,title,slug,summary,image,organizationRef,"orgTheme":organizationRef->{title,light,dark},externalUrl,"targetPageId":targetPage._ref, "targetSlug":targetPage->slug.current,startsAt,endsAt,repeatsUntil,allDay,publishedAt}},    exploreLocations[]{image, location->{_id, _type, title, slug, subtitle, "orgTheme": organizationRef->{title, light, dark}, externalUrl}}  },  "milestones": *[_id == $historyId][0].timelineEntries[showOnHomepage == true]{_key, "year":coalesce(homeHighlight.year,dateLabel), "summary":coalesce(homeHighlight.summary,description),"link":homeHighlight.link},  "events": *[_type == "event"] | order(startsAt asc){_id, _type, title, slug, summary, image, organizationRef, externalUrl, "orgTheme": organizationRef->{title, light, dark}, startsAt, endsAt, repeatsUntil, allDay},  "articles": *[_type == "article" && defined(slug.current) && excludeFromNews != true] | order(defined(publishedAt) desc, publishedAt desc, title asc){_id, _type, title, slug, summary, image, organizationRef, "orgTheme": organizationRef->{title, light, dark}, externalUrl, publishedAt}}
 export type SITE_QUERY_RESULT = {
   settings: {
     title: string | null
     description: string | null
+    footer: {
+      footerText?: FooterProse
+      address?: FooterProse
+      landAcknowledgment?: FooterProse
+    } | null
     address: string | null
     socialLinks: Array<
       {
@@ -850,7 +883,7 @@ export type SITE_QUERY_RESULT = {
             _type: 'event'
             title: string | null
             slug: Slug | null
-            summary: string | null
+            summary: null
             image: ParkImage | null
             organizationRef: OrganizationReference | null
             orgTheme: {
@@ -858,7 +891,7 @@ export type SITE_QUERY_RESULT = {
               light: string | null
               dark: string | null
             } | null
-            externalUrl: null
+            externalUrl: string | null
             targetPageId: null
             targetSlug: null
             startsAt: string | null
@@ -894,7 +927,7 @@ export type SITE_QUERY_RESULT = {
             _type: 'place'
             title: string | null
             slug: Slug | null
-            summary: string | null
+            summary: null
             image: null
             organizationRef: OrganizationReference | null
             orgTheme: {
@@ -920,7 +953,7 @@ export type SITE_QUERY_RESULT = {
         _type: 'place'
         title: string | null
         slug: Slug | null
-        summary: string | null
+        subtitle: string | null
         orgTheme: {
           title: string | null
           light: string | null
@@ -941,8 +974,10 @@ export type SITE_QUERY_RESULT = {
     _type: 'event'
     title: string | null
     slug: Slug | null
-    summary: string | null
+    summary: null
     image: ParkImage | null
+    organizationRef: OrganizationReference | null
+    externalUrl: string | null
     orgTheme: {
       title: string | null
       light: string | null
@@ -1018,7 +1053,7 @@ export type CONTENT_QUERY_RESULT =
       _rev: string
       title?: string
       organizationRef?: OrganizationReference
-      summary?: string
+      externalUrl?: string
       body?: RichText
       slug?: Slug
       image?: ParkImage
@@ -1210,7 +1245,6 @@ export type CONTENT_QUERY_RESULT =
       _rev: string
       title?: string
       organizationRef?: OrganizationReference
-      summary?: string
       externalUrl?: string
       subtitle?: string
       body?: RichText
@@ -1276,7 +1310,7 @@ export type CONTENT_QUERY_RESULT =
 
 // Source: ../web/src/sanity/queries.ts
 // Variable: SEARCH_QUERY
-// Query: *[_type in ["page", "place", "event", "article"] && defined(slug.current) && (title match $searchTerm || organizationRef->title match $searchTerm || summary match $searchTerm || (!defined(externalUrl) && !defined(targetPage) && pt::text(body) match $searchTerm) || contentSections[].title match $searchTerm || contentSections[].links[].label match $searchTerm || contentSections[].entries[].title match $searchTerm || contentSections[].entries[].links[].label match $searchTerm || count(contentSections[pt::text(body) match $searchTerm || count(entries[pt::text(body) match $searchTerm]) > 0]) > 0 || boardMembers[].name match $searchTerm || boardMembers[].role match $searchTerm || boardMembers[].affiliation match $searchTerm || boardMembers[].bio match $searchTerm || staffMembers[].name match $searchTerm || staffMembers[].role match $searchTerm || staffMembers[].affiliation match $searchTerm || staffMembers[].bio match $searchTerm || partners[].name match $searchTerm || supporterYears[].groups[].supporters[].name match $searchTerm || initiativeCards[].title match $searchTerm || donationSections[].title match $searchTerm || timelineEntries[].dateLabel match $searchTerm || timelineEntries[].description match $searchTerm)] | order(title asc)[0...100]{_id, _type, title, slug, summary, image, organizationRef, "orgTheme": organizationRef->{title, light, dark}, externalUrl, "targetPageId":targetPage._ref, "targetSlug":targetPage->slug.current}
+// Query: *[_type in ["page", "place", "event", "article"] && (defined(slug.current) || (_type == "event" && defined(externalUrl))) && (title match $searchTerm || organizationRef->title match $searchTerm || summary match $searchTerm || subtitle match $searchTerm || (!defined(externalUrl) && !defined(targetPage) && pt::text(body) match $searchTerm) || contentSections[].title match $searchTerm || contentSections[].links[].label match $searchTerm || contentSections[].entries[].title match $searchTerm || contentSections[].entries[].links[].label match $searchTerm || count(contentSections[pt::text(body) match $searchTerm || count(entries[pt::text(body) match $searchTerm]) > 0]) > 0 || boardMembers[].name match $searchTerm || boardMembers[].role match $searchTerm || boardMembers[].affiliation match $searchTerm || boardMembers[].bio match $searchTerm || staffMembers[].name match $searchTerm || staffMembers[].role match $searchTerm || staffMembers[].affiliation match $searchTerm || staffMembers[].bio match $searchTerm || partners[].name match $searchTerm || supporterYears[].groups[].supporters[].name match $searchTerm || initiativeCards[].title match $searchTerm || donationSections[].title match $searchTerm || timelineEntries[].dateLabel match $searchTerm || timelineEntries[].description match $searchTerm)] | order(title asc)[0...100]{_id, _type, title, slug, summary, image, organizationRef, "orgTheme": organizationRef->{title, light, dark}, externalUrl, "targetPageId":targetPage._ref, "targetSlug":targetPage->slug.current}
 export type SEARCH_QUERY_RESULT = Array<
   | {
       _id: string
@@ -1300,7 +1334,7 @@ export type SEARCH_QUERY_RESULT = Array<
       _type: 'event'
       title: string | null
       slug: Slug | null
-      summary: string | null
+      summary: null
       image: ParkImage | null
       organizationRef: OrganizationReference | null
       orgTheme: {
@@ -1308,7 +1342,7 @@ export type SEARCH_QUERY_RESULT = Array<
         light: string | null
         dark: string | null
       } | null
-      externalUrl: null
+      externalUrl: string | null
       targetPageId: null
       targetSlug: null
     }
@@ -1334,7 +1368,7 @@ export type SEARCH_QUERY_RESULT = Array<
       _type: 'place'
       title: string | null
       slug: Slug | null
-      summary: string | null
+      summary: null
       image: null
       organizationRef: OrganizationReference | null
       orgTheme: {
@@ -1351,10 +1385,10 @@ export type SEARCH_QUERY_RESULT = Array<
 // Query TypeMap
 declare global {
   interface SanityQueries {
-    '*[_id in $ids]{_id, _type, "slug":slug.current, externalUrl, "targetPageId":targetPage._ref, "targetSlug":targetPage->slug.current}': DESTINATIONS_QUERY_RESULT
-    '{\n  "settings": *[_type == "siteSettings" && _id == "siteSettings"][0]{\n    title, description, address, socialLinks, footerText, landAcknowledgment, quotes,\n    navigation, footerLinks, legalPages[]->{_id, title, "slug": slug.current}\n  },\n  "home": *[_type == "homePage" && _id == "homePage"][0]{\n    historyLink, heroSlides[]{..., "orgTheme": organizationRef->{title, light, dark}}, celebration,\n    features[]{image,caption,background,entry->{_id,_type,title,slug,summary,image,organizationRef,"orgTheme":organizationRef->{title,light,dark},externalUrl,"targetPageId":targetPage._ref, "targetSlug":targetPage->slug.current,startsAt,endsAt,repeatsUntil,allDay,publishedAt}},\n    exploreLocations[]{image, location->{_id, _type, title, slug, summary, "orgTheme": organizationRef->{title, light, dark}, externalUrl}}\n  },\n  "milestones": *[_id == $historyId][0].timelineEntries[showOnHomepage == true]{_key, "year":coalesce(homeHighlight.year,dateLabel), "summary":coalesce(homeHighlight.summary,description),"link":homeHighlight.link},\n  "events": *[_type == "event" && defined(slug.current)] | order(startsAt asc){_id, _type, title, slug, summary, image, "orgTheme": organizationRef->{title, light, dark}, startsAt, endsAt, repeatsUntil, allDay},\n  "articles": *[_type == "article" && defined(slug.current) && excludeFromNews != true] | order(defined(publishedAt) desc, publishedAt desc, title asc){_id, _type, title, slug, summary, image, organizationRef, "orgTheme": organizationRef->{title, light, dark}, externalUrl, publishedAt}\n}': SITE_QUERY_RESULT
+    '*[_id in $ids]{_id, _type, slug, organizationRef, externalUrl, "targetPageId":targetPage._ref, "targetSlug":targetPage->slug.current}': DESTINATIONS_QUERY_RESULT
+    '{\n  "settings": *[_type == "siteSettings" && _id == "siteSettings"][0]{\n    title, description, footer, address, socialLinks, footerText, landAcknowledgment, quotes,\n    navigation, footerLinks, legalPages[]->{_id, title, "slug": slug.current}\n  },\n  "home": *[_type == "homePage" && _id == "homePage"][0]{\n    historyLink, heroSlides[]{..., "orgTheme": organizationRef->{title, light, dark}}, celebration,\n    features[]{image,caption,background,entry->{_id,_type,title,slug,summary,image,organizationRef,"orgTheme":organizationRef->{title,light,dark},externalUrl,"targetPageId":targetPage._ref, "targetSlug":targetPage->slug.current,startsAt,endsAt,repeatsUntil,allDay,publishedAt}},\n    exploreLocations[]{image, location->{_id, _type, title, slug, subtitle, "orgTheme": organizationRef->{title, light, dark}, externalUrl}}\n  },\n  "milestones": *[_id == $historyId][0].timelineEntries[showOnHomepage == true]{_key, "year":coalesce(homeHighlight.year,dateLabel), "summary":coalesce(homeHighlight.summary,description),"link":homeHighlight.link},\n  "events": *[_type == "event"] | order(startsAt asc){_id, _type, title, slug, summary, image, organizationRef, externalUrl, "orgTheme": organizationRef->{title, light, dark}, startsAt, endsAt, repeatsUntil, allDay},\n  "articles": *[_type == "article" && defined(slug.current) && excludeFromNews != true] | order(defined(publishedAt) desc, publishedAt desc, title asc){_id, _type, title, slug, summary, image, organizationRef, "orgTheme": organizationRef->{title, light, dark}, externalUrl, publishedAt}\n}': SITE_QUERY_RESULT
     '*[_type == $type && slug.current == $slug && _type in ["page","place","event","article"]][0]{..., "orgTheme": organizationRef->{title, light, dark}, "targetPageId":targetPage._ref, "targetSlug":targetPage->slug.current}': CONTENT_QUERY_RESULT
-    '*[_type in ["page", "place", "event", "article"] && defined(slug.current) && (title match $searchTerm || organizationRef->title match $searchTerm || summary match $searchTerm || (!defined(externalUrl) && !defined(targetPage) && pt::text(body) match $searchTerm) || contentSections[].title match $searchTerm || contentSections[].links[].label match $searchTerm || contentSections[].entries[].title match $searchTerm || contentSections[].entries[].links[].label match $searchTerm || count(contentSections[pt::text(body) match $searchTerm || count(entries[pt::text(body) match $searchTerm]) > 0]) > 0 || boardMembers[].name match $searchTerm || boardMembers[].role match $searchTerm || boardMembers[].affiliation match $searchTerm || boardMembers[].bio match $searchTerm || staffMembers[].name match $searchTerm || staffMembers[].role match $searchTerm || staffMembers[].affiliation match $searchTerm || staffMembers[].bio match $searchTerm || partners[].name match $searchTerm || supporterYears[].groups[].supporters[].name match $searchTerm || initiativeCards[].title match $searchTerm || donationSections[].title match $searchTerm || timelineEntries[].dateLabel match $searchTerm || timelineEntries[].description match $searchTerm)] | order(title asc)[0...100]{_id, _type, title, slug, summary, image, organizationRef, "orgTheme": organizationRef->{title, light, dark}, externalUrl, "targetPageId":targetPage._ref, "targetSlug":targetPage->slug.current}': SEARCH_QUERY_RESULT
+    '*[_type in ["page", "place", "event", "article"] && (defined(slug.current) || (_type == "event" && defined(externalUrl))) && (title match $searchTerm || organizationRef->title match $searchTerm || summary match $searchTerm || subtitle match $searchTerm || (!defined(externalUrl) && !defined(targetPage) && pt::text(body) match $searchTerm) || contentSections[].title match $searchTerm || contentSections[].links[].label match $searchTerm || contentSections[].entries[].title match $searchTerm || contentSections[].entries[].links[].label match $searchTerm || count(contentSections[pt::text(body) match $searchTerm || count(entries[pt::text(body) match $searchTerm]) > 0]) > 0 || boardMembers[].name match $searchTerm || boardMembers[].role match $searchTerm || boardMembers[].affiliation match $searchTerm || boardMembers[].bio match $searchTerm || staffMembers[].name match $searchTerm || staffMembers[].role match $searchTerm || staffMembers[].affiliation match $searchTerm || staffMembers[].bio match $searchTerm || partners[].name match $searchTerm || supporterYears[].groups[].supporters[].name match $searchTerm || initiativeCards[].title match $searchTerm || donationSections[].title match $searchTerm || timelineEntries[].dateLabel match $searchTerm || timelineEntries[].description match $searchTerm)] | order(title asc)[0...100]{_id, _type, title, slug, summary, image, organizationRef, "orgTheme": organizationRef->{title, light, dark}, externalUrl, "targetPageId":targetPage._ref, "targetSlug":targetPage->slug.current}': SEARCH_QUERY_RESULT
   }
 }
 // Lets @sanity/client releases that predate the global registry read it too

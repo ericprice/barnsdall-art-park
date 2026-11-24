@@ -6,6 +6,7 @@ import {themeForEntry, themeStyle} from '@/lib/image-theme'
 import {DisplayLink, DotLink} from './action-links'
 import {ParkImage} from './park-image'
 import {CarouselChevron} from './carousel-chevron'
+import {useCarouselSwipe} from './use-carousel-swipe'
 
 // Studio allows five featured stories. Each uses a separate identity plate silhouette.
 const slideDots = [3, 13, 9, 11, 14]
@@ -14,13 +15,14 @@ export function Hero({slides, celebration}: Pick<SiteContent['home'], 'slides' |
   const [index, setIndex] = useState(0)
   const [hovered, setHovered] = useState(false)
   const [focused, setFocused] = useState(false)
+  const [touching, setTouching] = useState(false)
   const [atPageEnd, setAtPageEnd] = useState(false)
   const stories = slides
   const active = stories.length ? index % stories.length : 0
   const slide = stories[active]
 
   useEffect(() => {
-    if (slides.length < 2 || hovered || focused) return
+    if (slides.length < 2 || hovered || focused || touching) return
     const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)')
     let timer: number | undefined
     function schedule() {
@@ -37,7 +39,7 @@ export function Hero({slides, celebration}: Pick<SiteContent['home'], 'slides' |
       document.removeEventListener('visibilitychange', schedule)
       reducedMotion.removeEventListener('change', schedule)
     }
-  }, [slides.length, hovered, focused])
+  }, [slides.length, hovered, focused, touching])
 
   useEffect(() => {
     if (!celebration?.title) return
@@ -65,6 +67,9 @@ export function Hero({slides, celebration}: Pick<SiteContent['home'], 'slides' |
   function advance(direction: number) {
     setIndex((value) => (value + direction + stories.length) % stories.length)
   }
+
+  const swipe = useCarouselSwipe(stories.length, advance, setTouching)
+
   if (!slide) return null
   return (
     <>
@@ -77,6 +82,7 @@ export function Hero({slides, celebration}: Pick<SiteContent['home'], 'slides' |
           if (event.pointerType === 'mouse') setHovered(true)
         }}
         onPointerLeave={() => setHovered(false)}
+        {...swipe}
         onFocusCapture={() => setFocused(true)}
         onBlurCapture={(event) => {
           if (!event.currentTarget.contains(event.relatedTarget)) setFocused(false)
@@ -109,20 +115,18 @@ export function Hero({slides, celebration}: Pick<SiteContent['home'], 'slides' |
         <div className="hero__story" key={slide.id}>
           <h1>{slide.title}</h1>
           {slide.summary && <p>{slide.summary}</p>}
-          {slide.link?.href && (
-            <DisplayLink href={slide.link.href}>{slide.link.label}</DisplayLink>
-          )}
+          {slide.link?.href && <DisplayLink href={slide.link.href}>{slide.link.label}</DisplayLink>}
         </div>
         {stories.length > 1 && (
           <div className="hero__controls">
             <button type="button" onClick={() => advance(-1)} aria-label="Previous featured story">
-              <CarouselChevron direction="previous" bold />
+              <CarouselChevron direction="previous" />
             </button>
             <span className="sr-only" aria-live={focused ? 'polite' : 'off'}>
               {active + 1} of {stories.length}
             </span>
             <button type="button" onClick={() => advance(1)} aria-label="Next featured story">
-              <CarouselChevron direction="next" bold />
+              <CarouselChevron direction="next" />
             </button>
           </div>
         )}
