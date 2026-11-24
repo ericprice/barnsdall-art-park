@@ -15,8 +15,19 @@ $home-nav-height: $home-nav-start + $nav-search-size + $desktop-nav-end;
 $compact-nav-height: $compact-nav-start + $compact-mark-height + $compact-nav-end;
 
 @mixin green-panel-fill {
-  // Extend the paint horizontally without changing the layout or scroll width.
-  border-image: linear-gradient(var(--green) 0 0) fill 0 / 0 / 0 100vmax;
+  background-color: var(--green);
+  isolation: isolate;
+
+  &::before {
+    // Extend the solid fill across the viewport without clipping the menu content.
+    content: '';
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    pointer-events: none;
+    box-shadow: 0 0 0 100vmax var(--green);
+    clip-path: inset(0 -100vmax);
+  }
 }
 
 :root {
@@ -33,16 +44,6 @@ $compact-nav-height: $compact-nav-start + $compact-mark-height + $compact-nav-en
   --menu-fade: 150ms;
   @include display;
 
-  &::before {
-    @include green-panel-fill;
-    content: '';
-    position: absolute;
-    inset: 0;
-    z-index: -1;
-    pointer-events: none;
-    opacity: 0;
-  }
-
   a,
   button {
     color: inherit;
@@ -54,9 +55,7 @@ $compact-nav-height: $compact-nav-start + $compact-mark-height + $compact-nav-en
     padding: 0;
   }
   &[data-expanded='true'] {
-    &::before {
-      opacity: 1;
-    }
+    @include green-panel-fill;
 
     :focus-visible {
       outline-color: var(--paper);
