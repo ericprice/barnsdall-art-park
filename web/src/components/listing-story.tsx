@@ -1,6 +1,7 @@
 import {themeForEntry, themeStyle} from '@/lib/image-theme'
 import Link from './route-link'
 import type {ContentEntry, SiteContent} from '@/lib/content'
+import {blockText} from '@/lib/body-layout'
 import {scheduleLabel} from '@/lib/event-filters'
 import {SidebarLinks} from './action-links'
 import {ListingGrid} from './listing-card'
@@ -12,9 +13,20 @@ import {PageSections} from './page-sections'
 import {StoryGallery} from './story-gallery'
 import {interfaceText as text} from '../../../shared/interface'
 
+function subtitleComparison(text?: string | null) {
+  return text?.trim().replace(/\.$/, '').toLowerCase()
+}
+
 export function ListingStory({entry, site}: {entry: ContentEntry; site: SiteContent}) {
   const event = entry.type === 'event'
   const news = entry.type === 'article'
+  const firstBlock = entry.body?.[0]
+  const bodyIntro = firstBlock?._type === 'block' ? blockText(firstBlock) : undefined
+  const showSummary =
+    news &&
+    entry.summary &&
+    subtitleComparison(entry.summary) !== subtitleComparison(entry.subtitle) &&
+    entry.summary !== bodyIntro
   const theme = themeForEntry(entry)
   const images = [...(entry.image ? [entry.image] : []), ...(entry.gallery || [])]
   const ticketLinks = entry.link?.href
@@ -60,9 +72,7 @@ export function ListingStory({entry, site}: {entry: ContentEntry; site: SiteCont
             </aside>
           )}
           <div className="listing-story__body">
-            {news && entry.summary && (
-              <p className="listing-story__summary">{entry.summary}</p>
-            )}
+            {showSummary && <p className="listing-story__summary">{entry.summary}</p>}
             <RichText value={entry.body} orgTheme={event ? theme : undefined} />
             {!event && entry.link?.href && <Link href={entry.link.href}>{entry.link.label}</Link>}
           </div>

@@ -25,7 +25,7 @@ export function linkDestination(mark: Mark) {
 
 type Heading = {_key?: string; children?: Array<{text?: string}>}
 
-function blockText(block: Heading) {
+export function blockText(block: Heading) {
   return (block.children ?? []).map((span) => span.text).join('')
 }
 

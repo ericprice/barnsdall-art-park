@@ -221,7 +221,6 @@
     margin-top: calc(-1 * var(--type-section));
   }
   .story-gallery__photo {
-    width: 33%;
     border-radius: 42% 58% 34% 66% / 48% 50% 50% 52%;
     overflow: hidden;
     img {
@@ -291,9 +290,6 @@
   .listing-story .story-gallery__photo {
     width: 88%;
   }
-  .programme-story .story-gallery__photo {
-    width: 55%;
-  }
   .listing-story__columns {
     display: flex;
     flex-direction: column;
@@ -314,7 +310,7 @@
   margin: 3rem var(--gutter) 0;
   > h2 {
     text-align: center;
-    @include type-size(display);
+    @include type-size(section);
     margin-bottom: 0.4em;
   }
 }
