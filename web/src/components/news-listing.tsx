@@ -7,15 +7,18 @@ import {EntryDate} from './entry-meta'
 import {FeatureContent} from './feature-content'
 import {QuoteBand} from './quote-band'
 import {ParkImage} from './park-image'
+import {PageSubtitle} from './page-heading'
 
 export function NewsListing({
   articles,
   params,
   text,
+  subtitle,
 }: {
   articles: ContentEntry[]
   params: ListingParams
   text: InterfaceText
+  subtitle?: string
 }) {
   const pageSize = 6
   const [lead, ...otherArticles] = articles
@@ -29,6 +32,7 @@ export function NewsListing({
     <main id="main-content" className="news-index listing">
       <header className="listing-head">
         <h1>{text.news}</h1>
+        <PageSubtitle subtitle={subtitle} />
       </header>
       {featured && (
         <article

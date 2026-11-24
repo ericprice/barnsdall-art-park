@@ -29,6 +29,16 @@ function blockText(block: Heading) {
   return (block.children ?? []).map((span) => span.text).join('')
 }
 
+export function leadingBodyBlock(body?: RichText) {
+  const first = body?.[0]
+  return first?._type === 'block' && first.style === 'lead' ? first : undefined
+}
+
+export function bodyLeadText(body?: RichText) {
+  const lead = leadingBodyBlock(body)
+  return lead && blockText(lead)
+}
+
 // Old fragment URLs can differ from the heading text. Migrated headings carry their stable
 // fragment in their block key. New headings take their fragment from the visible title.
 export function headingAnchor(block: Heading) {

@@ -1,11 +1,12 @@
 @use '../styles/scale' as *;
 
 .editorial-page {
+  container-type: inline-size;
+  --story-photo-width: 66cqi;
   padding-inline: var(--gutter);
   @include publisher-type;
 
   .story-gallery {
-    --story-photo-width: 66%;
     --story-frame-ratio: calc(1053 / 693);
     margin: 0;
   }
@@ -57,6 +58,9 @@
       @include type-size(title);
     }
     > .rich-text {
+      > .lead:only-child {
+        margin-block-end: calc(var(--leading-body) * 1em);
+      }
       > h2:not(:first-child) {
         margin-block-start: 2.1rem;
       }
@@ -81,9 +85,6 @@
       margin-block-start: 1.2rem;
     }
   }
-  &__intro {
-    margin-block-end: calc(var(--leading-body) * 1em);
-  }
   > .quote-band {
     margin-inline: 0;
   }
@@ -91,9 +92,7 @@
 
 @media (max-width: 44rem) {
   .editorial-page {
-    .story-gallery {
-      --story-photo-width: 78%;
-    }
+    --story-photo-width: 78cqi;
     &__columns {
       grid-template-columns: minmax(0, 1fr);
     }

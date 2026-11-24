@@ -15,6 +15,7 @@ import {PageSections} from '@/components/page-sections'
 import {DisplayLink} from '@/components/action-links'
 import {HistoryTimeline} from '@/components/history-timeline'
 import {imageBuilder} from '@/sanity/image'
+import {bodyLeadText} from '@/lib/body-layout'
 
 type Props = {params: Promise<{slug: string[]}>; searchParams: Promise<ListingParams>}
 export async function generateMetadata({params}: Props): Promise<Metadata> {
@@ -26,7 +27,8 @@ export async function generateMetadata({params}: Props): Promise<Metadata> {
   const entry = listingTitle ? undefined : await getEntry(path)
   return {
     title: listingTitle || entry?.title || interfaceText.notFound,
-    description: entry?.summary || entry?.subtitle || site.settings.description,
+    description:
+      entry?.summary || entry?.subtitle || bodyLeadText(entry?.body) || site.settings.description,
     ...(entry?.image && typeof entry.image !== 'string' && entry.image.asset
       ? {
           openGraph: {
@@ -43,11 +45,21 @@ export default async function ContentPage({params, searchParams}: Props) {
   const site = await getSite()
   if (path === '/whats-on')
     return (
-      <EventsBrowser text={interfaceText} events={site.events} params={await searchParams} />
+      <EventsBrowser
+        text={interfaceText}
+        events={site.events}
+        params={await searchParams}
+        subtitle={site.settings.eventsSubtitle}
+      />
     )
   if (path === '/news')
     return (
-      <NewsListing text={interfaceText} articles={site.articles} params={await searchParams} />
+      <NewsListing
+        text={interfaceText}
+        articles={site.articles}
+        params={await searchParams}
+        subtitle={site.settings.newsSubtitle}
+      />
     )
   const entry = await getEntry(path)
   if (!entry) notFound()

@@ -2,12 +2,7 @@ import {contentSections} from './sections'
 import {destinationFields, quoteFields, validDestination} from './objects'
 import {FeatureColor} from './feature-color'
 import {footerFromPlainText} from '../../shared/footer-text'
-import {
-  pageLayouts,
-  pageHasMainImage,
-  pageUsesSubtitle,
-  historyPageId,
-} from '../../shared/page-layouts'
+import {pageLayouts, pageHasMainImage, historyPageId} from '../../shared/page-layouts'
 import {organizationReference} from './organization'
 import {hostsDetailPage, isExternalStoryUrl} from '../../shared/organizations'
 import {supportPageFields} from './support-subpages'
@@ -17,10 +12,8 @@ import {
   defineArrayMember,
   defineField,
   defineType,
-  useFormValue,
   type ConditionalPropertyCallback,
   type SanityDocument,
-  type StringFieldProps,
 } from 'sanity'
 import {CogIcon} from '@sanity/icons/Cog'
 import {HomeIcon} from '@sanity/icons/Home'
@@ -52,11 +45,11 @@ const slug = defineField({
   validation: (r) => r.required().custom(validSlug),
 })
 const summary = defineField({name: 'summary', type: 'text', rows: 3})
-
-function PageIntroductionField(props: StringFieldProps) {
-  const template = useFormValue(['template'])
-  return props.renderDefault(pageUsesSubtitle(template) ? {...props, title: 'Subtitle'} : props)
-}
+const subtitle = defineField({
+  name: 'subtitle',
+  type: 'string',
+  description: 'Shown beneath the title on the website.',
+})
 
 const image = defineField({name: 'image', type: 'parkImage'})
 const mainImage = {...image, title: 'Main image'}
@@ -91,6 +84,8 @@ export const siteSettings = defineType({
   fields: [
     title,
     defineField({name: 'description', title: 'Site description', type: 'text', rows: 3}),
+    defineField({...subtitle, name: 'eventsSubtitle', title: 'What’s On subtitle'}),
+    defineField({...subtitle, name: 'newsSubtitle', title: 'News subtitle'}),
     defineField({name: 'footerLinks', type: 'array', of: [defineArrayMember({type: 'link'})]}),
     defineField({
       name: 'navigation',
@@ -159,6 +154,7 @@ export const homePage = defineType({
   title: 'Homepage',
   type: 'document',
   fields: [
+    subtitle,
     defineField({
       name: 'heroSlides',
       title: 'Featured stories',
@@ -286,12 +282,7 @@ export const page = defineType({
   fields: [
     {...title, group: 'content'},
     {...organizationReference, group: 'content'},
-    {
-      ...summary,
-      title: 'Introduction',
-      group: 'content',
-      components: {field: PageIntroductionField},
-    },
+    {...subtitle, group: 'content'},
     {...body, group: 'content'},
     {...slug, group: 'content'},
     {...contentSections, group: 'content'},
@@ -340,6 +331,7 @@ export const page = defineType({
               validation: (r) => r.required(),
             }),
             image,
+            defineField({name: 'link', type: 'link'}),
             defineField({
               name: 'showOnHomepage',
               title: 'Show on homepage',
@@ -348,7 +340,7 @@ export const page = defineType({
             }),
             defineField({
               name: 'homeHighlight',
-              title: 'Homepage wording and link',
+              title: 'Homepage wording',
               type: 'object',
               description: 'Leave the text blank to use the milestone’s date and description.',
               hidden: ({document, parent}) =>
@@ -357,7 +349,6 @@ export const page = defineType({
               fields: [
                 defineField({name: 'year', title: 'Short date override', type: 'string'}),
                 defineField({...summary, title: 'Short description override'}),
-                defineField({name: 'link', type: 'link'}),
               ],
             }),
           ],
@@ -452,6 +443,7 @@ export const article = defineType({
   groups: [contentGroup, imagesGroup, {name: 'publishing', title: 'Publishing'}, hideAllFields],
   fields: [
     {...title, group: 'content'},
+    {...subtitle, group: 'content'},
     defineField({
       ...organizationReference,
       group: 'content',
@@ -555,13 +547,7 @@ export const event = defineType({
       validation: (rule) => rule.required(),
     }),
     externalStoryUrl('event'),
-    defineField({
-      name: 'subtitle',
-      type: 'string',
-      group: 'content',
-      hidden: partnerEvent,
-      description: 'Shown beneath the event title on its detail page.',
-    }),
+    {...subtitle, group: 'content'},
     {...body, group: 'content', hidden: partnerEvent},
     defineField({
       ...slug,

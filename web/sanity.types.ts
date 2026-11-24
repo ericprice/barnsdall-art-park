@@ -56,6 +56,7 @@ export type HomePage = {
   _createdAt: string
   _updatedAt: string
   _rev: string
+  subtitle?: string
   heroSlides?: Array<{
     title?: string
     summary?: string
@@ -131,6 +132,8 @@ export type SiteSettings = {
   _rev: string
   title?: string
   description?: string
+  eventsSubtitle?: string
+  newsSubtitle?: string
   footerLinks?: Array<
     {
       _key: string
@@ -265,7 +268,7 @@ export type Page = {
   _rev: string
   title?: string
   organizationRef?: OrganizationReference
-  summary?: string
+  subtitle?: string
   body?: RichText
   slug?: Slug
   contentSections?: Array<{
@@ -342,11 +345,11 @@ export type Page = {
     dateLabel?: string
     description?: string
     image?: ParkImage
+    link?: Link
     showOnHomepage?: boolean
     homeHighlight?: {
       year?: string
       summary?: string
-      link?: Link
     }
     _type: 'timelineEntry'
     _key: string
@@ -515,6 +518,7 @@ export type Article = {
   _updatedAt: string
   _rev: string
   title?: string
+  subtitle?: string
   organizationRef?: OrganizationReference
   summary?: string
   externalUrl?: string
@@ -786,7 +790,7 @@ export type DESTINATIONS_QUERY_RESULT = Array<
 
 // Source: ../web/src/sanity/queries.ts
 // Variable: SITE_QUERY
-// Query: {  "organizationColors": *[_type == "organization"] | order(displayOrder asc, lower(title) asc, _id asc){_id, light, dark},  "settings": *[_type == "siteSettings" && _id == "siteSettings"][0]{    title, description, footer, address, socialLinks, footerText, landAcknowledgment, quotes,    navigation, footerLinks, legalPages[]->{_id, title, "slug": slug.current}  },  "home": *[_type == "homePage" && _id == "homePage"][0]{    historyLink, heroSlides[]{..., "orgTheme": organizationRef->{title, light, dark}}, celebration,    features[]{image,caption,background,entry->{_id,_type,title,slug,summary,image,organizationRef,"orgTheme":organizationRef->{title,light,dark},externalUrl,"targetPageId":targetPage._ref, "targetSlug":targetPage->slug.current,startsAt,endsAt,repeatsUntil,allDay,publishedAt}},    exploreLocations[]{image, location->{_id, _type, title, slug, subtitle, "orgTheme": organizationRef->{title, light, dark}, externalUrl}}  },  "milestones": *[_id == $historyId][0].timelineEntries[showOnHomepage == true]{_key, "year":coalesce(homeHighlight.year,dateLabel), "summary":coalesce(homeHighlight.summary,description),"link":homeHighlight.link},  "events": *[_type == "event"] | order(startsAt asc){_id, _type, title, slug, summary, image, organizationRef, externalUrl, "orgTheme": organizationRef->{title, light, dark}, startsAt, endsAt, repeatsUntil, allDay},  "articles": *[_type == "article" && defined(slug.current) && excludeFromNews != true] | order(defined(publishedAt) desc, publishedAt desc, title asc){_id, _type, title, slug, summary, image, organizationRef, "orgTheme": organizationRef->{title, light, dark}, externalUrl, publishedAt}}
+// Query: {  "organizationColors": *[_type == "organization"] | order(displayOrder asc, lower(title) asc, _id asc){_id, light, dark},  "settings": *[_type == "siteSettings" && _id == "siteSettings"][0]{    title, description, eventsSubtitle, newsSubtitle, footer, address, socialLinks, footerText, landAcknowledgment, quotes,    navigation, footerLinks, legalPages[]->{_id, title, "slug": slug.current}  },  "home": *[_type == "homePage" && _id == "homePage"][0]{    subtitle, historyLink, heroSlides[]{..., "orgTheme": organizationRef->{title, light, dark}}, celebration,    features[]{image,caption,background,entry->{_id,_type,title,slug,"summary":select(_type == "page" => coalesce(subtitle, pt::text(body[0...1][style == "lead"])), summary),image,organizationRef,"orgTheme":organizationRef->{title,light,dark},externalUrl,"targetPageId":targetPage._ref, "targetSlug":targetPage->slug.current,startsAt,endsAt,repeatsUntil,allDay,publishedAt}},    exploreLocations[]{image, location->{_id, _type, title, slug, subtitle, "orgTheme": organizationRef->{title, light, dark}, externalUrl}}  },  "milestones": *[_id == $historyId][0].timelineEntries[showOnHomepage == true]{_key, "year":coalesce(homeHighlight.year,dateLabel), "summary":coalesce(homeHighlight.summary,description), link},  "events": *[_type == "event"] | order(startsAt asc){_id, _type, title, slug, summary, image, organizationRef, externalUrl, "orgTheme": organizationRef->{title, light, dark}, startsAt, endsAt, repeatsUntil, allDay},  "articles": *[_type == "article" && defined(slug.current) && excludeFromNews != true] | order(defined(publishedAt) desc, publishedAt desc, title asc){_id, _type, title, slug, summary, image, organizationRef, "orgTheme": organizationRef->{title, light, dark}, externalUrl, publishedAt}}
 export type SITE_QUERY_RESULT = {
   organizationColors: Array<{
     _id: string
@@ -796,6 +800,8 @@ export type SITE_QUERY_RESULT = {
   settings: {
     title: string | null
     description: string | null
+    eventsSubtitle: string | null
+    newsSubtitle: string | null
     footer: {
       footerText?: FooterProse
       address?: FooterProse
@@ -840,6 +846,7 @@ export type SITE_QUERY_RESULT = {
     }> | null
   } | null
   home: {
+    subtitle: string | null
     historyLink: Link | null
     heroSlides: Array<{
       title?: string
@@ -913,7 +920,7 @@ export type SITE_QUERY_RESULT = {
             _type: 'page'
             title: string | null
             slug: Slug | null
-            summary: string | null
+            summary: string
             image: ParkImage | null
             organizationRef: OrganizationReference | null
             orgTheme: {
@@ -1016,7 +1023,7 @@ export type SITE_QUERY_RESULT = {
 
 // Source: ../web/src/sanity/queries.ts
 // Variable: CONTENT_QUERY
-// Query: *[_type == $type && slug.current == $slug && _type in ["page","place","event","article"]][0]{..., _type == "page" => {initiativeCards[]{..., "detail": page->{title, "slug": slug.current, summary, "organization": organizationRef->title}}}, "orgTheme": organizationRef->{title, light, dark}, "targetPageId":targetPage._ref, "targetSlug":targetPage->slug.current}
+// Query: *[_type == $type && slug.current == $slug && _type in ["page","place","event","article"]][0]{..., _type == "page" => {initiativeCards[]{..., "detail": page->{title, "slug": slug.current, "summary": coalesce(subtitle, pt::text(body[0...1][style == "lead"])), "organization": organizationRef->title}}}, "orgTheme": organizationRef->{title, light, dark}, "targetPageId":targetPage._ref, "targetSlug":targetPage->slug.current}
 export type CONTENT_QUERY_RESULT =
   | {
       _id: string
@@ -1025,6 +1032,7 @@ export type CONTENT_QUERY_RESULT =
       _updatedAt: string
       _rev: string
       title?: string
+      subtitle?: string
       organizationRef?: OrganizationReference
       summary?: string
       externalUrl?: string
@@ -1096,7 +1104,7 @@ export type CONTENT_QUERY_RESULT =
       _rev: string
       title?: string
       organizationRef?: OrganizationReference
-      summary?: string
+      subtitle?: string
       body?: RichText
       slug?: Slug
       contentSections?: Array<{
@@ -1173,11 +1181,11 @@ export type CONTENT_QUERY_RESULT =
         dateLabel?: string
         description?: string
         image?: ParkImage
+        link?: Link
         showOnHomepage?: boolean
         homeHighlight?: {
           year?: string
           summary?: string
-          link?: Link
         }
         _type: 'timelineEntry'
         _key: string
@@ -1217,7 +1225,7 @@ export type CONTENT_QUERY_RESULT =
         detail: {
           title: string | null
           slug: string | null
-          summary: string | null
+          summary: string
           organization: string | null
         } | null
       }> | null
@@ -1367,7 +1375,7 @@ export type SEARCH_QUERY_RESULT = Array<
       _type: 'page'
       title: string | null
       slug: Slug | null
-      summary: string | null
+      summary: null
       image: ParkImage | null
       organizationRef: OrganizationReference | null
       orgTheme: {
@@ -1402,8 +1410,8 @@ export type SEARCH_QUERY_RESULT = Array<
 declare global {
   interface SanityQueries {
     '*[_id in $ids]{_id, _type, slug, organizationRef, externalUrl, "targetPageId":targetPage._ref, "targetSlug":targetPage->slug.current}': DESTINATIONS_QUERY_RESULT
-    '{\n  "organizationColors": *[_type == "organization"] | order(displayOrder asc, lower(title) asc, _id asc){_id, light, dark},\n  "settings": *[_type == "siteSettings" && _id == "siteSettings"][0]{\n    title, description, footer, address, socialLinks, footerText, landAcknowledgment, quotes,\n    navigation, footerLinks, legalPages[]->{_id, title, "slug": slug.current}\n  },\n  "home": *[_type == "homePage" && _id == "homePage"][0]{\n    historyLink, heroSlides[]{..., "orgTheme": organizationRef->{title, light, dark}}, celebration,\n    features[]{image,caption,background,entry->{_id,_type,title,slug,summary,image,organizationRef,"orgTheme":organizationRef->{title,light,dark},externalUrl,"targetPageId":targetPage._ref, "targetSlug":targetPage->slug.current,startsAt,endsAt,repeatsUntil,allDay,publishedAt}},\n    exploreLocations[]{image, location->{_id, _type, title, slug, subtitle, "orgTheme": organizationRef->{title, light, dark}, externalUrl}}\n  },\n  "milestones": *[_id == $historyId][0].timelineEntries[showOnHomepage == true]{_key, "year":coalesce(homeHighlight.year,dateLabel), "summary":coalesce(homeHighlight.summary,description),"link":homeHighlight.link},\n  "events": *[_type == "event"] | order(startsAt asc){_id, _type, title, slug, summary, image, organizationRef, externalUrl, "orgTheme": organizationRef->{title, light, dark}, startsAt, endsAt, repeatsUntil, allDay},\n  "articles": *[_type == "article" && defined(slug.current) && excludeFromNews != true] | order(defined(publishedAt) desc, publishedAt desc, title asc){_id, _type, title, slug, summary, image, organizationRef, "orgTheme": organizationRef->{title, light, dark}, externalUrl, publishedAt}\n}': SITE_QUERY_RESULT
-    '*[_type == $type && slug.current == $slug && _type in ["page","place","event","article"]][0]{..., _type == "page" => {initiativeCards[]{..., "detail": page->{title, "slug": slug.current, summary, "organization": organizationRef->title}}}, "orgTheme": organizationRef->{title, light, dark}, "targetPageId":targetPage._ref, "targetSlug":targetPage->slug.current}': CONTENT_QUERY_RESULT
+    '{\n  "organizationColors": *[_type == "organization"] | order(displayOrder asc, lower(title) asc, _id asc){_id, light, dark},\n  "settings": *[_type == "siteSettings" && _id == "siteSettings"][0]{\n    title, description, eventsSubtitle, newsSubtitle, footer, address, socialLinks, footerText, landAcknowledgment, quotes,\n    navigation, footerLinks, legalPages[]->{_id, title, "slug": slug.current}\n  },\n  "home": *[_type == "homePage" && _id == "homePage"][0]{\n    subtitle, historyLink, heroSlides[]{..., "orgTheme": organizationRef->{title, light, dark}}, celebration,\n    features[]{image,caption,background,entry->{_id,_type,title,slug,"summary":select(_type == "page" => coalesce(subtitle, pt::text(body[0...1][style == "lead"])), summary),image,organizationRef,"orgTheme":organizationRef->{title,light,dark},externalUrl,"targetPageId":targetPage._ref, "targetSlug":targetPage->slug.current,startsAt,endsAt,repeatsUntil,allDay,publishedAt}},\n    exploreLocations[]{image, location->{_id, _type, title, slug, subtitle, "orgTheme": organizationRef->{title, light, dark}, externalUrl}}\n  },\n  "milestones": *[_id == $historyId][0].timelineEntries[showOnHomepage == true]{_key, "year":coalesce(homeHighlight.year,dateLabel), "summary":coalesce(homeHighlight.summary,description), link},\n  "events": *[_type == "event"] | order(startsAt asc){_id, _type, title, slug, summary, image, organizationRef, externalUrl, "orgTheme": organizationRef->{title, light, dark}, startsAt, endsAt, repeatsUntil, allDay},\n  "articles": *[_type == "article" && defined(slug.current) && excludeFromNews != true] | order(defined(publishedAt) desc, publishedAt desc, title asc){_id, _type, title, slug, summary, image, organizationRef, "orgTheme": organizationRef->{title, light, dark}, externalUrl, publishedAt}\n}': SITE_QUERY_RESULT
+    '*[_type == $type && slug.current == $slug && _type in ["page","place","event","article"]][0]{..., _type == "page" => {initiativeCards[]{..., "detail": page->{title, "slug": slug.current, "summary": coalesce(subtitle, pt::text(body[0...1][style == "lead"])), "organization": organizationRef->title}}}, "orgTheme": organizationRef->{title, light, dark}, "targetPageId":targetPage._ref, "targetSlug":targetPage->slug.current}': CONTENT_QUERY_RESULT
     '*[_type in ["page", "place", "event", "article"] && (defined(slug.current) || (_type == "event" && defined(externalUrl))) && (title match $searchTerm || organizationRef->title match $searchTerm || summary match $searchTerm || subtitle match $searchTerm || (!defined(externalUrl) && !defined(targetPage) && pt::text(body) match $searchTerm) || contentSections[].title match $searchTerm || contentSections[].links[].label match $searchTerm || contentSections[].entries[].title match $searchTerm || contentSections[].entries[].links[].label match $searchTerm || count(contentSections[pt::text(body) match $searchTerm || count(entries[pt::text(body) match $searchTerm]) > 0]) > 0 || boardMembers[].name match $searchTerm || boardMembers[].role match $searchTerm || boardMembers[].affiliation match $searchTerm || boardMembers[].bio match $searchTerm || staffMembers[].name match $searchTerm || staffMembers[].role match $searchTerm || staffMembers[].affiliation match $searchTerm || staffMembers[].bio match $searchTerm || partners[].name match $searchTerm || supporterYears[].groups[].supporters[].name match $searchTerm || initiativeCards[!defined(page)].title match $searchTerm || donationSections[].title match $searchTerm || timelineEntries[].dateLabel match $searchTerm || timelineEntries[].description match $searchTerm)] | order(title asc)[0...100]{_id, _type, title, slug, summary, image, organizationRef, "orgTheme": organizationRef->{title, light, dark}, externalUrl, "targetPageId":targetPage._ref, "targetSlug":targetPage->slug.current}': SEARCH_QUERY_RESULT
   }
 }

@@ -8,21 +8,21 @@ export const DESTINATIONS_QUERY = defineQuery(
 export const SITE_QUERY = defineQuery(`{
   "organizationColors": *[_type == "organization"] | order(displayOrder asc, lower(title) asc, _id asc){_id, light, dark},
   "settings": *[_type == "siteSettings" && _id == "siteSettings"][0]{
-    title, description, footer, address, socialLinks, footerText, landAcknowledgment, quotes,
+    title, description, eventsSubtitle, newsSubtitle, footer, address, socialLinks, footerText, landAcknowledgment, quotes,
     navigation, footerLinks, legalPages[]->{_id, title, "slug": slug.current}
   },
   "home": *[_type == "homePage" && _id == "homePage"][0]{
-    historyLink, heroSlides[]{..., "orgTheme": organizationRef->{title, light, dark}}, celebration,
-    features[]{image,caption,background,entry->{_id,_type,title,slug,summary,image,organizationRef,"orgTheme":organizationRef->{title,light,dark},externalUrl,"targetPageId":targetPage._ref, "targetSlug":targetPage->slug.current,startsAt,endsAt,repeatsUntil,allDay,publishedAt}},
+    subtitle, historyLink, heroSlides[]{..., "orgTheme": organizationRef->{title, light, dark}}, celebration,
+    features[]{image,caption,background,entry->{_id,_type,title,slug,"summary":select(_type == "page" => coalesce(subtitle, pt::text(body[0...1][style == "lead"])), summary),image,organizationRef,"orgTheme":organizationRef->{title,light,dark},externalUrl,"targetPageId":targetPage._ref, "targetSlug":targetPage->slug.current,startsAt,endsAt,repeatsUntil,allDay,publishedAt}},
     exploreLocations[]{image, location->{_id, _type, title, slug, subtitle, "orgTheme": organizationRef->{title, light, dark}, externalUrl}}
   },
-  "milestones": *[_id == $historyId][0].timelineEntries[showOnHomepage == true]{_key, "year":coalesce(homeHighlight.year,dateLabel), "summary":coalesce(homeHighlight.summary,description),"link":homeHighlight.link},
+  "milestones": *[_id == $historyId][0].timelineEntries[showOnHomepage == true]{_key, "year":coalesce(homeHighlight.year,dateLabel), "summary":coalesce(homeHighlight.summary,description), link},
   "events": *[_type == "event"] | order(startsAt asc){_id, _type, title, slug, summary, image, organizationRef, externalUrl, "orgTheme": organizationRef->{title, light, dark}, startsAt, endsAt, repeatsUntil, allDay},
   "articles": *[_type == "article" && defined(slug.current) && excludeFromNews != true] | order(defined(publishedAt) desc, publishedAt desc, title asc){_id, _type, title, slug, summary, image, organizationRef, "orgTheme": organizationRef->{title, light, dark}, externalUrl, publishedAt}
 }`)
 
 export const CONTENT_QUERY = defineQuery(
-  `*[_type == $type && slug.current == $slug && _type in ["page","place","event","article"]][0]{..., _type == "page" => {initiativeCards[]{..., "detail": page->{title, "slug": slug.current, summary, "organization": organizationRef->title}}}, "orgTheme": organizationRef->{title, light, dark}, "targetPageId":targetPage._ref, "targetSlug":targetPage->slug.current}`,
+  `*[_type == $type && slug.current == $slug && _type in ["page","place","event","article"]][0]{..., _type == "page" => {initiativeCards[]{..., "detail": page->{title, "slug": slug.current, "summary": coalesce(subtitle, pt::text(body[0...1][style == "lead"])), "organization": organizationRef->title}}}, "orgTheme": organizationRef->{title, light, dark}, "targetPageId":targetPage._ref, "targetSlug":targetPage->slug.current}`,
 )
 
 export const SEARCH_QUERY = defineQuery(

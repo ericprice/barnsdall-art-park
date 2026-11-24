@@ -23,7 +23,7 @@ export async function generateMetadata(): Promise<Metadata> {
 }
 
 export default async function RootLayout({children}: {children: React.ReactNode}) {
-  const {settings} = await getSite()
+  const {settings, home} = await getSite()
   return (
     <html lang="en" data-scroll-behavior="smooth">
       <body>
@@ -33,6 +33,7 @@ export default async function RootLayout({children}: {children: React.ReactNode}
         <SiteShell seed={randomInt(2 ** 32)}>
           <SiteHeader
             settings={{title: settings.title, navigation: settings.navigation}}
+            homeSubtitle={home.subtitle}
             initialSunset={getParkSunset(new Date()).toISOString()}
           />
           {children}

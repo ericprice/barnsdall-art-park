@@ -184,6 +184,13 @@
           "type": "string"
         }
       },
+      "subtitle": {
+        "type": "objectAttribute",
+        "value": {
+          "type": "string"
+        },
+        "optional": true
+      },
       "heroSlides": {
         "type": "objectAttribute",
         "value": {
@@ -698,6 +705,20 @@
         "optional": true
       },
       "description": {
+        "type": "objectAttribute",
+        "value": {
+          "type": "string"
+        },
+        "optional": true
+      },
+      "eventsSubtitle": {
+        "type": "objectAttribute",
+        "value": {
+          "type": "string"
+        },
+        "optional": true
+      },
+      "newsSubtitle": {
         "type": "objectAttribute",
         "value": {
           "type": "string"
@@ -1590,7 +1611,7 @@
         },
         "optional": true
       },
-      "summary": {
+      "subtitle": {
         "type": "objectAttribute",
         "value": {
           "type": "string"
@@ -2040,6 +2061,14 @@
                 },
                 "optional": true
               },
+              "link": {
+                "type": "objectAttribute",
+                "value": {
+                  "type": "inline",
+                  "name": "link"
+                },
+                "optional": true
+              },
               "showOnHomepage": {
                 "type": "objectAttribute",
                 "value": {
@@ -2063,14 +2092,6 @@
                       "type": "objectAttribute",
                       "value": {
                         "type": "string"
-                      },
-                      "optional": true
-                    },
-                    "link": {
-                      "type": "objectAttribute",
-                      "value": {
-                        "type": "inline",
-                        "name": "link"
                       },
                       "optional": true
                     }
@@ -3215,6 +3236,13 @@
         }
       },
       "title": {
+        "type": "objectAttribute",
+        "value": {
+          "type": "string"
+        },
+        "optional": true
+      },
+      "subtitle": {
         "type": "objectAttribute",
         "value": {
           "type": "string"

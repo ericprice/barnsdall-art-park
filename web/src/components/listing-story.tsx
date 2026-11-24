@@ -36,7 +36,7 @@ export function ListingStory({entry, site}: {entry: ContentEntry; site: SiteCont
         <PageHeading
           title={entry.title}
           label={entry.organization}
-          subtitle={entry.subtitle || (event ? entry.summary : undefined)}
+          subtitle={entry.subtitle}
           className="listing-head"
         >
           {news && <EntryDate entry={entry} />}
@@ -60,10 +60,8 @@ export function ListingStory({entry, site}: {entry: ContentEntry; site: SiteCont
             </aside>
           )}
           <div className="listing-story__body">
-            {!event && entry.summary && (
-              <p className={news ? 'listing-story__summary' : 'listing-story__summary lead'}>
-                {entry.summary}
-              </p>
+            {news && entry.summary && (
+              <p className="listing-story__summary">{entry.summary}</p>
             )}
             <RichText value={entry.body} orgTheme={event ? theme : undefined} />
             {!event && entry.link?.href && <Link href={entry.link.href}>{entry.link.label}</Link>}

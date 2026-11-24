@@ -71,6 +71,8 @@ export type SiteContent = {
     footerLinks?: {label?: string; href?: string; _key?: string}[]
     title: string
     description: string
+    eventsSubtitle?: string
+    newsSubtitle?: string
     footer: NonNullable<NonNullable<SITE_QUERY_RESULT['settings']>['footer']>
     navigation: NavItem[]
     legalLinks: {id: string; label: string; href: string}[]
@@ -78,6 +80,7 @@ export type SiteContent = {
     socialLinks?: {label?: string; href?: string; _key: string}[]
   }
   home: {
+    subtitle?: string
     historyLink?: {label?: string; href?: string}
     slides: {
       orgTheme?: OrganizationTheme
@@ -160,6 +163,8 @@ function settingsFor(s: SITE_QUERY_RESULT['settings']): SiteContent['settings'] 
     footerLinks: s?.footerLinks ?? undefined,
     title: s?.title || '',
     description: s?.description || '',
+    eventsSubtitle: s?.eventsSubtitle ?? undefined,
+    newsSubtitle: s?.newsSubtitle ?? undefined,
     footer: s?.footer ?? footerFromPlainText(s ?? {}),
     quotes: s?.quotes ?? [],
     legalLinks: (s?.legalPages ?? []).flatMap((page) =>
@@ -188,6 +193,7 @@ export const getSite = cache(async (): Promise<SiteContent> => {
     events: data.events.map(toEntry),
     articles: data.articles.filter(contentDestination).map(toEntry),
     home: {
+      subtitle: data.home?.subtitle ?? undefined,
       historyLink: data.home?.historyLink || undefined,
       slides:
         data.home?.heroSlides?.map((s) => ({
@@ -225,6 +231,21 @@ export const getSite = cache(async (): Promise<SiteContent> => {
   }
 })
 
+function useCaptionsAsAlt(value: unknown) {
+  if (!value || typeof value !== 'object') return
+  if (
+    '_type' in value &&
+    (value._type === 'parkImage' || value._type === 'editorialImage') &&
+    'caption' in value &&
+    typeof value.caption === 'string' &&
+    value.caption.trim()
+  ) {
+    const image = value as ParkImage
+    image.alt = value.caption
+  }
+  Object.values(value).forEach(useCaptionsAsAlt)
+}
+
 export const getEntry = cache(async (path: string): Promise<ContentEntry | undefined> => {
   const parts = path.slice(1).split('/')
   const types: Record<string, string> = {park: 'place', 'whats-on': 'event', news: 'article'}
@@ -233,7 +254,12 @@ export const getEntry = cache(async (path: string): Promise<ContentEntry | undef
   const data = await readContent(CONTENT_QUERY, {type, slug})
   if (!data && path === '/history')
     return (await getEntry('/timeline')) ?? getEntry('/grove-history')
-  return data && contentDestination(data) ? toEntry(await withLinks(data)) : undefined
+  if (!data || !contentDestination(data)) return
+  const entry = await withLinks(data)
+  if (entry._type !== 'page' || entry.template !== 'timeline') return toEntry(entry)
+  const timeline = structuredClone(entry)
+  useCaptionsAsAlt(timeline)
+  return toEntry(timeline)
 })
 
 export async function searchContent(query: string): Promise<ContentEntry[]> {

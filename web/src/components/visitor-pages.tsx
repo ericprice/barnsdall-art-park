@@ -1,4 +1,5 @@
 import type {ContentEntry, SiteContent} from '@/lib/content'
+import {leadingBodyBlock} from '@/lib/body-layout'
 import {ParkImage} from './park-image'
 import {ActionLinks} from './action-links'
 import {EditorialPage} from './editorial-page'
@@ -13,6 +14,7 @@ type Props = {entry: ContentEntry; site: SiteContent}
 export function VisitPage({entry, site}: Props) {
   const policies = entry.template === 'policies'
   const map = entry.sections?.find((section) => section.role === 'map')
+  const lead = policies ? undefined : leadingBodyBlock(entry.body)
   return (
     <main id="main-content" className={'visitor-arrival' + (policies ? ' visitor-policies' : '')}>
       <PageHeading
@@ -20,8 +22,10 @@ export function VisitPage({entry, site}: Props) {
         subtitle={entry.subtitle}
         navigation={{path: entry.href, settings: site.settings}}
       />
-      {entry.summary && (
-        <p className={policies ? 'visitor-summary' : 'visitor-summary lead'}>{entry.summary}</p>
+      {lead && (
+        <div className="visitor-prose">
+          <RichText value={[lead]} />
+        </div>
       )}
       {!policies && (
         <>
@@ -40,7 +44,7 @@ export function VisitPage({entry, site}: Props) {
         </>
       )}
       <div className="visitor-prose">
-        <RichText value={entry.body} />
+        <RichText value={lead ? entry.body?.slice(1) : entry.body} />
         {entry.sections
           ?.filter((section) => section.role !== 'map')
           .map((section) => (

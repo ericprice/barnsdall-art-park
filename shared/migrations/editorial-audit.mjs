@@ -164,11 +164,11 @@ export function editorialDocuments(documents) {
           const milestone = doc.timelineEntries?.find((item) => item._key === highlight._key)
           assert.ok(milestone, 'Unknown homepage milestone ' + highlight._key)
           milestone.showOnHomepage = true
+          if (highlight.link) milestone.link ??= highlight.link
           milestone.homeHighlight ??= {
             _type: 'homeHighlight',
             ...(highlight.year !== milestone.dateLabel && {year: highlight.year}),
             ...(highlight.summary !== milestone.description && {summary: highlight.summary}),
-            ...(highlight.link && {link: highlight.link}),
           }
         }
       }

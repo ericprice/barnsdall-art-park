@@ -1,7 +1,6 @@
 @use '../styles/scale' as *;
 
 .visitor-arrival {
-  .visitor-summary,
   .visitor-prose {
     width: min(47%, 42rem);
     margin: 0 auto;
@@ -41,6 +40,14 @@
 }
 .visitor-policies .visitor-prose > .rich-text {
   margin-top: 1rem;
+
+  &:has(> .lead:first-child) {
+    margin-block-start: 0;
+  }
+  > .lead:first-child {
+    @include publisher-type;
+    margin-block-end: 1rem;
+  }
 }
 .contact-subscription {
   form {
@@ -78,7 +85,6 @@
 }
 @media (max-width: 44rem) {
   .visitor-arrival {
-    .visitor-summary,
     .visitor-prose,
     .visitor-map {
       width: calc(100% - 2 * var(--gutter));

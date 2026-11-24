@@ -149,28 +149,33 @@ const milestones: Milestone[] = [
   },
 ]
 
-function introduction(key: string, title: string, paragraph: string) {
-  return [
-    {key: `heading-${key}`, style: 'h2' as const, text: title},
-    {key: `${key}-paragraph`, style: 'normal' as const, text: paragraph},
-  ].map(({key, style, text}) => ({
+function textBlock<Style extends 'h2' | 'normal' | 'lead'>(key: string, style: Style, text: string) {
+  return {
     _key: key,
     _type: 'block' as const,
     style,
     markDefs: [],
     children: [{_key: 'text', _type: 'span' as const, marks: [], text}],
-  }))
+  }
+}
+
+function introduction(key: string, title: string, paragraph: string) {
+  return [textBlock(`heading-${key}`, 'h2', title), textBlock(`${key}-paragraph`, 'normal', paragraph)]
 }
 
 export function createHistoryPage<T>(resolveImage: (photo: HistoryPhoto) => T | undefined) {
   return {
     _type: 'page' as const,
-    title: 'Timeline',
-    summary: 'The history of Olive Hill, its cultural spaces and preservation.',
+    title: 'History',
     slug: {_type: 'slug' as const, current: 'history'},
     template: 'timeline' as const,
     image: resolveImage(photographs.grove),
     body: [
+      textBlock(
+        'history-lead',
+        'lead',
+        'The history of Olive Hill, its cultural spaces and preservation.',
+      ),
       ...introduction(
         'historic-grove',
         'The historic grove',

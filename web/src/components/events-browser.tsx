@@ -4,6 +4,7 @@ import {eventDay, eventMonths, readableMonth} from '@/lib/event-filters'
 import {ListingGrid} from './listing-card'
 import {QuoteBand} from './quote-band'
 import {ListingFilter} from './listing-filter'
+import {PageSubtitle} from './page-heading'
 
 export type ListingParams = {
   period?: string
@@ -20,10 +21,12 @@ export function EventsBrowser({
   events,
   params,
   text,
+  subtitle,
 }: {
   events: ContentEntry[]
   params: ListingParams
   text: InterfaceText
+  subtitle?: string
 }) {
   const today = eventDay(new Date().toISOString())!
   const archive = params.period === 'archive'
@@ -42,6 +45,7 @@ export function EventsBrowser({
     <main id="main-content" className="programme listing">
       <header className="listing-head">
         <h1>{text.whatsOn}</h1>
+        <PageSubtitle subtitle={subtitle} />
         <nav className="listing-tabs" aria-label="Event views">
           <Link href={href({period: undefined})} aria-current={!archive ? 'page' : undefined}>
             {text.upcoming}

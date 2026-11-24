@@ -69,7 +69,8 @@ const imageFields = [
     name: 'alt',
     title: 'Alternative text',
     type: 'string',
-    hidden: ({parent}) => Boolean(parent?.decorative),
+    hidden: ({document, parent}) =>
+      Boolean(parent?.decorative) || (document?._type === 'page' && document?.template === 'timeline'),
   }),
   defineField({
     name: 'caption',

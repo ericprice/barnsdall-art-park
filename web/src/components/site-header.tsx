@@ -16,6 +16,7 @@ import type {SiteContent} from '@/lib/content'
 import {interfaceText} from '../../../shared/interface'
 import {formatParkSunset, getParkSunset} from '@/lib/park-sunset'
 import {HeaderSearch} from './header-search'
+import {PageSubtitle} from './page-heading'
 
 function Magnifier() {
   return (
@@ -27,7 +28,7 @@ function Magnifier() {
 }
 
 type Settings = Pick<SiteContent['settings'], 'title' | 'navigation'>
-type HeaderProps = {settings: Settings; initialSunset: string}
+type HeaderProps = {settings: Settings; initialSunset: string; homeSubtitle?: string}
 
 function subscribeToClock(refresh: () => void) {
   const interval = window.setInterval(refresh, 60_000)
@@ -94,7 +95,7 @@ function ParkUtilityInfo({initialSunset}: {initialSunset: string}) {
   )
 }
 
-export function SiteHeader({settings, initialSunset}: HeaderProps) {
+export function SiteHeader({settings, initialSunset, homeSubtitle}: HeaderProps) {
   const pathname = usePathname()
   return (
     <Navigation
@@ -102,11 +103,12 @@ export function SiteHeader({settings, initialSunset}: HeaderProps) {
       pathname={pathname}
       settings={settings}
       initialSunset={initialSunset}
+      homeSubtitle={homeSubtitle}
     />
   )
 }
 
-function Navigation({pathname, settings, initialSunset}: HeaderProps & {pathname: string}) {
+function Navigation({pathname, settings, initialSunset, homeSubtitle}: HeaderProps & {pathname: string}) {
   const isHome = pathname === '/'
   const [pinned, setPinned] = useState(false)
   const compact = !isHome || pinned
@@ -267,6 +269,7 @@ function Navigation({pathname, settings, initialSunset}: HeaderProps & {pathname
           <Link href="/" className="park-masthead" aria-label={settings.title} onClick={close}>
             <ParkImage image="/identity/barnsdall-art-park.svg" sizes="96vw" priority />
           </Link>
+          <PageSubtitle subtitle={homeSubtitle} />
         </div>
       )}
       <header

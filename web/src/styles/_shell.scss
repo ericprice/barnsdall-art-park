@@ -97,6 +97,9 @@ $compact-nav-height: $compact-nav-start + $compact-mark-height + $compact-nav-en
 .park-header__intro {
   position: relative;
   padding-block-end: calc(var(--type-title) * 0.06);
+  .page-heading__subtitle {
+    text-align: center;
+  }
 }
 .park-navigation {
   display: flex;

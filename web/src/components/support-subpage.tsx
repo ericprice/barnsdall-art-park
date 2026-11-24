@@ -204,13 +204,16 @@ export function SupportSubpage({
         subtitle={entry.subtitle}
         navigation={{path, settings: site.settings}}
       />
-      {entry.summary && <p className="support-intro lead">{entry.summary}</p>}
+      {!!entry.body?.length && (
+        <div className="support-copy">
+          <RichText value={entry.body} />
+        </div>
+      )}
       {entry.template === 'supporters' && introductoryAction && (
         <div className="support-intro-action">
           <ActionLink action={introductoryAction} />
         </div>
       )}
-      <RichText value={entry.body} />
       {entry.template === 'supporters' && <SupporterDirectory entry={entry} />}
       {entry.template === 'initiatives' && <Initiatives entry={entry} />}
       {entry.template === 'donate' && <Donate entry={entry} />}

@@ -5,6 +5,10 @@ import {EntryLabel} from './entry-meta'
 
 export type PageHeadingNavigation = {path: string; settings: SiteContent['settings']}
 
+export function PageSubtitle({subtitle}: {subtitle?: string | null}) {
+  return subtitle ? <p className="page-heading__subtitle">{subtitle}</p> : null
+}
+
 export function PageHeading({
   title,
   subtitle,
@@ -33,7 +37,7 @@ export function PageHeading({
     <header className={className ? `page-heading ${className}` : 'page-heading'}>
       <EntryLabel label={label} large />
       <h1>{title}</h1>
-      {subtitle && <p className="page-heading__subtitle">{subtitle}</p>}
+      <PageSubtitle subtitle={subtitle} />
       {children}
       {!!links?.length && (
         <nav className="subnav" aria-label="Section navigation">

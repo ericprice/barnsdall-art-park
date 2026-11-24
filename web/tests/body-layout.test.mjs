@@ -124,7 +124,7 @@ test('the initial History template has editable heading blocks and individual da
   assert.equal(history.sections, undefined)
   assert.deepEqual(
     history.body.map(({style}) => style),
-    ['h2', 'normal', 'h2', 'normal'],
+    ['lead', 'h2', 'normal', 'h2', 'normal'],
   )
   const {sections} = bodyForLayout(history.body, '/history')
   assert.deepEqual(

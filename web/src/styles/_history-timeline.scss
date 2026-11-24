@@ -1,8 +1,9 @@
 @use 'scale' as *;
 
 .timeline-chronology {
-  h2 {
-    margin-bottom: 1.5rem;
+  .editorial-page__body & > h2 {
+    @include type-size(section);
+    margin-block-end: 1.5rem;
   }
   ol {
     margin: 0;
@@ -11,18 +12,35 @@
   }
   li {
     padding-block: 1.25rem;
-    border-top: 0.0625rem solid currentColor;
     scroll-margin-block-start: 2rem;
+
+    &:first-child {
+      padding-block-start: 0;
+    }
   }
   h3 {
-    @include type-size(label);
+    @include type-size(title);
     text-align: center;
     margin-block-end: var(--prose-heading-gap);
   }
   figure {
-    margin-block-end: var(--prose-heading-gap);
+    margin-block-end: calc(2 * var(--prose-heading-gap));
+    position: relative;
+    inset-inline-start: 50%;
+    inline-size: calc(var(--story-photo-width) * min(1, var(--timeline-photo-ratio, 1)));
+    translate: -50% 0;
+  }
+  &__photo {
+    position: relative;
+    aspect-ratio: var(--timeline-photo-ratio, 1);
+    img {
+      object-fit: contain;
+    }
   }
   figcaption {
     margin-block-start: 0.4rem;
+  }
+  &__link {
+    margin-block-start: var(--prose-heading-gap);
   }
 }

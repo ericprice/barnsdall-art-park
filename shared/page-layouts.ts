@@ -37,7 +37,3 @@ export const rolesByLayout: Record<string, (keyof typeof sectionRoles)[]> = {
 export function pageHasMainImage(template?: unknown) {
   return !['policies', 'contact', 'initiatives', 'supporters', 'donate'].includes(String(template))
 }
-
-export function pageUsesSubtitle(template?: unknown) {
-  return template === 'restoration' || template === 'centennial' || template === 'rentals'
-}
