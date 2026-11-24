@@ -13,7 +13,8 @@
 .visitor-wire {
   width: min(100%, 76rem);
   margin-inline: auto;
-  padding: 3rem var(--gutter) 6rem;
+  padding-inline: var(--gutter);
+  padding-block-end: 6rem;
   @include publisher-type;
   h1 {
     @include type-size(display);
@@ -35,7 +36,7 @@
   max-width: 42rem;
 }
 .visitor-arrival {
-  padding-block: 3rem;
+  padding-block-end: 3rem;
   .page-heading {
     text-align: center;
   }
@@ -138,10 +139,10 @@
 }
 @media (max-width: 44rem) {
   .visitor-wire {
-    padding-block: 2rem 3rem;
+    padding-block-end: 3rem;
   }
   .visitor-arrival {
-    padding-block: 2rem;
+    padding-block-end: 2rem;
     .visitor-summary,
     .visitor-prose,
     .visitor-map {

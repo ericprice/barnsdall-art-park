@@ -7,7 +7,8 @@ import {createContext, startTransition, useCallback, useContext, type ComponentP
 type LinkProps = ComponentProps<typeof NextLink>
 type NavigationOptions = Pick<LinkProps, 'replace' | 'scroll' | 'transitionTypes'>
 
-export const RouteTransition = createContext(startTransition)
+export const RouteTransition =
+  createContext<(action: () => void, href: string) => void>(startTransition)
 
 export function useRouteNavigation() {
   const router = useRouter()
@@ -18,7 +19,7 @@ export function useRouteNavigation() {
       transition(() => {
         if (replace) router.replace(href, options)
         else router.push(href, options)
-      })
+      }, href)
     },
     [router, transition],
   )

@@ -89,14 +89,22 @@ strong {
   max-width: var(--site-width);
   margin-inline: auto;
 }
-// Shared section titles and subnavigation remain visible while the body dims.
+:where(main:not(.home-page, .loading-preview)) {
+  padding-block-start: 3rem;
+  @media (max-width: 44rem) {
+    padding-block-start: 2rem;
+  }
+}
 .site-shell[data-navigating] {
   --route-content-opacity: 0.25;
   --route-content-delay: 120ms;
 }
+.site-shell[data-navigating='section'] :is(.page-heading, .listing-head) {
+  --route-content-opacity: 1;
+}
 .site-shell > main {
-  > :where(:not(.page-heading, .celebration, :has(> .page-heading))),
-  > :where(article:has(> .page-heading)) > :where(:not(.page-heading)) {
+  > :where(:not(.celebration, article:has(> header))),
+  > :where(article:has(> header)) > * {
     opacity: var(--route-content-opacity, 1);
     transition: opacity 160ms ease-out var(--route-content-delay, 0s);
   }
@@ -359,7 +367,6 @@ figcaption {
 }
 
 .interior {
-  padding-top: 3rem;
   h1 {
     @include type-size(display);
     text-align: center;
@@ -636,9 +643,6 @@ figcaption {
     > a {
       position: static;
     }
-  }
-  .interior {
-    padding-top: 2.5rem;
   }
   .subnav {
     gap: 0.7rem 1rem;

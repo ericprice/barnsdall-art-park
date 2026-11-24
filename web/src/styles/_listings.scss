@@ -3,7 +3,6 @@
 
 .listing,
 .listing-story {
-  padding-top: max(1.75rem, site-size(4));
   @include type-size(body);
 }
 

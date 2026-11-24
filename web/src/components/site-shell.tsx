@@ -1,6 +1,7 @@
 'use client'
 
 import {
+  useCallback,
   useEffect,
   useLayoutEffect,
   useRef,
@@ -122,6 +123,29 @@ export function LoadingDot({active = true}: {active?: boolean}) {
 export function SiteShell({seed, children}: {seed: number; children: ReactNode}) {
   const pathname = usePathname()
   const [navigating, startNavigation] = useTransition()
+  const [keepsSectionHeading, setKeepsSectionHeading] = useState(false)
+  const navigate = useCallback(
+    (action: () => void, href: string) => {
+      const target = new URL(href, window.location.href)
+      const current = window.location
+      // A detail page can have the same URL prefix and a different heading.
+      // Only sibling destinations in the current section menu share its heading.
+      const sectionLinks = document.querySelectorAll<HTMLAnchorElement>(
+        'main .subnav:has([aria-current="page"]) a[href]',
+      )
+      const sameSection = current.pathname.split('/')[1] === target.pathname.split('/')[1]
+      const sibling =
+        sameSection &&
+        Array.from(sectionLinks).some(
+          (link) => link.origin === target.origin && link.pathname === target.pathname,
+        )
+      setKeepsSectionHeading(
+        target.origin === current.origin && (target.pathname === current.pathname || sibling),
+      )
+      startNavigation(action)
+    },
+    [startNavigation],
+  )
   const [highlight, setHighlight] = useState({
     pathname,
     dot: seed % dotCount,
@@ -206,8 +230,12 @@ export function SiteShell({seed, children}: {seed: number; children: ReactNode})
   } as CSSProperties
 
   return (
-    <RouteTransition value={startNavigation}>
-      <div className="site-shell" style={style} data-navigating={navigating || undefined}>
+    <RouteTransition value={navigate}>
+      <div
+        className="site-shell"
+        style={style}
+        data-navigating={navigating ? (keepsSectionHeading ? 'section' : 'page') : undefined}
+      >
         {children}
         <div className="route-progress" role="status">
           <LoadingDot active={navigating} />
