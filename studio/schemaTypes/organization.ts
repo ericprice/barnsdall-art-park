@@ -41,7 +41,7 @@ export const organization = defineType({
       title: 'Display order',
       type: 'number',
       description:
-        'Lower numbers appear first in Organizations. Leave blank to sort by name after numbered entries.',
+        'Lower numbers appear first in Organizations and in the quote carousel. Blank entries follow in name order.',
       validation: (r) => r.integer().min(1),
     }),
   ],
