@@ -1,5 +1,7 @@
 'use client'
 
+import {interfaceText} from '../../../shared/interface'
+
 export default function GlobalError({reset}: {reset: () => void}) {
   return (
     <html lang="en">
@@ -11,10 +13,10 @@ export default function GlobalError({reset}: {reset: () => void}) {
           margin: 'auto',
         }}
       >
-        <h1>A brief interruption</h1>
-        <p>We couldn’t reach the park’s website content. Please try again shortly.</p>
+        <h1>{interfaceText.error}</h1>
+        <p>{interfaceText.unavailable}</p>
         <button type="button" onClick={reset}>
-          Try again
+          {interfaceText.retry}
         </button>
       </body>
     </html>

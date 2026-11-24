@@ -17,15 +17,13 @@ export const pageLayouts = {
 export const historyPageId = 'e12abb4a-ab48-47bf-af10-1e629027ab37'
 export const sectionRoles = {
   prose: 'Text and links',
-  columns: 'Columns',
+  columns: 'Grouped items',
   accordion: 'Accordion',
   map: 'Map actions',
   inquiries: 'Rental inquiries',
   campaign: 'Campaign introduction',
   signup: 'Newsletter signup',
   plan: 'Restoration plan',
-  past: 'Past initiatives drawer',
-  news: 'Related news',
 } as const
 
 export const rolesByLayout: Record<string, (keyof typeof sectionRoles)[]> = {
@@ -33,9 +31,13 @@ export const rolesByLayout: Record<string, (keyof typeof sectionRoles)[]> = {
   rentals: ['inquiries'],
   centennial: ['campaign'],
   contact: ['signup'],
-  restoration: ['plan', 'past', 'news'],
+  restoration: ['plan'],
 }
 
 export function pageHasMainImage(template?: unknown) {
   return !['policies', 'contact', 'initiatives', 'supporters', 'donate'].includes(String(template))
+}
+
+export function pageUsesSubtitle(template?: unknown) {
+  return template === 'restoration' || template === 'centennial' || template === 'rentals'
 }

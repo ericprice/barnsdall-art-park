@@ -3,8 +3,8 @@ import Link from './route-link'
 import type {ContentEntry, SiteContent, InterfaceText} from '@/lib/content'
 import {listingUrl, type ListingParams} from './events-browser'
 import {ListingGrid} from './listing-card'
-import {EntryDate, EntryLabel} from './entry-meta'
-import {DisplayLink} from './action-links'
+import {EntryDate} from './entry-meta'
+import {FeatureContent} from './feature-content'
 import {QuoteBand} from './quote-band'
 import {ParkImage} from './park-image'
 
@@ -49,15 +49,13 @@ export function NewsListing({
               priority
             />
           </div>
-          <EntryLabel label={featured.organization} large />
-          <h2>
-            <Link href={featured.href}>{featured.title}</Link>
-          </h2>
-          <EntryDate entry={featured} />
-          <div className="news-feature__copy">
-            {featured.summary && <p className="news-feature__summary">{featured.summary}</p>}
-            <DisplayLink href={featured.href}>{text.readMore}</DisplayLink>
-          </div>
+          <FeatureContent
+            label={featured.organization}
+            title={featured.title}
+            meta={<EntryDate entry={featured} />}
+            summary={featured.summary}
+            link={{href: featured.href, label: text.readMore}}
+          />
         </article>
       )}
       {entries.length > 0 && <ListingGrid entries={entries} readMore={text.readMore} news />}

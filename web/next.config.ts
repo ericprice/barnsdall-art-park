@@ -11,12 +11,12 @@ const nextConfig: NextConfig = {
       {source: '/olive-grove-initiative', destination: '/support/olive-grove', permanent: true},
       {
         source: '/olive-wood-workshop',
-        destination: '/support/olive-grove#past-workshop',
+        destination: '/support/initiatives/olive-wood-workshop',
         permanent: true,
       },
       {
         source: '/gardenparty2022-copy',
-        destination: '/support/olive-grove#past-garden-party',
+        destination: '/support/initiatives/garden-party-2022',
         permanent: true,
       },
       {source: '/timeline', destination: '/history', permanent: true},

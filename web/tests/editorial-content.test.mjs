@@ -66,8 +66,8 @@ test('section roles and anchors survive reordering and renaming', () => {
   const sections = pageSections([
     {
       _key: 'drawer',
-      role: 'past',
-      anchor: 'past-initiatives',
+      role: 'accordion',
+      anchor: 'projects',
       title: 'Earlier projects',
       entries: [{_key: 'one', title: 'First project'}],
     },
@@ -76,7 +76,7 @@ test('section roles and anchors survive reordering and renaming', () => {
   assert.deepEqual(
     sections.map((s) => [s.role, s.anchor, s.collapsible, s.entries.length]),
     [
-      ['past', 'past-initiatives', true, 1],
+      ['accordion', 'projects', true, 1],
       ['plan', 'restoration-plan', false, 0],
     ],
   )

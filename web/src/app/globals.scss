@@ -165,6 +165,34 @@ h4 {
   display: inline-block;
   text-decoration: none;
 }
+.feature-link {
+  display: grid;
+  justify-items: center;
+  width: 100%;
+  text-decoration: none;
+
+  &::after {
+    // Fill the positioned feature, including the image behind the copy.
+    content: '';
+    position: absolute;
+    inset: 0;
+  }
+}
+.feature-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+  text-align: center;
+  &__title {
+    @include type-size(display);
+    text-wrap: balance;
+  }
+  &__summary {
+    text-align: left;
+    text-wrap: pretty;
+  }
+}
 .lead {
   @include publisher-type(publisher-lead);
 }
@@ -213,6 +241,7 @@ figcaption {
   margin-block: 0.25em;
   &--large {
     @include type-size(title);
+    margin-block-end: 0.5em;
   }
 }
 .tile {
@@ -434,6 +463,17 @@ figcaption {
 .page-heading {
   margin: 0 auto 2rem;
   padding-inline: var(--gutter);
+  text-align: center;
+
+  h1 {
+    @include type-size(display);
+    text-wrap: balance;
+  }
+  &__subtitle {
+    font: 400 var(--type-section)/var(--leading-section) var(--lead);
+    margin-top: 0.12em;
+    text-wrap: balance;
+  }
 }
 .subnav {
   @include display-type(title);
@@ -452,8 +492,6 @@ figcaption {
     mix-blend-mode: multiply;
   }
 }
-.interior__intro,
-.interior__body,
 .page-section {
   max-width: 35rem;
   margin-inline: auto;
@@ -461,30 +499,6 @@ figcaption {
 
   @media (max-width: 48rem) {
     max-width: none;
-  }
-}
-.interior__intro {
-  margin-block-end: calc(var(--leading-body) * 1em);
-}
-.interior__image {
-  position: relative;
-  width: min(67%, 60rem);
-  aspect-ratio: 1.52;
-  margin: 2rem auto;
-  img {
-    object-fit: cover;
-  }
-  &--organic {
-    width: min(43%, 36rem);
-    aspect-ratio: 0.9;
-    border-radius: 46% 54% 56% 44%;
-    overflow: hidden;
-  }
-}
-.interior__body {
-  > p,
-  .entry-action {
-    margin-top: 1.2rem;
   }
 }
 .rich-text {
@@ -563,14 +577,10 @@ figcaption {
     @include type-size(title);
     margin-block-end: var(--prose-heading-gap);
   }
-  &--wide {
-    max-width: 80rem;
-  }
 }
-.section-columns {
+.section-items {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  @include content-grid-gap(2rem);
+  gap: 2rem;
   margin-top: 2rem;
   h3 {
     @include type-size(title);
@@ -585,20 +595,17 @@ figcaption {
   padding: 0;
   margin: 1rem 0 0;
 }
+.section-figure {
+  margin-top: 1.5rem;
+  figcaption {
+    margin-top: 0.4rem;
+  }
+}
 .section-image {
   position: relative;
-  aspect-ratio: 1.5;
-  margin-top: 1.5rem;
+  aspect-ratio: 1.9;
   img {
     object-fit: cover;
-  }
-  &--partners {
-    aspect-ratio: 660 / 102;
-    max-width: 50rem;
-    margin-inline: auto;
-    img {
-      object-fit: contain;
-    }
   }
 }
 .accordion {
@@ -635,19 +642,12 @@ figcaption {
     margin-top: 1rem;
   }
 }
-.detail-page > .quote-band {
-  margin-top: 4.5rem;
-}
-
 @media (max-width: 58rem) {
   .feature-grid {
     @include content-grid-gap(2.5rem, 1.5rem);
   }
   .history ol {
     @include content-grid-gap(1rem);
-  }
-  .interior__image {
-    width: 80%;
   }
 }
 @media (max-width: 44rem) {
@@ -694,22 +694,10 @@ figcaption {
     gap: 0.7rem 1rem;
     @include type-size(label);
   }
-  .interior__image {
-    width: calc(100% - 2rem);
-    &--organic {
-      width: 70%;
-    }
-  }
   .page-section {
     margin-top: 2.5rem;
     h2 {
       @include type-size(title);
-    }
-  }
-  .section-columns {
-    grid-template-columns: 1fr;
-    h3 {
-      text-align: left;
     }
   }
 }
@@ -725,16 +713,6 @@ figcaption {
   }
 }
 
-.interior-figure > figcaption {
-  width: min(67%, 60rem);
-  margin: -0.8rem auto 2rem;
-}
-@media (max-width: 44rem) {
-  .interior-figure > figcaption {
-    width: calc(100% - 2rem);
-  }
-}
-
 @include meta.load-css('../styles/home');
 @include meta.load-css('../styles/history-timeline');
 @include meta.load-css('../styles/shell');
@@ -744,23 +722,6 @@ figcaption {
   .mission-heading,
   .page-section h2 {
     @include type-size(section);
-  }
-
-  @media (width > 48rem) {
-    .interior__intro,
-    .interior__body {
-      width: min(100%, max(30rem, 47.3%));
-      max-width: none;
-      padding-inline: 0;
-    }
-  }
-
-  .page-section--wide {
-    max-width: none;
-  }
-
-  .section-columns {
-    @include content-grid-gap(var(--gutter));
   }
 }
 @include meta.load-css('../styles/support-subpages');

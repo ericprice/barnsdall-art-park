@@ -82,9 +82,7 @@ export function ExplorePark({places, title}: {places: ContentEntry[]; title: str
         ))}
       </ul>
       <p className="explore__description" id="explore-description">
-        <Link className="caption" href={selected.href}>
-          {selected.subtitle || selected.title}
-        </Link>
+        <Link href={selected.href}>{selected.subtitle || selected.title}</Link>
       </p>
     </section>
   )

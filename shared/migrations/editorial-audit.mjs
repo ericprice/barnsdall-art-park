@@ -19,7 +19,7 @@ const slots = {
   rentals: {inquiries: 'inquiries'},
   centennial: {centennial: 'campaign'},
   contact: {subscribe: 'signup'},
-  restoration: {'restoration-plan': 'plan', 'past-initiatives': 'past', 'related-news': 'news'},
+  restoration: {'restoration-plan': 'plan'},
 }
 const baseId = (id) => id.replace(/^drafts\./, '')
 const reference = (doc) => ({_type: 'reference', _ref: baseId(doc._id), _weak: true})
@@ -88,7 +88,11 @@ function migrateSections(doc, layout) {
       return mark ? {...mark, _key: link._key, label: link.label} : {...link, _type: 'link'}
     })
   doc.body = body
-  doc.contentSections = sections.map((s) => {
+  const retained =
+    layout === 'restoration'
+      ? sections.filter(({anchor}) => anchor !== 'past-initiatives' && anchor !== 'related-news')
+      : sections
+  doc.contentSections = retained.map((s) => {
     const role =
       slots[layout]?.[s.anchor] ||
       (s.collapsible ? 'accordion' : s.entries.length ? 'columns' : 'prose')

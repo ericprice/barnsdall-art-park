@@ -3,7 +3,8 @@
 import {useEffect, useState} from 'react'
 import type {SiteContent} from '@/lib/content'
 import {themeForEntry, themeStyle} from '@/lib/image-theme'
-import {DisplayLink, DotLink} from './action-links'
+import {DotLink} from './action-links'
+import {FeatureContent} from './feature-content'
 import {ParkImage} from './park-image'
 import {CarouselChevron} from './carousel-chevron'
 import {useCarouselSwipe} from './use-carousel-swipe'
@@ -112,11 +113,14 @@ export function Hero({slides, celebration}: Pick<SiteContent['home'], 'slides' |
             </div>
           ))}
         </div>
-        <div className="hero__story" key={slide.id}>
-          <h1>{slide.title}</h1>
-          {slide.summary && <p>{slide.summary}</p>}
-          {slide.link?.href && <DisplayLink href={slide.link.href}>{slide.link.label}</DisplayLink>}
-        </div>
+        <FeatureContent
+          key={slide.id}
+          className="hero__story"
+          heading="h1"
+          title={slide.title}
+          summary={slide.summary}
+          link={slide.link}
+        />
         {stories.length > 1 && (
           <div className="hero__controls">
             <button type="button" onClick={() => advance(-1)} aria-label="Previous featured story">

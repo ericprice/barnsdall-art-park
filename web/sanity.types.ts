@@ -488,6 +488,7 @@ export type Event = {
   title?: string
   organizationRef?: OrganizationReference
   externalUrl?: string
+  subtitle?: string
   body?: RichText
   slug?: Slug
   image?: ParkImage
@@ -1055,6 +1056,7 @@ export type CONTENT_QUERY_RESULT =
       title?: string
       organizationRef?: OrganizationReference
       externalUrl?: string
+      subtitle?: string
       body?: RichText
       slug?: Slug
       image?: ParkImage

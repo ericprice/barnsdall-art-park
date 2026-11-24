@@ -97,7 +97,7 @@ export const contentSections = defineField({
           name: 'entries',
           title: 'Items',
           type: 'array',
-          hidden: ({parent}) => !['columns', 'accordion', 'past'].includes(parent?.role),
+          hidden: ({parent}) => !['columns', 'accordion'].includes(parent?.role),
           of: [
             defineArrayMember({
               name: 'sectionItem',

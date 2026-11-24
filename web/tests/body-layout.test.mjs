@@ -59,11 +59,11 @@ test('a Visit map file and its public anchor survive migration and a subsequent 
   assert.match(sections[0].links[0].href, /4821178d166e1478946553b304524a749221c966\.pdf$/)
 })
 
-test('standard headings form Support columns and the Olive Grove disclosure from newly authored text', () => {
+test('standard headings form grouped items for Support and prose sections for Olive Grove', () => {
   const body = [
     paragraph('a', 'Our vision', 'h2'),
     paragraph('b', 'Advancement', 'h3'),
-    paragraph('c', 'The first column'),
+    paragraph('c', 'The first item'),
     paragraph('d', 'Engagement', 'h3'),
     linkedParagraph('e', 'Learn more', '/support'),
   ]
@@ -76,11 +76,8 @@ test('standard headings form Support columns and the Olive Grove disclosure from
     [paragraph('first', 'The plan', 'h2'), ...body],
     '/support/olive-grove',
   ).sections
-  assert.equal(olive[1].collapsible, true)
-  assert.deepEqual(
-    olive[1].entries.map(({title}) => title),
-    ['Advancement', 'Engagement'],
-  )
+  assert.equal(olive[1].collapsible, false)
+  assert.deepEqual(olive[1].body, body.slice(1, -1))
   assert.deepEqual(bodyForLayout(body, '/whats-on/fridays'), {body, sections: undefined})
 })
 

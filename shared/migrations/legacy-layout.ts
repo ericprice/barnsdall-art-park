@@ -14,8 +14,7 @@ const layoutPaths = new Set([
   '/history',
 ])
 
-// The CMS stores one ordered body. Designed visitor pages arrange its heading groups into
-// maps, columns, landscape spreads and disclosures. Stories render the body directly.
+// Recover the structured sections and stable anchors used by the current CMS.
 export function bodyForLayout(body: RichText | undefined, path: string, template?: string) {
   const parkLocation = path.startsWith('/park/')
   if (
@@ -45,10 +44,7 @@ export function bodyForLayout(body: RichText | undefined, path: string, template
         body: [],
         links: [],
         entries: [],
-        collapsible:
-          block._key.startsWith('disclosure-') ||
-          (path === '/support/olive-grove' &&
-            (anchor === 'past-initiatives' || sections.length === 1)),
+        collapsible: block._key.startsWith('disclosure-'),
       }
       sections.push(section)
       item = undefined

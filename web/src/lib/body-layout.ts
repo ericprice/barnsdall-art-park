@@ -71,8 +71,8 @@ export function pageSections(stored: Page['contentSections']): PageSection[] | u
     image: section.role === 'prose' || !section.role ? section.image : undefined,
     body: section.body || [],
     links: actions(section.links),
-    collapsible: section.role === 'accordion' || section.role === 'past',
-    entries: ['accordion', 'columns', 'past'].includes(section.role || '')
+    collapsible: section.role === 'accordion',
+    entries: ['accordion', 'columns'].includes(section.role || '')
       ? (section.entries || []).map((item) => ({
           _key: item._key,
           title: item.title || '',

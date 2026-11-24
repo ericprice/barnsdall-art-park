@@ -70,11 +70,11 @@ export function HeaderSearch({
           placeholder={labels.searchPlaceholder}
           value={query}
           onChange={(event) => setQuery(event.target.value)}
-          required
           maxLength={200}
         />
         <button type="submit">
-          {labels.search} <i aria-hidden="true" />
+          <span>{labels.search}</span>
+          <i aria-hidden="true" />
         </button>
       </form>
       <div

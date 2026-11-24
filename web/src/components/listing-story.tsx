@@ -4,21 +4,18 @@ import type {ContentEntry, SiteContent} from '@/lib/content'
 import {scheduleLabel} from '@/lib/event-filters'
 import {SidebarLinks} from './action-links'
 import {ListingGrid} from './listing-card'
-import {EntryDate, EntryLabel} from './entry-meta'
+import {EntryDate} from './entry-meta'
+import {PageHeading} from './page-heading'
 import {QuoteBand} from './quote-band'
 import {RichText} from './rich-text'
+import {PageSections} from './page-sections'
 import {StoryGallery} from './story-gallery'
 import {interfaceText as text} from '../../../shared/interface'
 
-export function ListingStory({
-  entry,
-  site,
-  event,
-}: {
-  entry: ContentEntry
-  site: SiteContent
-  event: boolean
-}) {
+export function ListingStory({entry, site}: {entry: ContentEntry; site: SiteContent}) {
+  const event = entry.type === 'event'
+  const news = entry.type === 'article'
+  const theme = themeForEntry(entry)
   const images = [...(entry.image ? [entry.image] : []), ...(entry.gallery || [])]
   const ticketLinks = entry.link?.href
     ? [{_key: 'tickets', href: entry.link.href, label: entry.link.label || text.getTickets}]
@@ -32,21 +29,24 @@ export function ListingStory({
   return (
     <main
       id="main-content"
-      style={themeStyle(themeForEntry(entry))}
-      className={'listing-story ' + (event ? 'programme-story' : 'news-story')}
+      style={themeStyle(theme)}
+      className={'listing-story ' + (news ? 'news-story' : 'programme-story')}
     >
       <article>
-        <header className="listing-head">
-          <EntryLabel label={entry.organization} large />
-          <h1>{entry.title}</h1>
-          {!event && <EntryDate entry={entry} />}
-        </header>
+        <PageHeading
+          title={entry.title}
+          label={entry.organization}
+          subtitle={entry.subtitle || (event ? entry.summary : undefined)}
+          className="listing-head"
+        >
+          {news && <EntryDate entry={entry} />}
+        </PageHeading>
         <StoryGallery
           text={text}
           key={entry.id}
           images={images}
           showCaption={!event}
-          orgTheme={event ? themeForEntry(entry) : undefined}
+          orgTheme={news ? undefined : theme}
         />
         <div className="listing-story__columns">
           {event && (
@@ -60,23 +60,24 @@ export function ListingStory({
             </aside>
           )}
           <div className="listing-story__body">
-            {entry.summary && (
-              <p className={event ? 'listing-story__summary lead' : 'listing-story__summary'}>
+            {!event && entry.summary && (
+              <p className={news ? 'listing-story__summary' : 'listing-story__summary lead'}>
                 {entry.summary}
               </p>
             )}
-            <RichText value={entry.body} orgTheme={event ? themeForEntry(entry) : undefined} />
+            <RichText value={entry.body} orgTheme={event ? theme : undefined} />
             {!event && entry.link?.href && <Link href={entry.link.href}>{entry.link.label}</Link>}
           </div>
         </div>
+        {entry.template === 'initiative' && <PageSections sections={entry.sections} />}
       </article>
-      {!event && related.length > 0 && (
+      {news && related.length > 0 && (
         <section className="related-stories">
           <h2>{text.seeAlso}</h2>
           <ListingGrid entries={related} readMore={text.readMore} news />
         </section>
       )}
-      {!event && (previous || next) && (
+      {news && (previous || next) && (
         <nav className="listing-paging" aria-label="News stories">
           {previous && <Link href={previous.href}>‹‹ {text.previousStory}</Link>}
           {next && (

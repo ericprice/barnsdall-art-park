@@ -1,12 +1,14 @@
 'use client'
 
+import {interfaceText} from '../../../shared/interface'
+
 export default function ErrorPage({reset}: {reset: () => void}) {
   return (
     <main id="main-content" className="interior">
-      <h1>A brief interruption</h1>
-      <p>We couldn’t load this page. Please try again.</p>
+      <h1>{interfaceText.error}</h1>
+      <p>{interfaceText.unavailable}</p>
       <button type="button" className="display-link" onClick={reset}>
-        Try again »
+        {interfaceText.retry} <span aria-hidden="true">»</span>
       </button>
     </main>
   )

@@ -2,7 +2,12 @@ import {contentSections} from './sections'
 import {destinationFields, quoteFields, validDestination} from './objects'
 import {FeatureColor} from './feature-color'
 import {footerFromPlainText} from '../../shared/footer-text'
-import {pageLayouts, pageHasMainImage, historyPageId} from '../../shared/page-layouts'
+import {
+  pageLayouts,
+  pageHasMainImage,
+  pageUsesSubtitle,
+  historyPageId,
+} from '../../shared/page-layouts'
 import {organizationReference} from './organization'
 import {hostsDetailPage, isExternalStoryUrl} from '../../shared/organizations'
 import {supportPageFields} from './support-subpages'
@@ -12,8 +17,10 @@ import {
   defineArrayMember,
   defineField,
   defineType,
+  useFormValue,
   type ConditionalPropertyCallback,
   type SanityDocument,
+  type StringFieldProps,
 } from 'sanity'
 import {CogIcon} from '@sanity/icons/Cog'
 import {HomeIcon} from '@sanity/icons/Home'
@@ -45,6 +52,12 @@ const slug = defineField({
   validation: (r) => r.required().custom(validSlug),
 })
 const summary = defineField({name: 'summary', type: 'text', rows: 3})
+
+function PageIntroductionField(props: StringFieldProps) {
+  const template = useFormValue(['template'])
+  return props.renderDefault(pageUsesSubtitle(template) ? {...props, title: 'Subtitle'} : props)
+}
+
 const image = defineField({name: 'image', type: 'parkImage'})
 const mainImage = {...image, title: 'Main image'}
 const editorialImage = defineField({name: 'image', title: 'Main image', type: 'editorialImage'})
@@ -273,7 +286,12 @@ export const page = defineType({
   fields: [
     {...title, group: 'content'},
     {...organizationReference, group: 'content'},
-    {...summary, title: 'Introduction', group: 'content'},
+    {
+      ...summary,
+      title: 'Introduction',
+      group: 'content',
+      components: {field: PageIntroductionField},
+    },
     {...body, group: 'content'},
     {...slug, group: 'content'},
     {...contentSections, group: 'content'},
@@ -537,6 +555,13 @@ export const event = defineType({
       validation: (rule) => rule.required(),
     }),
     externalStoryUrl('event'),
+    defineField({
+      name: 'subtitle',
+      type: 'string',
+      group: 'content',
+      hidden: partnerEvent,
+      description: 'Shown beneath the event title on its detail page.',
+    }),
     {...body, group: 'content', hidden: partnerEvent},
     defineField({
       ...slug,

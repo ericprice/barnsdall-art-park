@@ -2,6 +2,7 @@ import type {ContentEntry, SiteContent} from '@/lib/content'
 import {interfaceText} from '../../../shared/interface'
 import {Tile} from './tile'
 import {EntryLabel} from './entry-meta'
+import {FeatureContent} from './feature-content'
 import {DotLink, DotLinkContent} from './action-links'
 import {ParkImage} from './park-image'
 import {PageHeading} from './page-heading'
@@ -135,20 +136,31 @@ function Donate({entry}: {entry: ContentEntry}) {
           key={section._key}
           className={'donation-section donation-section--' + (section.kind || 'text')}
         >
-          {section.kind === 'feature' && (
-            <div className="donation-feature-shape">
-              <ParkImage image={section.image} priority sizes="75vw" />
-            </div>
-          )}
-          <div className="donation-heading">
-            <EntryLabel label={section.label} large />
-            <h2>{section.title}</h2>
-          </div>
-          {section.summary && <p className="donation-copy">{section.summary}</p>}
-          {section.link && (
-            <div className="donation-action-wrap">
-              <ActionLink action={section.link} />
-            </div>
+          {section.kind === 'feature' ? (
+            <>
+              <div className="donation-feature-shape">
+                <ParkImage image={section.image} priority sizes="75vw" />
+              </div>
+              <FeatureContent
+                label={section.label}
+                title={section.title}
+                summary={section.summary}
+                link={section.link}
+              />
+            </>
+          ) : (
+            <>
+              <div className="donation-heading">
+                <EntryLabel label={section.label} large />
+                <h2>{section.title}</h2>
+              </div>
+              {section.summary && <p className="donation-copy">{section.summary}</p>}
+              {section.link && (
+                <div className="donation-action-wrap">
+                  <ActionLink action={section.link} />
+                </div>
+              )}
+            </>
           )}
           {section.kind === 'levels' && section.levels?.length ? (
             <div className="donation-level-grid">
@@ -187,7 +199,11 @@ export function SupportSubpage({
   const introductoryAction = entry.supportLink
   return (
     <main id="main-content" className="interior support-subpage">
-      <PageHeading title={department?.title ?? entry.title} path={path} settings={site.settings} />
+      <PageHeading
+        title={department?.title ?? entry.title}
+        subtitle={entry.subtitle}
+        navigation={{path, settings: site.settings}}
+      />
       {entry.summary && <p className="support-intro lead">{entry.summary}</p>}
       {entry.template === 'supporters' && introductoryAction && (
         <div className="support-intro-action">

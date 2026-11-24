@@ -261,6 +261,11 @@ $compact-nav-height: $compact-nav-start + $compact-mark-height + $compact-nav-en
   input {
     flex: 1;
     min-width: 0;
+    // Center the native field’s capital letters alongside the cap-trimmed button label.
+    padding-block: 0.66em 0.5em;
+    &::-webkit-search-cancel-button {
+      display: none;
+    }
     &::placeholder {
       color: var(--pale-green);
       opacity: 1;
@@ -295,11 +300,16 @@ $compact-nav-height: $compact-nav-start + $compact-mark-height + $compact-nav-en
   }
 }
 
-.header-search button i,
-.foundation-newsletter button i {
-  @include olive-dot(14);
-  width: 0.7em;
-  height: 0.7em;
+.header-search button,
+.foundation-newsletter button {
+  span {
+    text-box: trim-both cap alphabetic;
+  }
+  i {
+    @include olive-dot(14);
+    width: 0.7em;
+    height: 0.7em;
+  }
 }
 
 .park-footer {
@@ -448,10 +458,6 @@ $compact-nav-height: $compact-nav-start + $compact-mark-height + $compact-nav-en
     justify-content: center;
     gap: 0.15em;
     text-transform: uppercase;
-    span {
-      text-box-trim: trim-both;
-      text-box-edge: cap alphabetic;
-    }
   }
   @media (max-width: 22rem) {
     input,

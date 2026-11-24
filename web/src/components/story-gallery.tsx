@@ -1,6 +1,7 @@
 'use client'
 
-import {useState} from 'react'
+import {useState, type CSSProperties} from 'react'
+import {tryGetImageDimensions} from '@sanity/asset-utils'
 import type {ImageSource, InterfaceText} from '@/lib/content'
 import type {OrganizationTheme} from '../../../shared/organizations'
 import {ParkImage} from './park-image'
@@ -26,8 +27,23 @@ export function StoryGallery({
   const image = images[index]
   if (!image) return null
   const caption = typeof image === 'string' ? undefined : image.caption
+  const asset = typeof image === 'string' ? undefined : image.asset
+  const crop = typeof image === 'string' ? undefined : image.crop
+  const dimensions = asset && tryGetImageDimensions(asset._ref)
+  const imageRatio =
+    dimensions &&
+    (dimensions.aspectRatio * (1 - (crop?.left ?? 0) - (crop?.right ?? 0))) /
+      (1 - (crop?.top ?? 0) - (crop?.bottom ?? 0))
   return (
-    <figure className="story-gallery" {...swipe}>
+    <figure
+      className="story-gallery"
+      style={
+        imageRatio && Number.isFinite(imageRatio) && imageRatio > 0
+          ? ({'--story-image-ratio': imageRatio} as CSSProperties)
+          : undefined
+      }
+      {...swipe}
+    >
       <div className="story-gallery__frame">
         <div className="story-gallery__photo">
           <ParkImage

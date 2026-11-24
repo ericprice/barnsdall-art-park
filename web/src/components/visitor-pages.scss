@@ -1,45 +1,6 @@
 @use '../styles/scale' as *;
 
-.visitor-photo {
-  position: relative;
-  aspect-ratio: 1.9;
-  img {
-    object-fit: cover;
-  }
-}
-.visitor-wire .action-links a:hover {
-  color: var(--green);
-}
-.visitor-wire {
-  width: min(100%, 76rem);
-  margin-inline: auto;
-  padding-inline: var(--gutter);
-  @include publisher-type;
-  h1 {
-    @include type-size(display);
-  }
-  h2 {
-    @include type-size(label);
-    margin-block-end: var(--prose-heading-gap);
-  }
-  figcaption {
-    margin-top: 0.4rem;
-  }
-  section {
-    scroll-margin-top: 2rem;
-  }
-}
-.visitor-wire__lead {
-  margin: 1.5rem 0 2.5rem;
-  max-width: 42rem;
-}
 .visitor-arrival {
-  .page-heading {
-    text-align: center;
-  }
-  h1 {
-    @include type-size(display);
-  }
   .visitor-summary,
   .visitor-prose {
     width: min(47%, 42rem);
@@ -60,8 +21,12 @@
     width: min(57%, 50rem);
     margin: 2.5rem auto;
   }
-  .visitor-map .visitor-photo {
+  .visitor-map__photo {
+    position: relative;
     aspect-ratio: 0.92;
+    img {
+      object-fit: cover;
+    }
   }
   .visitor-map .action-links {
     display: flex;
@@ -76,29 +41,6 @@
 }
 .visitor-policies .visitor-prose > .rich-text {
   margin-top: 1rem;
-}
-.rentals-page__inquiries,
-.rentals-page__venues,
-.contact-page__columns {
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  @include content-grid-gap(2.5rem, 2rem);
-  margin-top: 2.5rem;
-}
-.rentals-page__inquiries {
-  grid-template-columns: minmax(0, 1.6fr) minmax(0, 1fr);
-}
-.centennial-page .visitor-photo {
-  aspect-ratio: 2.7;
-}
-.centennial-copy {
-  max-width: 46rem;
-  margin-top: 2rem;
-}
-.visitor-kicker {
-  @include publisher-type;
-  text-transform: uppercase;
-  margin: 0 0 1rem;
 }
 .contact-subscription {
   form {
@@ -140,143 +82,6 @@
     .visitor-prose,
     .visitor-map {
       width: calc(100% - 2 * var(--gutter));
-    }
-  }
-  .rentals-page__inquiries,
-  .rentals-page__venues,
-  .contact-page__columns {
-    grid-template-columns: 1fr;
-    @include content-grid-gap(1.5rem);
-  }
-  .centennial-page .visitor-photo {
-    aspect-ratio: 1.6;
-  }
-}
-.olive-restoration__past,
-.olive-restoration__news {
-  margin-top: 3rem;
-}
-.olive-restoration__past {
-  border-block: 0.0625rem solid currentColor;
-  summary {
-    padding-block: 1rem;
-    cursor: pointer;
-  }
-  summary h2 {
-    display: inline;
-    margin: 0;
-  }
-  article {
-    display: grid;
-    grid-template-columns: 1fr 2fr;
-    gap: 1rem;
-    padding-block: 1rem;
-    border-top: 0.0625rem solid currentColor;
-  }
-  h3 {
-    @include type-size(label);
-  }
-  a {
-    display: inline-block;
-    margin-top: 0.5rem;
-  }
-}
-@media (max-width: 44rem) {
-  .olive-restoration__past article {
-    grid-template-columns: 1fr;
-  }
-}
-.park-landscape {
-  .page-heading {
-    text-align: center;
-  }
-  &__subtitle {
-    font: 400 var(--type-section)/var(--leading-section) var(--lead);
-    margin-top: 0.12em;
-  }
-  .story-gallery {
-    margin: 0;
-  }
-  .story-gallery__photo {
-    position: relative;
-    width: 66%;
-    margin-inline: auto;
-    aspect-ratio: 1053 / 693;
-    img {
-      object-fit: contain;
-    }
-  }
-  .story-gallery figcaption {
-    width: 66%;
-    margin: 0.35em auto 0;
-  }
-  &__columns {
-    display: grid;
-    grid-template-columns: minmax(0, 1fr) minmax(0, 49%) minmax(0, 1fr);
-    gap: var(--gutter);
-    margin: 2em 0 4rem;
-  }
-  &__links {
-    display: grid;
-    grid-column: 1;
-    justify-items: center;
-    align-content: start;
-    gap: 0.2em;
-    text-align: center;
-  }
-  &__body {
-    grid-column: 2;
-    section {
-      margin-block-start: 2.1rem;
-    }
-    h2 {
-      margin-block-start: 0;
-      margin-inline: auto;
-      text-align: center;
-      text-wrap: balance;
-      @include type-size(title);
-    }
-    > .rich-text {
-      > h2:not(:first-child) {
-        margin-block-start: 2.1rem;
-      }
-      > h2 {
-        scroll-margin-block-start: 2rem;
-      }
-      > p:has(> .dot-link:only-child) {
-        margin-block-start: 1rem;
-      }
-      > p:has(+ p > .dot-link:only-child) {
-        margin-block-end: 0;
-      }
-      > p:has(> .dot-link:only-child) + p:has(> .dot-link:only-child) {
-        margin-block-start: 0.4rem;
-      }
-    }
-  }
-  > .quote-band {
-    margin-inline: 0;
-  }
-}
-@media (max-width: 44rem) {
-  .park-landscape {
-    .story-gallery__photo,
-    .story-gallery figcaption {
-      width: 78%;
-    }
-    &__columns {
-      grid-template-columns: minmax(0, 1fr);
-    }
-    &__links {
-      display: flex;
-      flex-wrap: wrap;
-      justify-content: center;
-      gap: 0.65em 1em;
-    }
-    &__body {
-      grid-column: 1;
-      width: min(100%, 28rem);
-      margin-inline: auto;
     }
   }
 }

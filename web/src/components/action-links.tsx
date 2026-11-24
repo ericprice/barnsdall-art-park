@@ -21,15 +21,29 @@ export function DotLink({children, className, ...props}: LinkProps) {
   )
 }
 
+export function DisplayLinkContent({
+  children,
+  arrow = '»',
+}: {
+  children: ReactNode
+  arrow?: '»' | '↗'
+}) {
+  return (
+    <>
+      {children} <span aria-hidden="true">{arrow}</span>
+    </>
+  )
+}
+
 export function DisplayLink({
   children,
   className,
-  arrow = '»',
+  arrow,
   ...props
 }: LinkProps & {arrow?: '»' | '↗'}) {
   return (
     <Link {...props} className={className ? `display-link ${className}` : 'display-link'}>
-      {children} <span aria-hidden="true">{arrow}</span>
+      <DisplayLinkContent arrow={arrow}>{children}</DisplayLinkContent>
     </Link>
   )
 }

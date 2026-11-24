@@ -1,29 +1,19 @@
-import {themeForEntry} from '@/lib/image-theme'
 import {QuoteBand} from '@/components/quote-band'
 import {SupportSubpage} from '@/components/support-subpage'
+import {EditorialPage} from '@/components/editorial-page'
 import {FoundationDirectory} from '@/components/foundation-directory'
 import {foundationHeadings} from '../../../../shared/foundation'
 import {interfaceText} from '../../../../shared/interface'
 import type {Metadata} from 'next'
 import {notFound, redirect} from 'next/navigation'
 import {getEntry, getSite} from '@/lib/content'
-import {
-  VisitPage,
-  ParkLandscape,
-  RentalsPage,
-  CentennialPage,
-  ContactPage,
-  OliveGrovePage,
-} from '@/components/visitor-pages'
+import {VisitPage, CentennialPage, ContactPage} from '@/components/visitor-pages'
 import {EventsBrowser, type ListingParams} from '@/components/events-browser'
 import {ListingStory} from '@/components/listing-story'
 import {NewsListing} from '@/components/news-listing'
 import {PageSections} from '@/components/page-sections'
 import {DisplayLink} from '@/components/action-links'
-import {PageHeading} from '@/components/page-heading'
 import {HistoryTimeline} from '@/components/history-timeline'
-import {ParkImage} from '@/components/park-image'
-import {RichText} from '@/components/rich-text'
 import {imageBuilder} from '@/sanity/image'
 
 type Props = {params: Promise<{slug: string[]}>; searchParams: Promise<ListingParams>}
@@ -72,67 +62,51 @@ export default async function ContentPage({params, searchParams}: Props) {
   const entry = await getEntry(path)
   if (!entry) notFound()
   const external = /^https?:\/\//.test(entry.href)
-  if (path.startsWith('/park/') && !external) return <ParkLandscape entry={entry} site={site} />
-  if (entry.template === 'rentals') return <RentalsPage entry={entry} />
+  if (path.startsWith('/park/') && !external)
+    return (
+      <EditorialPage entry={entry} afterBody={<QuoteBand quote={site.settings.quotes} />}>
+        <PageSections sections={entry.sections} downloadPdf />
+      </EditorialPage>
+    )
   if (entry.template === 'contact') return <ContactPage entry={entry} />
-  if (entry.template === 'restoration') return <OliveGrovePage entry={entry} />
+  if (entry.template === 'rentals' || entry.template === 'restoration')
+    return (
+      <EditorialPage entry={entry}>
+        <PageSections sections={entry.sections} downloadPdf />
+      </EditorialPage>
+    )
   if (entry.template === 'centennial') return <CentennialPage entry={entry} />
   if (entry.template === 'visit' || entry.template === 'policies')
     return <VisitPage entry={entry} site={site} />
   if (entry.template === 'timeline') return <HistoryTimeline entry={entry} />
   if (external || (path.startsWith('/news/') && entry.href !== path)) redirect(entry.href)
-  if (path.startsWith('/whats-on/') || path.startsWith('/news/'))
-    return <ListingStory entry={entry} site={site} event={path.startsWith('/whats-on/')} />
+  if (entry.type === 'event' || entry.type === 'article' || entry.template === 'initiative')
+    return <ListingStory entry={entry} site={site} />
   if (['initiatives', 'supporters', 'donate'].includes(entry.template || ''))
     return <SupportSubpage entry={entry} site={site} path={path} />
   const foundation = entry.template === 'foundation'
   return (
-    <main
-      id="main-content"
-      className={`interior detail-page ${foundation ? 'foundation-page' : ''}`}
+    <EditorialPage
+      entry={entry}
+      className={foundation ? 'foundation-page' : undefined}
+      introHeading={foundation ? foundationHeadings.mission : undefined}
+      title={path.startsWith('/support/') ? interfaceText.support : entry.title}
+      navigation={{path, settings: site.settings}}
+      afterBody={
+        <>
+          {foundation && <FoundationDirectory entry={entry} />}
+          <QuoteBand quote={site.settings.quotes} />
+        </>
+      }
     >
-      <article>
-        <PageHeading
-          title={path.startsWith('/support/') ? interfaceText.support : entry.title}
-          path={path}
-          settings={site.settings}
-        />
-        {entry.template === 'initiative' && path.startsWith('/support/') && (
-          <h2 className="mission-heading">{entry.title}</h2>
-        )}
-        {foundation && <h2 className="mission-heading">{foundationHeadings.mission}</h2>}
-        {entry.summary && <p className="interior__intro lead">{entry.summary}</p>}
-        {entry.image && (
-          <figure className="interior-figure">
-            <div
-              className={`interior__image ${entry.template === 'initiative' ? 'interior__image--organic' : ''}`}
-            >
-              <ParkImage
-                image={entry.image}
-                orgTheme={entry.template === 'initiative' ? themeForEntry(entry) : undefined}
-                priority
-                sizes="(max-width: 44rem) 95vw, 66vw"
-              />
-            </div>
-            {typeof entry.image !== 'string' && entry.image.caption && (
-              <figcaption>{entry.image.caption}</figcaption>
-            )}
-          </figure>
-        )}
-        <div className="interior__body">
-          <RichText value={entry.body} />
-          {entry.link?.href && (
-            <p className="entry-action">
-              <DisplayLink href={entry.link.href} arrow="↗">
-                {entry.link.label}
-              </DisplayLink>
-            </p>
-          )}
-        </div>
-        <PageSections sections={entry.sections} />
-        {foundation && <FoundationDirectory entry={entry} />}
-      </article>
-      <QuoteBand quote={site.settings.quotes} />
-    </main>
+      {entry.link?.href && (
+        <p className="entry-action">
+          <DisplayLink href={entry.link.href} arrow="↗">
+            {entry.link.label}
+          </DisplayLink>
+        </p>
+      )}
+      <PageSections sections={entry.sections} />
+    </EditorialPage>
   )
 }
