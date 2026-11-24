@@ -1,4 +1,4 @@
-import Link from 'next/link'
+import Link from './route-link'
 import type {SiteContent} from '@/lib/content'
 
 export function PageHeading({

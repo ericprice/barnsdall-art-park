@@ -1,5 +1,5 @@
 import {isCutout, themeForEntry, themeStyle} from '@/lib/image-theme'
-import Link from 'next/link'
+import Link from './route-link'
 import type {ContentEntry, SiteContent, InterfaceText} from '@/lib/content'
 import {listingUrl, type ListingParams} from './events-browser'
 import {ListingGrid, NewsCredit} from './listing-card'

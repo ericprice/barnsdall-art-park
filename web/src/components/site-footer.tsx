@@ -1,5 +1,5 @@
 import {ParkImage} from './park-image'
-import Link from 'next/link'
+import Link from './route-link'
 import type {SiteContent} from '@/lib/content'
 import {NewsletterSignup} from './newsletter-signup'
 import {interfaceText} from '../../../shared/interface'

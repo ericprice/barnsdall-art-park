@@ -1,4 +1,4 @@
-import Link from 'next/link'
+import Link from './route-link'
 import type {ComponentProps} from 'react'
 import type {PageSection} from '@/lib/content'
 

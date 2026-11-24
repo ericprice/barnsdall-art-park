@@ -1,13 +1,13 @@
 'use client'
 
-import {useRouter} from 'next/navigation'
+import {useRouteNavigation} from './route-link'
 import {newsletterPrefillKey} from '@/lib/newsletter-prefill'
 import {interfaceText as labels} from '../../../shared/interface'
 
 const signupHref = '/contact#subscribe'
 
 export function NewsletterSignup() {
-  const router = useRouter()
+  const navigate = useRouteNavigation()
   return (
     <div className="foundation-newsletter">
       <form
@@ -24,7 +24,7 @@ export function NewsletterSignup() {
               /* Storage can be unavailable in private browsing. */
             }
           }
-          router.push(signupHref)
+          navigate(signupHref)
         }}
       >
         <input

@@ -1,4 +1,4 @@
-import Link from 'next/link'
+import Link from '@/components/route-link'
 import {interfaceText} from '../../../shared/interface'
 
 export default function NotFound() {

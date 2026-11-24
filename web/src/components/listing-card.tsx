@@ -1,6 +1,6 @@
 import {themeForEntry, themeStyle} from '@/lib/image-theme'
 import {drawDots} from '@/lib/identity-dots'
-import Link from 'next/link'
+import Link from './route-link'
 import type {CSSProperties} from 'react'
 import type {ContentEntry} from '@/lib/content'
 import {readableDate, scheduleLabel} from '@/lib/event-filters'

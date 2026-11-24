@@ -1,7 +1,7 @@
 'use client'
 
 import type {InterfaceText} from '@/lib/content'
-import Link from 'next/link'
+import Link from './route-link'
 import {useEffect, useRef, useState} from 'react'
 
 type Result = {id: string; title: string; href: string}

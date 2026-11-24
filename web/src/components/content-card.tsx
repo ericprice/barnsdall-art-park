@@ -1,5 +1,5 @@
 import {isCutout, themeForEntry, themeStyle} from '@/lib/image-theme'
-import Link from 'next/link'
+import Link from './route-link'
 import {scheduleLabel} from '@/lib/event-filters'
 import {ParkImage} from './park-image'
 import type {ContentEntry} from '@/lib/content'

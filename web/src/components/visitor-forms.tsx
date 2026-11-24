@@ -1,7 +1,7 @@
 'use client'
 
 import {useEffect, useRef, useState} from 'react'
-import {useRouter} from 'next/navigation'
+import {useRouteNavigation} from './route-link'
 import {newsletterPrefillKey} from '@/lib/newsletter-prefill'
 import {interfaceText} from '../../../shared/interface'
 
@@ -10,15 +10,15 @@ const newsletterScript =
 const newsletterFallback = 'https://www.barnsdall.org/contact'
 
 export function LegacyPoliciesLink() {
-  const router = useRouter()
+  const navigate = useRouteNavigation()
   useEffect(() => {
     function redirectHash() {
-      if (window.location.hash === '#policies') router.replace('/visit/policies')
+      if (window.location.hash === '#policies') navigate('/visit/policies', {replace: true})
     }
     redirectHash()
     window.addEventListener('hashchange', redirectHash)
     return () => window.removeEventListener('hashchange', redirectHash)
-  }, [router])
+  }, [navigate])
   return null
 }
 

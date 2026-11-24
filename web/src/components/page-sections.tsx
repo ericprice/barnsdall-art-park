@@ -1,5 +1,5 @@
 import {ActionLinks} from './action-links'
-import Link from 'next/link'
+import Link from './route-link'
 import type {PageSection} from '@/lib/content'
 import {RichText} from './rich-text'
 import {ParkImage} from './park-image'

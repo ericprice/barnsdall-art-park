@@ -89,11 +89,45 @@ strong {
   max-width: var(--site-width);
   margin-inline: auto;
 }
-.site-shell:has(> main[aria-busy='true']) > .park-footer {
-  visibility: hidden;
+// Shared section titles and subnavigation remain visible while the body dims.
+.site-shell[data-navigating] {
+  --route-content-opacity: 0.25;
+  --route-content-delay: 120ms;
 }
-.site-shell > main[aria-busy='true'] {
-  min-height: 100svh;
+.site-shell > main {
+  > :where(:not(.page-heading, .celebration, :has(> .page-heading))),
+  > :where(article:has(> .page-heading)) > :where(:not(.page-heading)) {
+    opacity: var(--route-content-opacity, 1);
+    transition: opacity 160ms ease-out var(--route-content-delay, 0s);
+  }
+}
+.route-progress {
+  position: fixed;
+  inset: 50% auto auto 50%;
+  translate: -50% -50%;
+  z-index: 19;
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+  transition: opacity 140ms ease-out, visibility 0s linear 140ms;
+
+  .site-shell[data-navigating] > & {
+    visibility: visible;
+    opacity: 1;
+    transition-delay: 120ms;
+  }
+}
+.loading-dot {
+  position: relative;
+  display: block;
+  inline-size: 6rem;
+  aspect-ratio: 1;
+  > span {
+    position: absolute;
+    translate: -50% -50%;
+    background-color: var(--pink);
+    mask: center / contain no-repeat;
+  }
 }
 .sr-only {
   position: absolute;

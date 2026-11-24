@@ -1,4 +1,4 @@
-import Link from 'next/link'
+import Link from './route-link'
 import type {ContentEntry, SiteContent, InterfaceText} from '@/lib/content'
 import {eventDay, eventMonths, readableMonth} from '@/lib/event-filters'
 import {ListingGrid} from './listing-card'

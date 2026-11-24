@@ -1,4 +1,4 @@
-import Link from 'next/link'
+import Link from './route-link'
 import type {ContentEntry, ImageSource, SiteContent} from '@/lib/content'
 import {ParkImage} from './park-image'
 import {ActionLinks, SidebarLinks} from './action-links'

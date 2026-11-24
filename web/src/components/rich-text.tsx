@@ -2,6 +2,7 @@ import type {CSSProperties} from 'react'
 import {drawDots} from '@/lib/identity-dots'
 import {PortableText} from 'next-sanity'
 import {DotLink} from './action-links'
+import Link from './route-link'
 import {ParkImage} from './park-image'
 import {headingAnchor, linkDestination, standaloneLink} from '@/lib/body-layout'
 import type {OrganizationTheme} from '../../../shared/organizations'
@@ -81,7 +82,7 @@ export function RichText({value, orgTheme}: {value?: RichTextValue; orgTheme?: O
             },
             link: ({value, children}) => {
               const href = value && linkDestination(value)
-              return href ? <a href={href}>{children}</a> : <>{children}</>
+              return href ? <Link href={href}>{children}</Link> : <>{children}</>
             },
           },
         }}

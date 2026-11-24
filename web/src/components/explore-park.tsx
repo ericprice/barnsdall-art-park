@@ -1,6 +1,6 @@
 'use client'
 
-import Link from 'next/link'
+import Link from './route-link'
 import {useRef, useState, type CSSProperties} from 'react'
 import type {ContentEntry} from '@/lib/content'
 import {themeForEntry, themeStyle} from '@/lib/image-theme'

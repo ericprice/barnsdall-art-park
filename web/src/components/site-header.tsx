@@ -1,7 +1,7 @@
 'use client'
 
 import {ParkImage} from './park-image'
-import Link from 'next/link'
+import Link from './route-link'
 import {usePathname} from 'next/navigation'
 import {
   useCallback,

@@ -1,5 +1,5 @@
 import {themeForEntry, themeStyle} from '@/lib/image-theme'
-import Link from 'next/link'
+import Link from './route-link'
 import type {ContentEntry, SiteContent} from '@/lib/content'
 import {scheduleLabel} from '@/lib/event-filters'
 import {SidebarLinks} from './action-links'

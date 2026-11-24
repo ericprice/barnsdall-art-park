@@ -1,6 +1,6 @@
 'use client'
 
-import Link from 'next/link'
+import Link from './route-link'
 import {useEffect, useId, useLayoutEffect, useRef, useState} from 'react'
 
 export function ListingFilter({
