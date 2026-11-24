@@ -11,15 +11,6 @@ export async function QuoteBand() {
   )
 
   if (pool.length === 0) return null
-  if (pool.length > 1) {
-    await connection()
-    for (let index = pool.length - 1; index > 0; index--) {
-      const other = randomInt(index + 1)
-      const current = pool[index]
-      pool[index] = pool[other]
-      pool[other] = current
-    }
-  }
 
   const palette = new Map<string, QuoteColors>()
   for (const organization of organizationColors) {
@@ -28,5 +19,15 @@ export async function QuoteBand() {
     if (light && dark) palette.set(`${light}/${dark}`.toLowerCase(), {light, dark})
   }
 
-  return <QuoteCarousel quotes={pool} palette={[...palette.values()]} />
+  if (pool.length > 1 || palette.size > 1) await connection()
+  for (let index = pool.length - 1; index > 0; index--) {
+    const other = randomInt(index + 1)
+    const current = pool[index]
+    pool[index] = pool[other]
+    pool[other] = current
+  }
+
+  const colors = [...palette.values()]
+  const start = colors.length > 1 ? randomInt(colors.length) : 0
+  return <QuoteCarousel quotes={pool} palette={[...colors.slice(start), ...colors.slice(0, start)]} />
 }
