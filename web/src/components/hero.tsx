@@ -3,8 +3,9 @@
 import {useEffect, useState} from 'react'
 import type {SiteContent} from '@/lib/content'
 import {themeForEntry, themeStyle} from '@/lib/image-theme'
-import {DotLink} from './action-links'
+import {DisplayLinkContent} from './action-links'
 import {FeatureContent} from './feature-content'
+import Link from './route-link'
 import {ParkImage} from './park-image'
 import {CarouselChevron} from './carousel-chevron'
 import {useCarouselSwipe} from './use-carousel-swipe'
@@ -72,6 +73,11 @@ export function Hero({slides, celebration}: Pick<SiteContent['home'], 'slides' |
   const swipe = useCarouselSwipe(stories.length, advance, setTouching)
 
   if (!slide) return null
+  const badgeProps = {
+    className: 'celebration',
+    'data-at-page-end': atPageEnd,
+    inert: atPageEnd,
+  }
   return (
     <>
       <section
@@ -135,14 +141,21 @@ export function Hero({slides, celebration}: Pick<SiteContent['home'], 'slides' |
           </div>
         )}
       </section>
-      {celebration?.title && (
-        <aside className="celebration" data-at-page-end={atPageEnd} inert={atPageEnd}>
-          <h2>{celebration.title}</h2>
-          {celebration.link?.href && (
-            <DotLink href={celebration.link.href}>{celebration.link.label}</DotLink>
-          )}
-        </aside>
-      )}
+      {celebration?.title &&
+        (celebration.link?.href ? (
+          <Link {...badgeProps} href={celebration.link.href}>
+            <h2>{celebration.title}</h2>
+            {celebration.link.label && (
+              <span className="display-link">
+                <DisplayLinkContent>{celebration.link.label}</DisplayLinkContent>
+              </span>
+            )}
+          </Link>
+        ) : (
+          <aside {...badgeProps}>
+            <h2>{celebration.title}</h2>
+          </aside>
+        ))}
     </>
   )
 }

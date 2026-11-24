@@ -123,14 +123,12 @@ $home-base-gap: max(2rem, site-size(4));
   color: var(--paper);
   border-radius: 44% 56% 47% 53% / 43% 41% 59% 57%;
   text-align: center;
+  text-decoration: none;
   h2 {
     width: 90%;
     font-size: 19cqi;
     line-height: var(--leading-section);
     white-space: pre-line;
-  }
-  a {
-    @include type-size(body);
   }
 }
 @keyframes story-in {
