@@ -355,7 +355,8 @@ figcaption {
 .quote-band {
   margin: 3rem var(--gutter) 0;
   padding-block: 3rem;
-  background: var(--olive);
+  background: var(--green-tint);
+  color: var(--green);
   text-align: center;
   position: relative;
   &__content {
