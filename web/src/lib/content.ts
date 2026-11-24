@@ -119,6 +119,7 @@ type DocumentEntry =
   | SEARCH_QUERY_RESULT[number]
 function hasStoryDestination(doc: DocumentEntry) {
   if (doc._type !== 'article') return true
+  if ('targetPageId' in doc && doc.targetPageId) return Boolean(doc.targetSlug)
   const organization = 'organizationRef' in doc ? doc.organizationRef?._ref : undefined
   const href = 'externalUrl' in doc ? doc.externalUrl : undefined
   return hostsNewsPage(organization) || isExternalNewsLink(href)
@@ -135,13 +136,7 @@ function toEntry(doc: DocumentEntry): ContentEntry {
       contentPath(doc._type, doc.slug?.current),
     summary: doc.summary,
     image: 'image' in doc ? doc.image : undefined,
-    // During the two-phase migration the previous release still reads the unsectioned body.
-    body:
-      'migrationIntro' in doc
-        ? (doc.migrationIntro as RichText)
-        : 'body' in doc
-          ? doc.body
-          : undefined,
+    body: 'body' in doc ? doc.body : undefined,
     sections: 'contentSections' in doc ? pageSections(doc.contentSections) : undefined,
     date:
       doc._type === 'event' && 'startsAt' in doc

@@ -9,19 +9,30 @@ test('nested links follow a changed slug, preserve fragments and handle an unpub
       {internal: {_ref: 'visit'}},
       {markDefs: [{internal: {_ref: 'visit'}}, {href: '#subscribe'}]},
       {internal: {_ref: 'gone'}},
+      {internal: {_ref: 'promotion'}},
     ],
   }
   let requests = 0
   const result = await resolveInternalLinks(source, async (ids) => {
     requests++
-    assert.deepEqual(ids, ['visit', 'gone'])
-    return [{_id: 'visit', _type: 'page', slug: 'visitor-information'}]
+    assert.deepEqual(ids, ['visit', 'gone', 'promotion'])
+    return [
+      {_id: 'visit', _type: 'page', slug: 'visitor-information'},
+      {
+        _id: 'promotion',
+        _type: 'article',
+        slug: 'campaign',
+        targetPageId: 'unpublished',
+        targetSlug: null,
+      },
+    ]
   })
   assert.equal(requests, 1)
   assert.equal(result.children[0].href, '/visitor-information')
   assert.equal(result.children[1].markDefs[0].href, '/visitor-information')
   assert.equal(result.children[1].markDefs[1].href, '#subscribe')
   assert.equal(result.children[2].href, undefined)
+  assert.equal(result.children[3].href, undefined)
   assert.equal(source.children[0].href, undefined)
 })
 test('section roles and anchors survive reordering and renaming', () => {

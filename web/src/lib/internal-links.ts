@@ -9,6 +9,7 @@ type Route = {
   _type: string
   slug: string | null
   externalUrl?: string | null
+  targetPageId?: string | null
   targetSlug?: string | null
 }
 type StoredLink = {internal: {_ref: string}; href?: string}
@@ -37,7 +38,7 @@ export async function resolveInternalLinks<T>(
   const routes = await fetchRoutes([...new Set(links.map((link) => link.internal._ref))])
   const hrefs = new Map(
     routes
-      .filter((doc) => doc.slug)
+      .filter((doc) => doc.slug && (!doc.targetPageId || doc.targetSlug))
       .map((doc) => [
         doc._id,
         doc.externalUrl ||
