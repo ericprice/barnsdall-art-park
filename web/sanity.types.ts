@@ -230,7 +230,7 @@ export type RichText = Array<
         _type: 'span'
         _key: string
       }>
-      style?: 'normal' | 'lead' | 'dotLink' | 'h2' | 'h3'
+      style?: 'normal' | 'lead' | 'pullQuote' | 'dotLink' | 'h2' | 'h3'
       listItem?: 'bullet' | 'number'
       markDefs?: Array<
         | {

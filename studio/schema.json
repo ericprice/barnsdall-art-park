@@ -1359,6 +1359,10 @@
                     },
                     {
                       "type": "string",
+                      "value": "pullQuote"
+                    },
+                    {
+                      "type": "string",
                       "value": "dotLink"
                     },
                     {

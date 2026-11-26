@@ -53,6 +53,9 @@ export function RichText({value, orgTheme}: {value?: RichTextValue; orgTheme?: O
           },
           block: {
             lead: ({children}) => <p className="lead">{children}</p>,
+            pullQuote: ({children}) => (
+              <blockquote className="rich-text__pull-quote">{children}</blockquote>
+            ),
             h2: ({value, children}) => <h2 id={headingAnchor(value)}>{children}</h2>,
             h3: ({value, children}) => <h3 id={headingAnchor(value)}>{children}</h3>,
             dotLink: ({value, children}) => {

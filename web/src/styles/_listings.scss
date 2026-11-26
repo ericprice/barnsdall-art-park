@@ -276,7 +276,7 @@
   @include display-type(title);
   text-align: center;
 }
-.news-story .listing-story__body .rich-text blockquote {
+.news-story .listing-story__body .rich-text blockquote:not(.rich-text__pull-quote) {
   font: 400 var(--type-section)/var(--leading-section) var(--lead);
   text-transform: none;
   text-align: center;

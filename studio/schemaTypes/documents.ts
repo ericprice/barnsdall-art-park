@@ -523,7 +523,7 @@ export const article = defineType({
           Boolean(document?.externalUrl) ||
           !hostsDetailPage((document?.organizationRef as {_ref?: string})?._ref)),
     }),
-    {...body, group: 'content', hidden: offsiteArticle},
+    {...body, group: 'content', hidden: ({document}) => Boolean(document?.targetPage)},
     {...slug, group: 'content'},
     {...editorialImage, group: 'images'},
     {...gallery, group: 'images', hidden: offsiteArticle},
@@ -544,14 +544,8 @@ export const article = defineType({
       group: 'publishing',
       type: 'datetime',
       options: eventClock,
-      validation: (rule) =>
-        rule
-          .custom(
-            (date, {document}) =>
-              Boolean(date || document?.excludeFromNews) ||
-              'Add a display date to place this story in chronological order.',
-          )
-          .warning(),
+      initialValue: () => new Date().toISOString(),
+      validation: (rule) => rule.required(),
     }),
     defineField({
       name: 'sourceLink',
@@ -603,7 +597,7 @@ export const event = defineType({
     }),
     externalStoryUrl('event'),
     {...subtitle, group: 'content'},
-    {...body, group: 'content', hidden: partnerEvent},
+    {...body, group: 'content'},
     defineField({
       ...slug,
       group: 'content',
