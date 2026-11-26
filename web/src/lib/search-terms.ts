@@ -41,6 +41,14 @@ function wordsOf(text: string) {
   )
 }
 
+export function topicStems(text: string) {
+  return new Set(
+    wordsOf(text)
+      .filter((word) => /^\p{L}{3,}$/u.test(word) && !stopWords.has(word))
+      .map(stemmer),
+  )
+}
+
 function indexWords(words: string[]): WordIndex {
   const unique = new Set(words)
   const stems = new Set([...unique].map(stemmer))

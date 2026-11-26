@@ -6,6 +6,7 @@ export const routePrefixes: Record<string, string> = {
 const typesByPrefix = new Map(
   Object.entries(routePrefixes).map(([type, prefix]) => [prefix.slice(1), type]),
 )
+export const legacyOliveGroveNewsSlug = 'olive-grove'
 
 export function contentRoute(path: string) {
   const parts = path.slice(1).split('/')
@@ -19,6 +20,7 @@ export const legacyRedirects = [
   {source: '/rentals', destination: '/visit/rentals', permanent: true},
   {source: '/the-park', destination: '/park/the-park', permanent: true},
   {source: '/olive-grove-initiative', destination: '/support/olive-grove', permanent: true},
+  {source: `/news/${legacyOliveGroveNewsSlug}`, destination: '/support/olive-grove', permanent: true},
   {
     source: '/olive-wood-workshop',
     destination: '/support/initiatives/olive-wood-workshop',

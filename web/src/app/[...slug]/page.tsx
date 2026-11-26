@@ -13,7 +13,6 @@ import {EventsBrowser, type ListingParams} from '@/components/events-browser'
 import {ListingStory} from '@/components/listing-story'
 import {NewsListing} from '@/components/news-listing'
 import {PageSections} from '@/components/page-sections'
-import {DisplayLink} from '@/components/display-link'
 import {HistoryTimeline} from '@/components/history-timeline'
 import {imageBuilder} from '@/sanity/image'
 import {publicOrigin} from '@/lib/site-origin'
@@ -116,13 +115,6 @@ export default async function ContentPage({params, searchParams}: Props) {
         </>
       }
     >
-      {entry.link?.href && (
-        <p className="entry-action">
-          <DisplayLink href={entry.link.href} arrow="↗">
-            {entry.link.label}
-          </DisplayLink>
-        </p>
-      )}
       <PageSections sections={entry.sections} />
     </EditorialPage>
   )

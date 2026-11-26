@@ -74,8 +74,8 @@
   .display-link {
     @include type-size(title);
   }
-  .feature-content__summary + .display-link {
-    margin-block-start: var(--feature-cta-offset);
+  .feature-content__summary:has(+ .display-link) {
+    margin-block-end: var(--feature-cta-offset);
   }
 }
 .hero__controls {

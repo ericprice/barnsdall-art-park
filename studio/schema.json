@@ -3263,6 +3263,13 @@
         },
         "optional": true
       },
+      "date": {
+        "type": "objectAttribute",
+        "value": {
+          "type": "string"
+        },
+        "optional": true
+      },
       "organizationRef": {
         "type": "objectAttribute",
         "value": {
@@ -3282,14 +3289,6 @@
         "type": "objectAttribute",
         "value": {
           "type": "string"
-        },
-        "optional": true
-      },
-      "targetPage": {
-        "type": "objectAttribute",
-        "value": {
-          "type": "inline",
-          "name": "page.reference"
         },
         "optional": true
       },
@@ -3336,28 +3335,6 @@
               "name": "parkImage"
             }
           }
-        },
-        "optional": true
-      },
-      "excludeFromNews": {
-        "type": "objectAttribute",
-        "value": {
-          "type": "boolean"
-        },
-        "optional": true
-      },
-      "publishedAt": {
-        "type": "objectAttribute",
-        "value": {
-          "type": "string"
-        },
-        "optional": true
-      },
-      "sourceLink": {
-        "type": "objectAttribute",
-        "value": {
-          "type": "inline",
-          "name": "link"
         },
         "optional": true
       },

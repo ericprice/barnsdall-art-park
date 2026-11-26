@@ -64,6 +64,7 @@ const imageFields = [
     title: 'Decorative image',
     type: 'boolean',
     description: 'Screen readers skip decorative images.',
+    hidden: ({document}) => document?._type === 'article',
   }),
   defineField({
     name: 'alt',
@@ -71,12 +72,13 @@ const imageFields = [
     type: 'string',
     hidden: ({document, parent}) =>
       Boolean(parent?.decorative) ||
+      document?._type === 'article' ||
       (document?._type === 'page' && document?.template === 'timeline'),
   }),
   defineField({
     name: 'caption',
     type: 'string',
-    description: 'Visible credit or caption where the layout includes one.',
+    description: 'Visible credit or caption. Also used as alternative text for News images.',
   }),
 ]
 export const parkImage = defineType({

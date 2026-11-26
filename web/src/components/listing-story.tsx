@@ -1,8 +1,7 @@
 import {themeForEntry, themeStyle} from '@/lib/image-theme'
 import Link from './route-link'
 import type {ContentEntry} from '@/lib/content'
-import {getNewsNeighbors} from '@/lib/news'
-import {blockText} from '@/lib/body-layout'
+import {getNewsNeighbors, getRelatedNews} from '@/lib/news'
 import {scheduleLabel} from '@/lib/event-filters'
 import {SidebarLinks} from './action-links'
 import {ListingGrid} from './listing-card'
@@ -14,27 +13,18 @@ import {PageSections} from './page-sections'
 import {StoryGallery} from './story-gallery'
 import {interfaceText as text} from '../../../shared/interface'
 
-function subtitleComparison(text?: string | null) {
-  return text?.trim().replace(/\.$/, '').toLowerCase()
-}
-
 export async function ListingStory({entry}: {entry: ContentEntry}) {
   const event = entry.type === 'event'
   const news = entry.type === 'article'
-  const firstBlock = entry.body?.[0]
-  const bodyIntro = firstBlock?._type === 'block' ? blockText(firstBlock) : undefined
-  const showSummary =
-    news &&
-    entry.summary &&
-    subtitleComparison(entry.summary) !== subtitleComparison(entry.subtitle) &&
-    entry.summary !== bodyIntro
   const theme = themeForEntry(entry)
   const images = [...(entry.image ? [entry.image] : []), ...(entry.gallery || [])]
-  const ticketLinks = entry.link?.href
-    ? [{_key: 'tickets', href: entry.link.href, label: entry.link.label || text.getTickets}]
+  const ticketLinks = entry.ticketLink?.href
+    ? [{_key: 'tickets', href: entry.ticketLink.href, label: entry.ticketLink.label || text.getTickets}]
     : undefined
-  const related = entry.relatedStories ?? []
-  const {previous, next} = await getNewsNeighbors(entry)
+  const [related, {previous, next}] = await Promise.all([
+    getRelatedNews(entry),
+    getNewsNeighbors(entry),
+  ])
   return (
     <main
       id="main-content"
@@ -68,9 +58,7 @@ export async function ListingStory({entry}: {entry: ContentEntry}) {
             </aside>
           )}
           <div className="listing-story__body">
-            {showSummary && <p className="listing-story__summary">{entry.summary}</p>}
             <RichText value={entry.body} orgTheme={event ? theme : undefined} />
-            {!event && entry.link?.href && <Link href={entry.link.href}>{entry.link.label}</Link>}
           </div>
         </div>
         {entry.template === 'initiative' && <PageSections sections={entry.sections} />}

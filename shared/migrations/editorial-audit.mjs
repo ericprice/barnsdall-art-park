@@ -182,14 +182,11 @@ export function editorialDocuments(documents) {
         const partner = doc.organizationRef && !hostsDetailPage(doc.organizationRef._ref)
         const href = doc.storyDestination?.href || (partner && doc.sourceLink?.href)
         if (href && /^https?:\/\//.test(href)) doc.externalUrl ??= href
-        else if (href) {
-          const target = linkTo(href, documents)
-          assert.ok(target, 'Missing promotion destination ' + href)
-          doc.targetPage ??= reference(target)
-          doc.excludeFromNews = true
-        }
         if (partner) assert.ok(doc.externalUrl, 'Missing partner URL for ' + doc._id)
+        delete doc.sourceLink
         delete doc.storyDestination
+        delete doc.targetPage
+        delete doc.excludeFromNews
         delete doc.archiveEntry
       }
     }

@@ -11,14 +11,10 @@ type Route = {
   slug?: {current?: string} | null
   organizationRef?: {_ref: string} | null
   externalUrl?: string | null
-  targetPageId?: string | null
-  targetSlug?: string | null
 }
 export function contentDestination(doc: Route) {
-  const {externalUrl, targetPageId, targetSlug, _type, organizationRef} = doc
+  const {externalUrl, _type, organizationRef} = doc
   const hosted = hostsDetailPage(organizationRef?._ref)
-  if (_type === 'article' && targetPageId)
-    return targetSlug ? contentPath('page', targetSlug) : undefined
   if ((_type === 'event' || _type === 'article') && !hosted)
     return isExternalStoryUrl(externalUrl) ? externalUrl : undefined
   if (_type !== 'event' && externalUrl) return externalUrl

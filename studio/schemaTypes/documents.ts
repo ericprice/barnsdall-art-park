@@ -455,7 +455,7 @@ function partnerOwned(document?: SanityDocument) {
 }
 const partnerEvent: ConditionalPropertyCallback = ({document}) => partnerOwned(document)
 const offsiteArticle: ConditionalPropertyCallback = ({document}) =>
-  Boolean(document?.externalUrl || document?.targetPage || partnerOwned(document))
+  Boolean(document?.externalUrl || partnerOwned(document))
 
 function externalStoryUrl(kind: 'event' | 'article') {
   return defineField({
@@ -467,8 +467,7 @@ function externalStoryUrl(kind: 'event' | 'article') {
       kind === 'event'
         ? 'Link directly to the event on the organizer’s website. On-site body, gallery and ticket information is retained if ownership changes.'
         : 'Required for partner news. Leave empty for an on-site Foundation or Park story. Changing the destination retains existing on-site text and images.',
-    hidden: ({document}) =>
-      kind === 'event' ? !partnerOwned(document) : Boolean(document?.targetPage),
+    hidden: ({document}) => kind === 'event' && !partnerOwned(document),
     validation: (rule) =>
       rule
         .uri({scheme: ['https', 'http']})
@@ -487,10 +486,19 @@ export const article = defineType({
   icon: DocumentTextIcon,
   title: 'News',
   type: 'document',
-  groups: [contentGroup, imagesGroup, {name: 'publishing', title: 'Publishing'}, hideAllFields],
+  groups: [contentGroup, imagesGroup, hideAllFields],
   fields: [
     {...title, group: 'content'},
     {...subtitle, group: 'content'},
+    defineField({
+      name: 'date',
+      title: 'Date',
+      group: 'content',
+      type: 'datetime',
+      options: eventClock,
+      initialValue: () => new Date().toISOString(),
+      validation: (rule) => rule.required(),
+    }),
     defineField({
       ...organizationReference,
       group: 'content',
@@ -499,68 +507,21 @@ export const article = defineType({
     {
       ...summary,
       title: 'Card summary',
-      description: 'Shown on News cards and above the article body.',
+      description: 'Short excerpt for News cards and the featured News item. Write the article in Body.',
       group: 'content',
     },
     externalStoryUrl('article'),
-    defineField({
-      name: 'targetPage',
-      title: 'Promotion destination',
-      type: 'reference',
-      weak: true,
-      to: [{type: 'page'}],
-      group: 'content',
-      validation: (r) =>
-        r.custom(
-          (v, ctx) =>
-            !v ||
-            ctx.document?.excludeFromNews === true ||
-            'Clear the promotion destination to turn this into a news story.',
-        ),
-      hidden: ({document}) =>
-        !document?.targetPage &&
-        (!document?.excludeFromNews ||
-          Boolean(document?.externalUrl) ||
-          !hostsDetailPage((document?.organizationRef as {_ref?: string})?._ref)),
-    }),
-    {...body, group: 'content', hidden: ({document}) => Boolean(document?.targetPage)},
+    {...body, group: 'content'},
     {...slug, group: 'content'},
     {...editorialImage, group: 'images'},
     {...gallery, group: 'images', hidden: offsiteArticle},
-    defineField({
-      name: 'excludeFromNews',
-      group: 'publishing',
-      title: 'Use as a promotional card only',
-      type: 'boolean',
-      initialValue: false,
-      description:
-        'Keep this card available for features and omit it from the chronological News listing.',
-    }),
-    defineField({
-      name: 'publishedAt',
-      title: 'Display date',
-      description:
-        'Shown on the listing and used to order news. Use Studio publishing controls to release a story.',
-      group: 'publishing',
-      type: 'datetime',
-      options: eventClock,
-      initialValue: () => new Date().toISOString(),
-      validation: (rule) => rule.required(),
-    }),
-    defineField({
-      name: 'sourceLink',
-      hidden: offsiteArticle,
-      group: 'content',
-      title: 'Original story or source',
-      type: 'link',
-    }),
     defineField({
       name: 'relatedStories',
       hidden: offsiteArticle,
       group: 'content',
       title: 'See also',
       type: 'array',
-      description: 'Select and reorder up to three related news stories.',
+      description: 'Select up to three stories, or leave empty for automatic suggestions.',
       of: [defineArrayMember({type: 'reference', to: [{type: 'article'}]})],
       validation: (rule) => rule.unique().max(3),
     }),
@@ -570,13 +531,12 @@ export const article = defineType({
       title: 'title',
       owner: 'organizationRef.title',
       url: 'externalUrl',
-      promo: 'excludeFromNews',
       media: 'image',
     },
-    prepare: ({title, owner, url, promo, media}) => ({
+    prepare: ({title, owner, url, media}) => ({
       title,
       media,
-      subtitle: [owner, promo ? 'Promotion' : url ? 'External article' : 'On-site story']
+      subtitle: [owner, url ? 'External article' : 'On-site story']
         .filter(Boolean)
         .join(' · '),
     }),

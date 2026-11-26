@@ -1,13 +1,16 @@
 import {defineQuery} from 'next-sanity'
+import {legacyOliveGroveNewsSlug} from '../../../shared/routes'
 
-const routeFields = `_id, _type, slug, organizationRef, externalUrl,
-  "targetPageId": targetPage._ref, "targetSlug": targetPage->slug.current`
+const routeFields = '_id, _type, slug, organizationRef, externalUrl'
 const owner = `coalesce(organizationRef->, *[_type == "organization" && _id == "organization-" + string::split(^.organizationRef._ref, ".")[1]][0])`
 const cardBase = `${routeFields}, title, summary`
-const cardMeta = `"orgTheme": ${owner}{title, light, dark}, startsAt, endsAt, repeatsUntil, allDay, publishedAt`
+const articleDate = 'coalesce(date, publishedAt)'
+const dateField = `"date": ${articleDate}`
+const cardMeta = `"orgTheme": ${owner}{title, light, dark}, startsAt, endsAt, repeatsUntil, allDay, ${dateField}`
 const cardFields = `${cardBase}, image,
   ${cardMeta}`
-const newsOrder = 'defined(publishedAt) desc, publishedAt desc, title asc, _id asc'
+const newsOrder = `defined(${articleDate}) desc, ${articleDate} desc, title asc, _id asc`
+const canonicalRoute = `(_type != "article" || slug.current != "${legacyOliveGroveNewsSlug}")`
 
 export const DESTINATIONS_QUERY = defineQuery(`*[_id in $ids]{${routeFields}}`)
 
@@ -36,26 +39,25 @@ export const EVENTS_QUERY = defineQuery(
 )
 
 export const NEWS_ROUTES_QUERY = defineQuery(
-  `*[_type == "article" && defined(slug.current) && excludeFromNews != true] | order(${newsOrder}){${routeFields}, title}`,
+  `*[_type == "article" && defined(slug.current) && ${canonicalRoute}] | order(${newsOrder}){${routeFields}, title, subtitle, summary}`,
 )
 
 // Use the same stable sort as the News index. Undated stories follow all dated stories.
 const tiedAfter = '(title > $title || (title == $title && _id > $id))'
 const tiedBefore = '(title < $title || (title == $title && _id < $id))'
 const olderStory = `select(defined($date) =>
-  (!defined(publishedAt) || publishedAt < $date || (publishedAt == $date && ${tiedAfter})),
-  !defined(publishedAt) && ${tiedAfter})`
+  (!defined(${articleDate}) || ${articleDate} < $date || (${articleDate} == $date && ${tiedAfter})),
+  !defined(${articleDate}) && ${tiedAfter})`
 const newerStory = `select(defined($date) =>
-  (publishedAt > $date || (publishedAt == $date && ${tiedBefore})),
-  defined(publishedAt) || ${tiedBefore})`
-const listedStory = `_type == "article" && defined(title) && defined(slug.current) && excludeFromNews != true &&
-  select(defined(targetPage) => defined(targetPage->slug.current),
-    organizationRef._ref in $hostIds => true,
+  (${articleDate} > $date || (${articleDate} == $date && ${tiedBefore})),
+  defined(${articleDate}) || ${tiedBefore})`
+const listedStory = `_type == "article" && defined(title) && defined(slug.current) && ${canonicalRoute} &&
+  (organizationRef._ref in $hostIds ||
     string::startsWith(externalUrl, "https://") || string::startsWith(externalUrl, "http://"))`
 
 export const NEWS_NEIGHBORS_QUERY = defineQuery(`{
   "previous": *[${listedStory} && ${olderStory}] | order(${newsOrder})[0]{${routeFields}},
-  "next": *[${listedStory} && ${newerStory}] | order(defined(publishedAt) asc, publishedAt asc, title desc, _id desc)[0]{${routeFields}}
+  "next": *[${listedStory} && ${newerStory}] | order(defined(${articleDate}) asc, ${articleDate} asc, title desc, _id desc)[0]{${routeFields}}
 }`)
 
 export const NEWS_CARDS_QUERY = defineQuery(`*[_type == "article" && _id in $ids]{${cardFields}}`)
@@ -64,20 +66,20 @@ export const CONTENT_QUERY = defineQuery(
   `*[_type == $type && slug.current == $slug && _type in ["page","place","event","article"]][0]{
     ...,
     _type == "page" => {initiativeCards[]{..., "detail": page->{title, "slug": slug.current, "summary": coalesce(subtitle, pt::text(body[0...1][style == "lead"])), "organization": ${owner}.title}}},
-    _type == "article" => {"relatedCards": relatedStories[]->{${cardFields}}},
-    "orgTheme": ${owner}{title, light, dark}, "targetPageId": targetPage._ref, "targetSlug": targetPage->slug.current
+    _type == "article" => {${dateField}, "relatedCards": (relatedStories[]->)[${canonicalRoute}]{${cardFields}}},
+    "orgTheme": ${owner}{title, light, dark}
   }`,
 )
 
 export const SITEMAP_QUERY = defineQuery(
-  `*[_type in ["page","place","event","article"] && defined(slug.current)]{${routeFields}}`,
+  `*[_type in ["page","place","event","article"] && defined(slug.current) && ${canonicalRoute}]{${routeFields}}`,
 )
 
 // Project plain text once for all searches. Keep titles and summaries separate for ranking.
 const searchText = `array::join(array::compact([
   slug.current,
   coalesce(organizationRef->title, $organizations[id == ^.organizationRef._ref][0].title),
-  select(!defined(externalUrl) && !defined(targetPage) => pt::text(body)),
+  select(!defined(externalUrl) => pt::text(body)),
   ...coalesce(contentSections[].title, []),
   ...coalesce(contentSections[].links[].label, []),
   ...coalesce(contentSections[]{"text": pt::text(body)}.text, []),
@@ -96,7 +98,7 @@ const searchText = `array::join(array::compact([
   ...coalesce(timelineEntries[].dateLabel, []), ...coalesce(timelineEntries[].description, [])
 ]), " ")`
 
-export const SEARCH_CATALOG_QUERY = defineQuery(`*[_type in ["page", "place", "event", "article"] &&
+export const SEARCH_CATALOG_QUERY = defineQuery(`*[_type in ["page", "place", "event", "article"] && ${canonicalRoute} &&
   defined(title) && (defined(slug.current) || defined(externalUrl))]{
     ${routeFields}, title, "description": array::join(array::compact([subtitle, summary]), " "), "text": ${searchText}
 }`)
@@ -105,7 +107,7 @@ export const SEARCH_CARDS_QUERY =
   defineQuery(`*[_type in ["page", "place", "event", "article"] && _id in $ids]{
   ${cardBase}, ${cardMeta}, subtitle,
   "image": select(_type == "place" => gallery[defined(asset)][0], image),
-  "bodyText": select(!defined(externalUrl) && !defined(targetPage) =>
+  "bodyText": select(!defined(externalUrl) =>
     pt::text(body[_type == "block" && (!defined(style) || style in ["normal", "lead"]) &&
       !defined(listItem) && pt::text([@]) match "*"][0...1]))
 }`)

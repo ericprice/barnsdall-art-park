@@ -14,6 +14,7 @@ import {
 export type {InterfaceText} from '../../../shared/interface'
 import 'server-only'
 import {cache} from 'react'
+import {decodeHTMLStrict} from 'entities'
 import {readContent} from '@/sanity/read'
 import {
   CONTENT_QUERY,
@@ -59,11 +60,10 @@ export type ContentEntry = {
   allDay?: boolean | null
   gallery?: (ParkImage & {_key: string})[]
   endsAt?: string | null
-  link?: {label?: string; href?: string} | null
+  ticketLink?: {label?: string; href?: string} | null
   subtitle?: string
   sidebarLinks?: Place['sidebarLinks']
   template?: Page['template']
-  excludedFromNews?: boolean
   relatedStories?: ContentEntry[]
   sections?: PageSection[]
   boardMembers?: Page['boardMembers']
@@ -129,7 +129,9 @@ type DocumentEntry =
   | EVENTS_QUERY_RESULT[number]
   | NEWS_CARDS_QUERY_RESULT[number]
   | SEARCH_CARDS_QUERY_RESULT[number]
-export function toContentEntry(doc: DocumentEntry): ContentEntry {
+export function toContentEntry(source: DocumentEntry): ContentEntry {
+  const doc = source._type === 'article' ? structuredClone(source) : source
+  if (doc._type === 'article') applyCaptionAlt(doc, true)
   const owner = doc.organizationRef?._ref
   const theme = organizationTheme(doc.orgTheme, owner)
   return {
@@ -144,8 +146,8 @@ export function toContentEntry(doc: DocumentEntry): ContentEntry {
     date:
       doc._type === 'event' && 'startsAt' in doc
         ? doc.startsAt
-        : 'publishedAt' in doc
-          ? doc.publishedAt
+        : 'date' in doc
+          ? doc.date
           : null,
     orgTheme: theme,
     organization: owner || doc.orgTheme ? theme.title : undefined,
@@ -153,13 +155,12 @@ export function toContentEntry(doc: DocumentEntry): ContentEntry {
     allDay: 'allDay' in doc ? doc.allDay : null,
     gallery: 'gallery' in doc ? doc.gallery : undefined,
     endsAt: 'endsAt' in doc ? doc.endsAt : null,
-    link: 'sourceLink' in doc ? doc.sourceLink : 'ticketLink' in doc ? doc.ticketLink : null,
+    ticketLink: 'ticketLink' in doc ? doc.ticketLink : null,
     subtitle: 'subtitle' in doc ? doc.subtitle || undefined : undefined,
     sidebarLinks: 'sidebarLinks' in doc ? doc.sidebarLinks : undefined,
     template: 'template' in doc ? doc.template || undefined : undefined,
-    excludedFromNews: 'excludeFromNews' in doc ? doc.excludeFromNews : undefined,
     relatedStories:
-      'relatedCards' in doc
+      'relatedStories' in doc && doc.relatedStories?.length && 'relatedCards' in doc
         ? (doc.relatedCards ?? []).flatMap((story) =>
             story && story._id !== doc._id && contentDestination(story)
               ? [toContentEntry(story)]
@@ -265,19 +266,25 @@ export const getHome = cache(async (): Promise<HomeContent> => {
   }
 })
 
-function useCaptionsAsAlt(value: unknown) {
+function applyCaptionAlt(value: unknown, captionsOnly = false) {
   if (!value || typeof value !== 'object') return
   if (
     '_type' in value &&
-    (value._type === 'parkImage' || value._type === 'editorialImage') &&
-    'caption' in value &&
-    typeof value.caption === 'string' &&
-    value.caption.trim()
+    (value._type === 'parkImage' || value._type === 'editorialImage')
   ) {
     const image = value as ParkImage
-    image.alt = value.caption
+    const caption = typeof image.caption === 'string' ? image.caption.trim() : ''
+    if (captionsOnly) {
+      image.alt = decodeHTMLStrict(caption)
+        .replace(/<!--[\s\S]*?-->|<\/?[a-z][^>]*>/gi, ' ')
+        .replace(/[\s\p{Cc}]+/gu, ' ')
+        .trim()
+      delete image.decorative
+    } else if (caption) {
+      image.alt = image.caption
+    }
   }
-  Object.values(value).forEach(useCaptionsAsAlt)
+  for (const child of Object.values(value)) applyCaptionAlt(child, captionsOnly)
 }
 
 export const getEntry = cache(async (path: string): Promise<ContentEntry | undefined> => {
@@ -289,7 +296,7 @@ export const getEntry = cache(async (path: string): Promise<ContentEntry | undef
   const entry = await withLinks(data)
   if (entry._type !== 'page' || entry.template !== 'timeline') return toContentEntry(entry)
   const timeline = structuredClone(entry)
-  useCaptionsAsAlt(timeline)
+  applyCaptionAlt(timeline)
   return toContentEntry(timeline)
 })
 

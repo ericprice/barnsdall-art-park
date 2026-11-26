@@ -9,22 +9,16 @@ test('nested links follow a changed slug, preserve fragments and handle an unpub
       {internal: {_ref: 'visit'}},
       {markDefs: [{internal: {_ref: 'visit'}}, {href: '#subscribe'}]},
       {internal: {_ref: 'gone'}},
-      {internal: {_ref: 'promotion'}},
+      {internal: {_ref: 'unpublished'}},
     ],
   }
   let requests = 0
   const result = await resolveInternalLinks(source, async (ids) => {
     requests++
-    assert.deepEqual(ids, ['visit', 'gone', 'promotion'])
+    assert.deepEqual(ids, ['visit', 'gone', 'unpublished'])
     return [
       {_id: 'visit', _type: 'page', slug: {current: 'visitor-information'}},
-      {
-        _id: 'promotion',
-        _type: 'article',
-        slug: {current: 'campaign'},
-        targetPageId: 'unpublished',
-        targetSlug: null,
-      },
+      {_id: 'unpublished', _type: 'page', slug: null},
     ]
   })
   assert.equal(requests, 1)
