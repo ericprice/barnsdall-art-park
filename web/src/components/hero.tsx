@@ -15,7 +15,6 @@ const slideDots = [3, 13, 9, 11, 14]
 
 export function Hero({slides}: Pick<HomeContent, 'slides'>) {
   const [frame, setFrame] = useState({index: 0, previous: -1})
-  const [paused, setPaused] = useState(false)
   const [hovered, setHovered] = useState(false)
   const [focused, setFocused] = useState(false)
   const [touching, setTouching] = useState(false)
@@ -34,24 +33,21 @@ export function Hero({slides}: Pick<HomeContent, 'slides'>) {
   )
 
   useEffect(() => {
-    if (slides.length < 2 || paused || hovered || focused || touching) return
-    const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)')
+    if (slides.length < 2 || hovered || focused || touching) return
     let timer: number | undefined
     function schedule() {
       window.clearInterval(timer)
-      if (document.visibilityState === 'visible' && !reducedMotion.matches) {
+      if (document.visibilityState === 'visible') {
         timer = window.setInterval(() => advance(1), 6500)
       }
     }
     schedule()
     document.addEventListener('visibilitychange', schedule)
-    reducedMotion.addEventListener('change', schedule)
     return () => {
       window.clearInterval(timer)
       document.removeEventListener('visibilitychange', schedule)
-      reducedMotion.removeEventListener('change', schedule)
     }
-  }, [slides.length, paused, hovered, focused, touching, advance])
+  }, [slides.length, hovered, focused, touching, advance])
 
   const swipe = useCarouselSwipe(slides.length, advance, setTouching)
 
@@ -120,16 +116,6 @@ export function Hero({slides}: Pick<HomeContent, 'slides'>) {
             <CarouselChevron direction="next" />
           </button>
         </div>
-      )}
-      {slides.length > 1 && (
-        <button
-          className="hero__pause"
-          type="button"
-          onClick={() => setPaused(!paused)}
-          aria-label={paused ? 'Play featured stories' : 'Pause featured stories'}
-        >
-          {paused ? 'Play' : 'Pause'}
-        </button>
       )}
     </section>
   )

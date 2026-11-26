@@ -47,24 +47,10 @@ export function HeaderSearch({
   }, [])
   useEffect(() => {
     if (!showPlaceholder || placeholderCount < 2) return
-    const motion = window.matchMedia('(prefers-reduced-motion: no-preference)')
-    let timer: number | undefined
-
-    function updateTimer() {
-      window.clearInterval(timer)
-      if (motion.matches) {
-        timer = window.setInterval(() => {
-          setPlaceholderIndex((index) => (index + 1) % placeholderCount)
-        }, 4000 / 1.5)
-      }
-    }
-
-    updateTimer()
-    motion.addEventListener('change', updateTimer)
-    return () => {
-      window.clearInterval(timer)
-      motion.removeEventListener('change', updateTimer)
-    }
+    const timer = window.setInterval(() => {
+      setPlaceholderIndex((index) => (index + 1) % placeholderCount)
+    }, 4000 / 1.5)
+    return () => window.clearInterval(timer)
   }, [placeholderCount, showPlaceholder])
   useEffect(() => {
     if (!term) return

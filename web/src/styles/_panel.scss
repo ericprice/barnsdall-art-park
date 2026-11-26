@@ -18,11 +18,9 @@
   > span {
     grid-area: 1 / 1;
 
-    @media (prefers-reduced-motion: no-preference) {
-      $duration: calc(var(--menu-fade) / $speed);
-      $delay: calc((var(--menu-fade) + 150ms) / $speed);
-      transition: opacity $duration ease-in $delay;
-    }
+    $duration: calc(var(--menu-fade) / $speed);
+    $delay: calc((var(--menu-fade) + 150ms) / $speed);
+    transition: opacity $duration ease-in $delay;
 
     &[data-active='false'] {
       opacity: 0;

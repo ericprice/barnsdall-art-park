@@ -56,16 +56,8 @@ $compact-nav-height: $compact-nav-start + $compact-mark-height + $compact-nav-en
   padding-block: 0.8em 0.125em;
   @include type-size(label);
 
-  &__info {
-    display: flex;
-    align-items: center;
-    gap: 0.5em;
-    padding-block: 0.3em;
-  }
-  &__pause {
-    display: none;
-  }
   &__items {
+    padding-block: 0.3em;
     display: flex;
     flex-wrap: wrap;
     align-items: center;
@@ -259,22 +251,9 @@ $compact-nav-height: $compact-nav-start + $compact-mark-height + $compact-nav-en
     @include type-size(compact-label);
     padding-block: 0.25em 0.15em;
 
-    @media (prefers-reduced-motion: no-preference) {
-      &__pause {
-        display: inline-block;
-        min-inline-size: 1.6em;
-        min-block-size: 1.6em;
-      }
-      &__items {
-        display: grid;
-        @include fade-rotating-items;
-      }
-    }
-    @media (prefers-reduced-motion: reduce) {
-      &__items {
-        flex-direction: column;
-        align-items: flex-start;
-      }
+    &__items {
+      display: grid;
+      @include fade-rotating-items;
     }
   }
   .park-header--home .park-navigation {

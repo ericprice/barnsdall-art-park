@@ -12,10 +12,7 @@ export function usePinnedHeader() {
     const observer = new IntersectionObserver(([entry]) => {
       const nextPinned = entry.boundingClientRect.bottom < 0
       if (nextPinned === wasPinned) return
-      if (
-        wasPinned !== undefined &&
-        !window.matchMedia('(prefers-reduced-motion: reduce)').matches
-      ) {
+      if (wasPinned !== undefined) {
         const labels = header.current?.querySelectorAll<HTMLElement>(
           '.park-navigation__label, .park-navigation__mobile > button:first-child',
         )

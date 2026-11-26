@@ -71,10 +71,9 @@ export function QuoteCarousel({quotes, palette}: {quotes: Quote[]; palette: Quot
   }, [slide.sequence])
 
   function advance(direction: number) {
-    const motion = !window.matchMedia('(prefers-reduced-motion: reduce)').matches
     setSlide(({index, sequence, paletteIndex}) => ({
       index: (index + direction + quotes.length) % quotes.length,
-      previous: motion ? index % quotes.length : -1,
+      previous: index % quotes.length,
       sequence: sequence + 1,
       paletteIndex: (paletteIndex + direction + paletteSize) % paletteSize,
     }))

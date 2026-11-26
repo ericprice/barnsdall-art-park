@@ -29,7 +29,6 @@ function Sunset({initialSunset}: {initialSunset: string}) {
 
 export function ParkUtilityInfo({initialSunset}: {initialSunset: string}) {
   const [active, setActive] = useState(0)
-  const [paused, setPaused] = useState(false)
   const items = [
     {id: 'city-run', content: 'City-run since 1927'},
     {id: 'hours', content: 'Open Until 10 PM'},
@@ -38,10 +37,7 @@ export function ParkUtilityInfo({initialSunset}: {initialSunset: string}) {
   const itemCount = items.length
 
   useEffect(() => {
-    if (paused) return
-    const mobile = window.matchMedia(
-      '(max-width: 48rem) and (prefers-reduced-motion: no-preference)',
-    )
+    const mobile = window.matchMedia('(max-width: 48rem)')
     let timer: number | undefined
     function updateTimer() {
       window.clearInterval(timer)
@@ -59,25 +55,15 @@ export function ParkUtilityInfo({initialSunset}: {initialSunset: string}) {
       window.clearInterval(timer)
       mobile.removeEventListener('change', onViewportChange)
     }
-  }, [itemCount, paused])
+  }, [itemCount])
 
   return (
-    <div className="park-utility__info">
-      <div className="park-utility__items">
-        {items.map(({id, content}, index) => (
-          <span data-active={index === active} key={id}>
-            {content}
-          </span>
-        ))}
-      </div>
-      <button
-        type="button"
-        className="park-utility__pause"
-        aria-label={paused ? 'Resume park information' : 'Pause park information'}
-        onClick={() => setPaused(!paused)}
-      >
-        <span aria-hidden="true">{paused ? '▶' : 'Ⅱ'}</span>
-      </button>
+    <div className="park-utility__items">
+      {items.map(({id, content}, index) => (
+        <span data-active={index === active} key={id}>
+          {content}
+        </span>
+      ))}
     </div>
   )
 }

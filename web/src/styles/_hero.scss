@@ -72,19 +72,6 @@
     max-width: 21em;
   }
 }
-.hero__pause {
-  position: absolute;
-  bottom: 0;
-  left: 50%;
-  translate: -50% 0;
-  padding: 0.35em 0.75em;
-  color: var(--ink);
-  @include publisher-type;
-  text-decoration: underline;
-  @media (prefers-reduced-motion: reduce) {
-    display: none;
-  }
-}
 .hero__controls button {
   color: var(--org-dark);
   transition: color var(--slide-fade) ease;

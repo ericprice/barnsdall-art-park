@@ -6,7 +6,6 @@ import {
   useLayoutEffect,
   useRef,
   useState,
-  useSyncExternalStore,
   useTransition,
   type CSSProperties,
   type ReactNode,
@@ -42,26 +41,13 @@ function placeLoadingDot(dot: HTMLSpanElement, image: HTMLImageElement, quadrant
   dot.style.maskImage = `url("${image.src}")`
 }
 
-const motionPreference = '(prefers-reduced-motion: reduce)'
-
-function subscribeToMotion(notify: () => void) {
-  const preference = window.matchMedia(motionPreference)
-  preference.addEventListener('change', notify)
-  return () => preference.removeEventListener('change', notify)
-}
-
 export function LoadingDot({active = true}: {active?: boolean}) {
-  const reducedMotion = useSyncExternalStore(
-    subscribeToMotion,
-    () => window.matchMedia(motionPreference).matches,
-    () => true,
-  )
   const firstDot = useRef<HTMLSpanElement>(null)
   const secondDot = useRef<HTMLSpanElement>(null)
   const previousStart = useRef(-1)
 
   useEffect(() => {
-    if (!active || reducedMotion || !firstDot.current || !secondDot.current) return
+    if (!active || !firstDot.current || !secondDot.current) return
     const layers = [firstDot.current, secondDot.current]
     for (const layer of layers) layer.hidden = true
     let last = previousStart.current
@@ -125,7 +111,7 @@ export function LoadingDot({active = true}: {active?: boolean}) {
       window.clearInterval(timer)
       window.clearTimeout(overlapTimer)
     }
-  }, [active, reducedMotion])
+  }, [active])
 
   return (
     <span className="loading-dot" aria-hidden="true">

@@ -102,17 +102,6 @@ h4 {
 figcaption {
   @include small-text;
 }
-@media (prefers-reduced-motion: reduce) {
-  html {
-    scroll-behavior: auto;
-  }
-  *,
-  *::before,
-  *::after {
-    transition: none !important;
-    animation: none !important;
-  }
-}
 @media (max-width: 44rem) {
   :root {
     --gutter: 1rem;

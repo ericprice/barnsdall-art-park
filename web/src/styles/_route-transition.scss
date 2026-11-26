@@ -53,15 +53,6 @@
     mask: center / contain no-repeat;
   }
 }
-@media (prefers-reduced-motion: reduce) {
-  .loading-dot {
-    background: var(--pink);
-    mask: url('/identity/dots/1.svg') center / 50% no-repeat;
-    > span {
-      display: none;
-    }
-  }
-}
 .loading-preview {
   display: grid;
   place-items: center;
