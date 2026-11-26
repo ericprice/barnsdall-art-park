@@ -160,6 +160,12 @@ $compact-nav-height: $compact-nav-start + $compact-mark-height + $compact-nav-en
 .park-header--compact {
   padding-block-start: $compact-header-start;
   background: var(--paper);
+
+  &[data-expanded='false'] nav:has(> .park-navigation__group[data-current='true']) {
+    > .park-navigation__group {
+      --hover-color: var(--nav-color);
+    }
+  }
 }
 .park-header__intro + .park-header--compact {
   // Keep the hero and the rest of the page stationary when the row changes size.

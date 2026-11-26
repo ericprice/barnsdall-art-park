@@ -159,7 +159,7 @@ export const richText = defineType({
         {title: 'Subheading', value: 'h3'},
       ],
       marks: {
-        decorators: [{title: 'Strong', value: 'strong'}, emphasis],
+        decorators: [emphasis],
         annotations: [
           defineArrayMember({name: 'download', title: 'File download', type: 'file'}),
           inlineLink,

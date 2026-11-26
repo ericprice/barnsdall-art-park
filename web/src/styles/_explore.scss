@@ -95,7 +95,7 @@
     &[data-current='true']::before {
       content: '';
       position: absolute;
-      inset: -0.55em 4%;
+      inset: -0.65em 12.5%;
       mask: var(--label-dot) center / 100% 100% no-repeat;
       background: var(--ink);
     }
