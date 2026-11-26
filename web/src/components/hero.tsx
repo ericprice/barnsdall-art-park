@@ -146,6 +146,7 @@ export function CelebrationBadge({celebration}: Pick<HomeContent, 'celebration'>
   )
   return (
     <div className="celebration" data-footer-visible={footerVisible} inert={footerVisible}>
+      <span className="celebration__dot" aria-hidden="true" />
       {celebration.link?.href ? (
         <Link className="celebration__content" href={celebration.link.href}>
           {content}
