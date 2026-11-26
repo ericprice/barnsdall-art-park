@@ -26,6 +26,7 @@ import type {
   SHELL_QUERY_RESULT,
   HOME_QUERY_RESULT,
   NEWS_CARDS_QUERY_RESULT,
+  SEARCH_CARDS_QUERY_RESULT,
   EVENTS_QUERY_RESULT,
   ParkImage,
   EditorialImage,
@@ -125,6 +126,7 @@ type DocumentEntry =
     >
   | EVENTS_QUERY_RESULT[number]
   | NEWS_CARDS_QUERY_RESULT[number]
+  | SEARCH_CARDS_QUERY_RESULT[number]
 export function toContentEntry(doc: DocumentEntry): ContentEntry {
   const owner = doc.organizationRef?._ref
   const theme = organizationTheme(doc.orgTheme, owner)

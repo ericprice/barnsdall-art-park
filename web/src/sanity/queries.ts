@@ -3,8 +3,10 @@ import {defineQuery} from 'next-sanity'
 const routeFields = `_id, _type, slug, organizationRef, externalUrl,
   "targetPageId": targetPage._ref, "targetSlug": targetPage->slug.current`
 const owner = `coalesce(organizationRef->, *[_type == "organization" && _id == "organization-" + string::split(^.organizationRef._ref, ".")[1]][0])`
-const cardFields = `${routeFields}, title, summary, image,
-  "orgTheme": ${owner}{title, light, dark}, startsAt, endsAt, repeatsUntil, allDay, publishedAt`
+const cardBase = `${routeFields}, title, summary`
+const cardMeta = `"orgTheme": ${owner}{title, light, dark}, startsAt, endsAt, repeatsUntil, allDay, publishedAt`
+const cardFields = `${cardBase}, image,
+  ${cardMeta}`
 const newsOrder = 'defined(publishedAt) desc, publishedAt desc, title asc, _id asc'
 
 export const DESTINATIONS_QUERY = defineQuery(`*[_id in $ids]{${routeFields}}`)
@@ -71,8 +73,7 @@ export const SITEMAP_QUERY = defineQuery(
   `*[_type in ["page","place","event","article"] && defined(slug.current)]{${routeFields}}`,
 )
 
-export const SEARCH_QUERY = defineQuery(
-  `*[_type in ["page", "place", "event", "article"] &&
+const searchMatches = `*[_type in ["page", "place", "event", "article"] &&
     (defined(slug.current) || defined(externalUrl)) && (
     title match $searchTerm || (!defined(organizationRef->title) && organizationRef._ref in $organizationIds) || organizationRef->title match $searchTerm ||
     summary match $searchTerm || subtitle match $searchTerm ||
@@ -88,5 +89,14 @@ export const SEARCH_QUERY = defineQuery(
     donationSections[].ways[].title match $searchTerm || donationSections[].ways[].summary match $searchTerm ||
     donationSections[].levels[].title match $searchTerm || donationSections[].levels[].summary match $searchTerm ||
     timelineEntries[].dateLabel match $searchTerm || timelineEntries[].description match $searchTerm
-  )] | order((lower(title) == $exactTerm) desc, (title match $searchTerm) desc, lower(title) asc, _id asc)[$from...$to]{${routeFields}, title}`,
-)
+  )] | order((lower(title) == $exactTerm) desc, (title match $searchTerm) desc, lower(title) asc, _id asc)[$from...$to]`
+
+export const SEARCH_QUERY = defineQuery(`${searchMatches}{${routeFields}, title}`)
+
+export const SEARCH_CARDS_QUERY = defineQuery(`${searchMatches}{
+  ${cardBase}, ${cardMeta}, subtitle,
+  "image": select(_type == "place" => gallery[defined(asset)][0], image),
+  "bodyText": select(!defined(externalUrl) && !defined(targetPage) =>
+    pt::text(body[_type == "block" && (!defined(style) || style in ["normal", "lead"]) &&
+      !defined(listItem) && pt::text([@]) match "*"][0...1]))
+}`)
