@@ -20,6 +20,7 @@
 @include webfont('Publisher Rounded Sans', 'publisher-sans-italic', italic);
 * {
   box-sizing: border-box;
+  -webkit-tap-highlight-color: transparent;
 }
 html {
   scroll-behavior: smooth;
@@ -59,6 +60,9 @@ a {
 :where(button, a, input, select, summary):focus-visible {
   outline: 0.16rem solid var(--green);
   outline-offset: 0.3rem;
+}
+:target:focus {
+  outline: none;
 }
 img {
   max-width: 100%;

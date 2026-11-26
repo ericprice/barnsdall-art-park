@@ -32,6 +32,9 @@
 .tile {
   text-align: center;
   min-width: 0;
+  &:has(.tile__media img[data-tinted]) {
+    --hover-color: var(--org-dark);
+  }
   .entry-label {
     margin-block: 0.333em;
   }

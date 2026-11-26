@@ -65,6 +65,7 @@ export function ParkImage({
         {...dimensions}
         unoptimized={svg}
         className={className}
+        data-tinted={tint || undefined}
         sizes={sizes}
         preload={priority}
         style={style}

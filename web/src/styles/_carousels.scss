@@ -59,6 +59,7 @@
   scale: 0.8;
 }
 .quote-band {
+  --hover-color: var(--ink);
   margin: 3rem var(--gutter) 0;
   padding-block: 3rem;
   background: color-mix(in srgb, var(--quote-background, var(--pale-green)) 50%, transparent);

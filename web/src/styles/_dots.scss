@@ -14,6 +14,7 @@
 }
 
 @mixin active-nav-dot($mask, $color) {
+  --hover-color: currentColor;
   position: relative;
   isolation: isolate;
   &::before {

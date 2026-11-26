@@ -1,3 +1,4 @@
+import type {CSSProperties} from 'react'
 import {ParkImage} from './park-image'
 import Link from './route-link'
 import {getShell} from '@/lib/content'
@@ -50,7 +51,15 @@ export async function SiteFooter() {
                   return (
                     <li key={link._key}>
                       <a href={link.href} aria-label={link.label}>
-                        {icon ? <ParkImage image={icon} sizes="3rem" /> : link.label}
+                        {icon ? (
+                          <span
+                            className="park-footer__social-icon"
+                            style={{'--social-icon': `url('${icon}')`} as CSSProperties}
+                            aria-hidden="true"
+                          />
+                        ) : (
+                          link.label
+                        )}
                       </a>
                     </li>
                   )

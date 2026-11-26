@@ -37,14 +37,17 @@
   a {
     position: relative;
     text-decoration: none;
-    &[aria-current]::before {
-      content: '';
-      position: absolute;
-      z-index: -1;
-      inset: -0.2em auto -0.2em 30%;
-      width: 1.2em;
-      background: var(--pink);
-      border-radius: 44% 56% 39% 61% / 55% 36% 64% 45%;
+    &[aria-current] {
+      --hover-color: currentColor;
+      &::before {
+        content: '';
+        position: absolute;
+        z-index: -1;
+        inset: -0.2em auto -0.2em 30%;
+        width: 1.2em;
+        background: var(--pink);
+        border-radius: 44% 56% 39% 61% / 55% 36% 64% 45%;
+      }
     }
   }
 }

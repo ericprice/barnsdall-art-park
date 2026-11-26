@@ -46,6 +46,7 @@
     }
   }
   &__connect {
+    --hover-color: var(--ink);
     color: var(--green);
   }
   &__heading {
@@ -67,14 +68,20 @@
       justify-content: flex-end;
       gap: 0.15em;
     }
-    a,
-    img {
+    a {
       display: block;
     }
-    a:has(img) {
-      position: relative;
-      width: 1cap;
-      aspect-ratio: 1;
+  }
+  &__social-icon {
+    display: block;
+    width: 1cap;
+    aspect-ratio: 1;
+    background-color: currentColor;
+    mask: var(--social-icon) center / contain no-repeat;
+
+    @media (forced-colors: active) {
+      forced-color-adjust: none;
+      background-color: LinkText;
     }
   }
   &__details {

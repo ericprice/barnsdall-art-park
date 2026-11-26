@@ -25,6 +25,7 @@ html:has(.header-search :focus) {
     display: none;
   }
   ul {
+    --hover-color: var(--ink);
     list-style: none;
     margin-block-start: 0.5em;
     padding: 0;
@@ -60,6 +61,7 @@ html:has(.header-search :focus) {
     padding-block-end: 0.5em;
   }
   .header-search__view-all {
+    --hover-color: var(--paper);
     display: block;
     width: fit-content;
     margin: 0.5em auto 0;

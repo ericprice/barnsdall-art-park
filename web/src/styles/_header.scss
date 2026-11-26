@@ -38,7 +38,12 @@ $compact-nav-height: $compact-nav-start + $compact-mark-height + $compact-nav-en
   button {
     padding: 0;
   }
+  // Blend the homepage header as a whole so its sticky layer can see the carousel behind it.
+  &--home[data-expanded='false'] {
+    mix-blend-mode: multiply;
+  }
   &[data-expanded='true'] {
+    --hover-color: currentColor;
     @include green-panel-fill;
 
     :focus-visible {
@@ -76,6 +81,10 @@ $compact-nav-height: $compact-nav-start + $compact-mark-height + $compact-nav-en
   display: block;
   position: relative;
   aspect-ratio: 988.1 / 85;
+
+  &:focus {
+    outline: none;
+  }
 }
 .park-header__intro {
   position: relative;
@@ -144,6 +153,7 @@ $compact-nav-height: $compact-nav-start + $compact-mark-height + $compact-nav-en
   }
   &__group[data-open='true'] > &__label,
   &__search[aria-expanded='true'] {
+    --hover-color: var(--paper);
     color: var(--paper);
   }
 }
@@ -167,7 +177,12 @@ $compact-nav-height: $compact-nav-start + $compact-mark-height + $compact-nav-en
   background: var(--ink);
   color: var(--paper) !important;
   border-radius: 48% 52% 57% 43% / 37% 42% 58% 63%;
-  mix-blend-mode: multiply;
+
+  @media (hover: hover) {
+    .park-header[data-expanded='false'] &:hover {
+      background-color: var(--green);
+    }
+  }
 }
 .compact-home--mobile {
   display: none;

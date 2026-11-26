@@ -79,11 +79,13 @@
     margin-block-start: calc(0.15 * var(--type-display));
   }
 }
-.hero__controls button {
+.hero__controls {
+  --hover-color: var(--ink);
   color: var(--org-dark);
   transition: color var(--slide-fade) ease;
 }
 .celebration {
+  --hover-color: var(--paper);
   position: fixed;
   z-index: 2;
   transition: opacity 360ms ease;
@@ -108,6 +110,11 @@
   border-radius: 44% 56% 47% 53% / 43% 41% 59% 57%;
   text-align: center;
   text-decoration: none;
+  @media (hover: hover) {
+    &:any-link:hover {
+      background-color: var(--ink);
+    }
+  }
   h2 {
     width: 90%;
     font-size: 19cqi;

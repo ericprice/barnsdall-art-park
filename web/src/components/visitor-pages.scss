@@ -115,6 +115,11 @@
     font: 400 var(--type-label)/var(--leading-label) var(--display);
     text-transform: uppercase;
     cursor: pointer;
+    @media (hover: hover) {
+      &:enabled:hover {
+        background-color: var(--ink);
+      }
+    }
     @media (max-width: 22rem) {
       @include type-size(compact-label);
     }

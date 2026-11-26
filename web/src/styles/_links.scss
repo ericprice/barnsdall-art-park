@@ -1,6 +1,14 @@
 @use 'tokens' as *;
 @use 'dots' as *;
 
+@media (hover: hover) {
+  a:any-link:hover,
+  button:enabled:hover,
+  .section-disclosure > summary:hover {
+    color: var(--hover-color, var(--green));
+  }
+}
+
 .display-link {
   @include display-type(label);
   display: inline-block;
@@ -11,6 +19,7 @@
   }
 }
 .feature-link {
+  --hover-color: currentColor;
   display: grid;
   justify-items: center;
   width: 100%;

@@ -46,7 +46,12 @@ export function StoryGallery({
           />
         </div>
         {images.length > 1 && (
-          <div className="story-gallery__buttons" style={orgTheme && {color: orgTheme.dark}}>
+          <div
+            className="story-gallery__buttons"
+            style={
+              orgTheme && ({color: orgTheme.dark, '--hover-color': 'var(--ink)'} as CSSProperties)
+            }
+          >
             <button type="button" aria-label={labels.previousPhoto} onClick={() => advance(-1)}>
               <CarouselChevron direction="previous" />
             </button>

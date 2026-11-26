@@ -71,6 +71,7 @@
       text-align: center;
     }
     li:not(.has-logo) {
+      --hover-color: var(--ink);
       @include display-type(label);
       color: var(--green);
       background: var(--inline-form-fill);

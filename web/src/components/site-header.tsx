@@ -144,7 +144,7 @@ function Navigation({
     if (!isHome) return
     event.preventDefault()
     window.scrollTo({top: 0})
-    intro.current?.querySelector<HTMLAnchorElement>('.park-masthead')?.focus({preventScroll: true})
+    intro.current?.querySelector<HTMLDivElement>('.park-masthead')?.focus({preventScroll: true})
   }
 
   const expanded = open !== null || mobile
@@ -159,9 +159,9 @@ function Navigation({
               Donate
             </Link>
           </div>
-          <Link href="/" className="park-masthead" aria-label={settings.title} onClick={close}>
+          <div className="park-masthead" role="img" aria-label={settings.title} tabIndex={-1}>
             <ParkImage image="/identity/barnsdall-art-park.svg" sizes="96vw" priority />
-          </Link>
+          </div>
           <PageSubtitle subtitle={homeSubtitle} />
         </div>
       )}

@@ -8,7 +8,7 @@ import type {CSSProperties} from 'react'
 import type {ContentEntry} from '@/lib/content'
 import {EntryDate} from './entry-meta'
 import {ParkImage} from './park-image'
-import {DotLink} from './action-links'
+import {DotLinkContent} from './action-links'
 
 export function ListingGrid({
   entries,
@@ -60,6 +60,17 @@ function ListingCard({
   theme?: ReturnType<typeof themeForEntry>
 }) {
   const editorial = variant === 'news' || (variant === 'search' && entry.type === 'article')
+  const details = (
+    <>
+      <EntryDate entry={entry} />
+      {variant !== 'event' && entry.summary && <p className="tile__summary">{entry.summary}</p>}
+      {variant === 'news' && entry.href && readMore && (
+        <span className="dot-link">
+          <DotLinkContent>{readMore}</DotLinkContent>
+        </span>
+      )}
+    </>
+  )
   return (
     <Tile
       className="listing-card"
@@ -68,6 +79,7 @@ function ListingCard({
       title={entry.title}
       label={entry.organization}
       heading={variant === 'search' ? 'h2' : undefined}
+      caption={variant !== 'search' && details}
       media={
         <div
           className="tile__media listing-card__photo"
@@ -82,11 +94,7 @@ function ListingCard({
         </div>
       }
     >
-      <EntryDate entry={entry} />
-      {variant !== 'event' && entry.summary && <p className="tile__summary">{entry.summary}</p>}
-      {variant === 'news' && entry.href && readMore && (
-        <DotLink href={entry.href}>{readMore}</DotLink>
-      )}
+      {variant === 'search' && details}
     </Tile>
   )
 }
