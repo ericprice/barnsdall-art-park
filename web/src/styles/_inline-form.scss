@@ -1,0 +1,69 @@
+@use 'tokens' as *;
+@use 'dots' as *;
+
+:root {
+  --inline-form-fill: color-mix(
+    in srgb,
+    var(--foundation-light, var(--pale-green)) 50%,
+    var(--paper)
+  );
+}
+
+.inline-form {
+  display: flex;
+  align-items: stretch;
+  width: 100%;
+  @include type-size(display);
+  letter-spacing: inherit;
+  color: var(--green);
+  block-size: 1cap;
+  padding: calc(0.18 * var(--type-label));
+  background: var(--inline-form-fill);
+
+  input,
+  button,
+  .inline-form__placeholder {
+    font: inherit;
+    @include type-size(label);
+    padding: 0 0.29em;
+    letter-spacing: inherit;
+  }
+  input,
+  .inline-form__placeholder {
+    padding-block-start: 0.1em;
+  }
+  input::placeholder,
+  .inline-form__placeholder {
+    color: var(--green);
+    opacity: 0.5;
+    text-transform: uppercase;
+  }
+  input {
+    min-width: 0;
+    width: 0;
+    flex: 1;
+    background: transparent;
+    border: 0;
+    text-transform: uppercase;
+    @media (forced-colors: none) {
+      &:focus-visible {
+        outline: none;
+      }
+    }
+  }
+  button {
+    @include submit-button-mark;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.15em;
+    text-transform: uppercase;
+  }
+  @media (max-width: 22rem) {
+    input,
+    button,
+    .inline-form__placeholder {
+      @include type-size(compact-label);
+    }
+  }
+}

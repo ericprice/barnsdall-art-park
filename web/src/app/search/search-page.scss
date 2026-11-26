@@ -1,3 +1,5 @@
+@use '../../styles/tokens' as *;
+
 .search-page {
   &__grid {
     margin: 0 var(--gutter);
@@ -7,6 +9,10 @@
 
   .search-page__paging {
     justify-content: center;
+  }
+
+  .listing-empty {
+    @include display-type(title);
   }
 
   .page-heading h1 {

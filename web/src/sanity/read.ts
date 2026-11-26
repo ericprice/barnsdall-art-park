@@ -28,8 +28,7 @@ export async function readContent<Query extends string>(
       stega: false,
     })
   }
-  // User-entered search text has unbounded cardinality. The published Sanity CDN can
-  // serve it without persisting a separate Next Data Cache entry for every prefix.
+  // Serve variable result selections through the CDN without caching every ID combination in Next.
   if (options.cache === false)
     return client.fetch(query, params, {
       perspective: 'published',

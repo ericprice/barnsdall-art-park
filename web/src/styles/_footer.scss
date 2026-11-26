@@ -126,3 +126,8 @@
     }
   }
 }
+
+.foundation-newsletter {
+  margin: 0.48em 0 0;
+  @include display-type(label);
+}

@@ -1,6 +1,7 @@
 import {randomInt} from 'node:crypto'
 import type {Metadata} from 'next'
-import {Suspense} from 'react'
+import {Suspense, type CSSProperties} from 'react'
+import {hexColor} from '../../../shared/organizations'
 import {getShell} from '@/lib/content'
 import {getParkSunset} from '@/lib/park-sunset'
 import {SiteShell} from '@/components/site-shell'
@@ -23,16 +24,27 @@ export async function generateMetadata(): Promise<Metadata> {
 }
 
 export default async function RootLayout({children}: {children: React.ReactNode}) {
-  const {settings, homeSubtitle} = await getShell()
+  const {settings, homeSubtitle, organizationColors} = await getShell()
+  const foundationLight = hexColor(
+    organizationColors.find(({_id}) => _id === 'organization-foundation')?.light,
+  )
   return (
-    <html lang="en" data-scroll-behavior="smooth">
+    <html
+      lang="en"
+      data-scroll-behavior="smooth"
+      style={{'--foundation-light': foundationLight} as CSSProperties}
+    >
       <body>
         <a href="#main-content" className="skip-link">
           {interfaceText.skip}
         </a>
         <SiteShell seed={randomInt(2 ** 32)}>
           <SiteHeader
-            settings={{title: settings.title, navigation: settings.navigation}}
+            settings={{
+              title: settings.title,
+              navigation: settings.navigation,
+              searchPlaceholders: settings.searchPlaceholders,
+            }}
             homeSubtitle={homeSubtitle}
             initialSunset={getParkSunset(new Date()).toISOString()}
           />

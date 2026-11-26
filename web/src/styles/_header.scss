@@ -267,18 +267,7 @@ $compact-nav-height: $compact-nav-start + $compact-mark-height + $compact-nav-en
       }
       &__items {
         display: grid;
-
-        > span {
-          grid-area: 1 / 1;
-          transition: opacity var(--menu-fade) ease-in calc(var(--menu-fade) + 150ms);
-
-          &[data-active='false'] {
-            opacity: 0;
-            pointer-events: none;
-            transition-timing-function: ease-out;
-            transition-delay: 0s;
-          }
-        }
+        @include fade-rotating-items;
       }
     }
     @media (prefers-reduced-motion: reduce) {

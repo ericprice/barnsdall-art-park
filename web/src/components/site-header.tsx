@@ -21,7 +21,7 @@ function Magnifier() {
   )
 }
 
-type Settings = Pick<SiteSettings, 'title' | 'navigation'>
+type Settings = Pick<SiteSettings, 'title' | 'navigation' | 'searchPlaceholders'>
 type HeaderProps = {settings: Settings; initialSunset: string; homeSubtitle?: string}
 
 export function SiteHeader({settings, initialSunset, homeSubtitle}: HeaderProps) {
@@ -48,15 +48,26 @@ function Navigation({
   const compact = !isHome || pinned
   const [open, setOpen] = useState<number | 'search' | null>(null)
   const [mobile, setMobile] = useState(false)
-  const [initialQuery, setInitialQuery] = useState('')
+  const [search, setSearch] = useState({query: '', placeholderIndex: 0})
   const opener = useRef<HTMLElement | null>(null)
   const mobileButton = useRef<HTMLButtonElement>(null)
+  const placeholderCount = settings.searchPlaceholders.length
 
   const close = useCallback(() => {
     setOpen(null)
     setMobile(false)
-    setInitialQuery('')
   }, [])
+
+  const openSearch = useCallback(
+    (query = '') => {
+      const placeholderIndex =
+        placeholderCount > 1 ? Math.floor(Math.random() * placeholderCount) : 0
+      setSearch({query, placeholderIndex})
+      setOpen('search')
+      setMobile(false)
+    },
+    [placeholderCount],
+  )
 
   useEffect(() => {
     function openFromFooter(event: MouseEvent) {
@@ -66,14 +77,12 @@ function Navigation({
       if (!link || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return
       event.preventDefault()
       opener.current = link
-      setOpen('search')
-      setMobile(false)
+      openSearch()
     }
     function openFromLocation() {
       const [fragment, params] = window.location.hash.slice(1).split('?')
       if (fragment !== 'site-search') return
-      setInitialQuery(new URLSearchParams(params).get('q')?.slice(0, 200) || '')
-      setOpen('search')
+      openSearch(new URLSearchParams(params).get('q')?.slice(0, 200))
       window.history.replaceState(
         window.history.state,
         '',
@@ -87,7 +96,7 @@ function Navigation({
       document.removeEventListener('click', openFromFooter)
       window.removeEventListener('hashchange', openFromLocation)
     }
-  }, [])
+  }, [openSearch])
 
   useEffect(() => {
     function onKey(event: KeyboardEvent) {
@@ -126,9 +135,8 @@ function Navigation({
 
   function toggleSearch(trigger: HTMLButtonElement) {
     opener.current = trigger
-    setMobile(false)
-    setInitialQuery('')
-    setOpen(open === 'search' ? null : 'search')
+    if (open === 'search') close()
+    else openSearch()
   }
 
   function returnHome(event: {preventDefault: () => void}) {
@@ -252,7 +260,13 @@ function Navigation({
           </nav>
         </div>
         {open === 'search' && (
-          <HeaderSearch labels={interfaceText} initialQuery={initialQuery} onNavigate={close} />
+          <HeaderSearch
+            labels={interfaceText}
+            initialQuery={search.query}
+            placeholderOptions={settings.searchPlaceholders}
+            initialPlaceholderIndex={search.placeholderIndex}
+            onNavigate={close}
+          />
         )}
       </header>
     </>

@@ -1,6 +1,7 @@
 import {contentRoute} from '../../../shared/routes'
 import {historyPageId} from '../../../shared/page-layouts'
 import {footerFromPlainText} from '../../../shared/footer-text'
+import {defaultSearchPlaceholders} from '../../../shared/search-placeholders'
 import {contentDestination, contentPath, resolveInternalLinks} from './internal-links'
 import {pageSections, type PageSection} from './body-layout'
 export type {PageSection} from './body-layout'
@@ -87,6 +88,7 @@ export type SiteSettings = {
   description: string
   eventsSubtitle?: string
   newsSubtitle?: string
+  searchPlaceholders: string[]
   footer: NonNullable<NonNullable<SHELL_QUERY_RESULT['settings']>['footer']>
   navigation: NavItem[]
   legalLinks: {id: string; label: string; href: string}[]
@@ -184,6 +186,10 @@ function settingsFor(s: SHELL_QUERY_RESULT['settings']): SiteSettings {
     description: s?.description || '',
     eventsSubtitle: s?.eventsSubtitle ?? undefined,
     newsSubtitle: s?.newsSubtitle ?? undefined,
+    // Studio unsets a primitive array when its final item is removed.
+    searchPlaceholders: s
+      ? (s.searchPlaceholders ?? []).map((phrase) => phrase.trim()).filter(Boolean)
+      : defaultSearchPlaceholders,
     footer: s?.footer ?? footerFromPlainText(s ?? {}),
     quotes: s?.quotes ?? [],
     legalLinks: (s?.legalPages ?? []).flatMap((page) =>

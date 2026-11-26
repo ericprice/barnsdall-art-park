@@ -3,6 +3,7 @@ import {validateContentSlug} from '../../shared/routes'
 import {destinationFields, quoteFields, validDestination} from './objects'
 import {FeatureColor} from './feature-color'
 import {footerFromPlainText} from '../../shared/footer-text'
+import {defaultSearchPlaceholders} from '../../shared/search-placeholders'
 import {
   pageLayouts,
   pageHasMainImage,
@@ -94,6 +95,14 @@ export const siteSettings = defineType({
     defineField({name: 'description', title: 'Site description', type: 'text', rows: 3}),
     defineField({...subtitle, name: 'eventsSubtitle', title: 'What’s On subtitle'}),
     defineField({...subtitle, name: 'newsSubtitle', title: 'News subtitle'}),
+    defineField({
+      name: 'searchPlaceholders',
+      title: 'Search placeholders',
+      description: 'Example phrases that rotate in the empty search field, in the order listed.',
+      type: 'array',
+      of: [defineArrayMember({type: 'string'})],
+      initialValue: defaultSearchPlaceholders,
+    }),
     defineField({name: 'footerLinks', type: 'array', of: [defineArrayMember({type: 'link'})]}),
     defineField({
       name: 'navigation',

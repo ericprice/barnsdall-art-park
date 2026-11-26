@@ -9,7 +9,6 @@ export const interfaceText = {
   close: 'Close',
   search: 'Search',
   subscribe: 'Subscribe',
-  searchPlaceholder: 'Coyotes in the olive grove',
   noResults: 'No results',
   searchError: 'Search is unavailable. Try again.',
   connect: 'Connect',

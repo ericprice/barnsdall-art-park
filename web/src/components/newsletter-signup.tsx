@@ -1,23 +1,23 @@
 'use client'
 
-import type {CSSProperties} from 'react'
 import {useRouteNavigation} from './route-link'
 import {newsletterPrefillKey} from '@/lib/newsletter-prefill'
 import {interfaceText as labels} from '../../../shared/interface'
 
 const signupHref = '/contact#subscribe'
 
-export function NewsletterSignup({background}: {background?: string}) {
+export function NewsletterSignup() {
   const navigate = useRouteNavigation()
   return (
     <div className="foundation-newsletter">
       <form
         action={signupHref}
         aria-label={labels.newsletterTitle}
-        style={background ? ({'--newsletter-background': background} as CSSProperties) : undefined}
+        className="inline-form"
         onSubmit={(event) => {
           event.preventDefault()
-          const email = event.currentTarget.querySelector<HTMLInputElement>('input[type=email]')?.value
+          const email =
+            event.currentTarget.querySelector<HTMLInputElement>('input[type=email]')?.value
           if (email) {
             try {
               sessionStorage.setItem(newsletterPrefillKey, email)

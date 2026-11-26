@@ -4,7 +4,6 @@ import {getShell} from '@/lib/content'
 import {NewsletterSignup} from './newsletter-signup'
 import {FooterText} from './rich-text'
 import {interfaceText} from '../../../shared/interface'
-import {hexColor} from '../../../shared/organizations'
 
 const copyrightYear = new Intl.DateTimeFormat('en-US', {
   timeZone: 'America/Los_Angeles',
@@ -23,8 +22,7 @@ function platformIcon(href: string) {
   }
 }
 export async function SiteFooter() {
-  const {settings, organizationColors} = await getShell()
-  const foundation = organizationColors.find(({_id}) => _id === 'organization-foundation')
+  const {settings} = await getShell()
   return (
     <footer className="park-footer" id="connect">
       <div className="park-footer__foundation">
@@ -60,7 +58,7 @@ export async function SiteFooter() {
               </ul>
             )}
           </div>
-          <NewsletterSignup background={hexColor(foundation?.light)} />
+          <NewsletterSignup />
           <div className="park-footer__details">
             <address>
               <FooterText value={settings.footer.address} />

@@ -13,3 +13,22 @@
     clip-path: inset(0 -100vmax);
   }
 }
+
+@mixin fade-rotating-items($speed: 1) {
+  > span {
+    grid-area: 1 / 1;
+
+    @media (prefers-reduced-motion: no-preference) {
+      $duration: calc(var(--menu-fade) / $speed);
+      $delay: calc((var(--menu-fade) + 150ms) / $speed);
+      transition: opacity $duration ease-in $delay;
+    }
+
+    &[data-active='false'] {
+      opacity: 0;
+      pointer-events: none;
+      transition-timing-function: ease-out;
+      transition-delay: 0s;
+    }
+  }
+}

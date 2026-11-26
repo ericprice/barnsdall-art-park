@@ -725,6 +725,16 @@
         },
         "optional": true
       },
+      "searchPlaceholders": {
+        "type": "objectAttribute",
+        "value": {
+          "type": "array",
+          "of": {
+            "type": "string"
+          }
+        },
+        "optional": true
+      },
       "footerLinks": {
         "type": "objectAttribute",
         "value": {

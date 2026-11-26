@@ -1,57 +1,63 @@
 import 'server-only'
 import {organizationDocuments} from '../../../shared/organizations'
-import type {SEARCH_QUERY_RESULT} from '../../sanity.types'
 import {toContentEntry, type ContentEntry} from './content'
 import {routeSummary} from './internal-links'
-import {SEARCH_CARDS_QUERY, SEARCH_QUERY} from '@/sanity/queries'
+import {createSearchRanker, indexSearchFields} from './search-terms'
+import {SEARCH_CARDS_QUERY, SEARCH_CATALOG_QUERY} from '@/sanity/queries'
 import {imageAspectRatio} from '@/sanity/image'
 import {readContent} from '@/sanity/read'
 
 const pageSize = 12
 const maxPage = Math.floor((Number.MAX_SAFE_INTEGER - 1) / pageSize)
-type SearchParams = {
-  searchTerm: string
-  exactTerm: string
-  organizationIds: string[]
-  from: number
-  to: number
+const organizations = organizationDocuments.flatMap(({_id, title}) => [
+  {id: _id, title},
+  {id: _id.replace('organization-', 'organization.'), title},
+])
+async function loadCatalog() {
+  return readContent(SEARCH_CATALOG_QUERY, {organizations})
 }
 
-async function rankedMatches<Row extends SEARCH_QUERY_RESULT[number]>(
-  query: string,
-  limit: number,
-  readBatch: (params: SearchParams) => Promise<Row[]>,
-) {
-  const exactTerm = query.trim().toLowerCase()
-  if (!exactTerm) return []
-  const organizationIds = organizationDocuments
-    .filter((org) => org.title.toLowerCase().includes(exactTerm))
-    .flatMap(({_id}) => [_id, _id.replace('organization-', 'organization.')])
-  const results = []
-  const destinations = new Set<string>()
-  const params = {searchTerm: exactTerm + '*', exactTerm, organizationIds}
-  const batchSize = Math.min(limit, 100)
-  // Read another ranked batch only if unroutable or duplicate rows leave the requested window short.
-  for (let from = 0; results.length < limit; from += batchSize) {
-    const docs = await readBatch({...params, from, to: from + batchSize})
-    for (const doc of docs) {
-      const hit = routeSummary(doc)
-      if (hit && !destinations.has(hit.href)) {
-        destinations.add(hit.href)
-        results.push({doc, hit})
-        if (results.length === limit) break
-      }
-    }
-    if (docs.length < batchSize) break
-  }
-  return results
+function indexCatalog(docs: Awaited<ReturnType<typeof loadCatalog>>) {
+  return docs.flatMap((doc) => {
+    const hit = routeSummary(doc)
+    return hit ? [{hit, fields: indexSearchFields(doc)}] : []
+  })
+}
+
+// Check the full projection so edits to linked destinations and organizations also refresh the index.
+let catalog: {source: string; rows: ReturnType<typeof indexCatalog>} | undefined
+async function searchableRows() {
+  const docs = await loadCatalog()
+  const source = JSON.stringify(docs)
+  if (!catalog || source !== catalog.source) catalog = {source, rows: indexCatalog(docs)}
+  return catalog.rows
 }
 
 export async function searchContent(query: string, limit = 100) {
-  const matches = await rankedMatches(query, limit, (params) =>
-    readContent(SEARCH_QUERY, params, {cache: false}),
-  )
-  return matches.map(({hit}) => hit)
+  const rank = createSearchRanker(query)
+  if (!rank || limit <= 0) return []
+  const rows = await searchableRows()
+  const ranked = rows
+    .flatMap(({hit, fields}) => {
+      const score = rank(fields)
+      return score === undefined ? [] : [{hit, score}]
+    })
+    .sort(
+      (a, b) =>
+        b.score - a.score ||
+        a.hit.title.localeCompare(b.hit.title) ||
+        a.hit.id.localeCompare(b.hit.id),
+    )
+
+  const hits = []
+  const destinations = new Set<string>()
+  for (const {hit} of ranked) {
+    if (destinations.has(hit.href)) continue
+    destinations.add(hit.href)
+    hits.push(hit)
+    if (hits.length >= limit) break
+  }
+  return hits
 }
 
 function excerpt(...candidates: (string | null)[]) {
@@ -76,15 +82,21 @@ export async function searchResultPage(
   const page =
     Number.isSafeInteger(requestedPage) && requestedPage > 0 ? Math.min(requestedPage, maxPage) : 1
   const limit = page * pageSize
-  const matches = await rankedMatches(query, limit + 1, (params) =>
-    readContent(SEARCH_CARDS_QUERY, params, {cache: false}),
+  const matches = await searchContent(query, limit + 1)
+  const ids = matches.slice(0, limit).map(({id}) => id)
+  const docs = ids.length ? await readContent(SEARCH_CARDS_QUERY, {ids}, {cache: false}) : []
+  const entries = new Map(
+    docs.map((doc) => [
+      doc._id,
+      {
+        ...toContentEntry(doc),
+        image: imageAspectRatio(doc.image) ? doc.image : undefined,
+        summary: excerpt(doc.summary, doc.subtitle, doc.bodyText),
+      },
+    ]),
   )
   return {
-    entries: matches.slice(0, limit).map(({doc}) => ({
-      ...toContentEntry(doc),
-      image: imageAspectRatio(doc.image) ? doc.image : undefined,
-      summary: excerpt(doc.summary, doc.subtitle, doc.bodyText),
-    })),
+    entries: ids.flatMap((id) => entries.get(id) ?? []),
     hasMore: page < maxPage && matches.length > limit,
     page,
   }

@@ -15,7 +15,7 @@ export const SHELL_QUERY = defineQuery(`{
   "organizationColors": *[_type == "organization"] | order(displayOrder asc, lower(title) asc, _id asc){_id, light, dark},
   "settings": *[_id == "siteSettings" && _type == "siteSettings"][0]{
     title, description, eventsSubtitle, newsSubtitle, footer, address, socialLinks, footerText, landAcknowledgment, quotes,
-    navigation, footerLinks, legalPages[]->{_id, title, "slug": slug.current}
+    navigation, searchPlaceholders, footerLinks, legalPages[]->{_id, title, "slug": slug.current}
   },
   "homeSubtitle": *[_id == "homePage" && _type == "homePage"][0].subtitle
 }`)
@@ -73,27 +73,36 @@ export const SITEMAP_QUERY = defineQuery(
   `*[_type in ["page","place","event","article"] && defined(slug.current)]{${routeFields}}`,
 )
 
-const searchMatches = `*[_type in ["page", "place", "event", "article"] &&
-    (defined(slug.current) || defined(externalUrl)) && (
-    title match $searchTerm || (!defined(organizationRef->title) && organizationRef._ref in $organizationIds) || organizationRef->title match $searchTerm ||
-    summary match $searchTerm || subtitle match $searchTerm ||
-    (!defined(externalUrl) && !defined(targetPage) && pt::text(body) match $searchTerm) ||
-    contentSections[].title match $searchTerm || contentSections[].links[].label match $searchTerm ||
-    contentSections[].entries[].title match $searchTerm || contentSections[].entries[].links[].label match $searchTerm ||
-    count(contentSections[pt::text(body) match $searchTerm || count(entries[pt::text(body) match $searchTerm]) > 0]) > 0 ||
-    boardMembers[].name match $searchTerm || boardMembers[].role match $searchTerm || boardMembers[].affiliation match $searchTerm || boardMembers[].bio match $searchTerm ||
-    staffMembers[].name match $searchTerm || staffMembers[].role match $searchTerm || staffMembers[].affiliation match $searchTerm || staffMembers[].bio match $searchTerm ||
-    partners[].name match $searchTerm || supporterYears[].groups[].supporters[].name match $searchTerm ||
-    initiativeCards[!defined(page)].title match $searchTerm || initiativeCards[].summary match $searchTerm ||
-    donationSections[].title match $searchTerm || donationSections[].label match $searchTerm || donationSections[].summary match $searchTerm ||
-    donationSections[].ways[].title match $searchTerm || donationSections[].ways[].summary match $searchTerm ||
-    donationSections[].levels[].title match $searchTerm || donationSections[].levels[].summary match $searchTerm ||
-    timelineEntries[].dateLabel match $searchTerm || timelineEntries[].description match $searchTerm
-  )] | order((lower(title) == $exactTerm) desc, (title match $searchTerm) desc, lower(title) asc, _id asc)[$from...$to]`
+// Project plain text once for all searches. Keep titles and summaries separate for ranking.
+const searchText = `array::join(array::compact([
+  slug.current,
+  coalesce(organizationRef->title, $organizations[id == ^.organizationRef._ref][0].title),
+  select(!defined(externalUrl) && !defined(targetPage) => pt::text(body)),
+  ...coalesce(contentSections[].title, []),
+  ...coalesce(contentSections[].links[].label, []),
+  ...coalesce(contentSections[]{"text": pt::text(body)}.text, []),
+  ...coalesce(contentSections[].entries[].title, []),
+  ...coalesce(contentSections[].entries[].links[].label, []),
+  ...coalesce(contentSections[].entries[]{"text": pt::text(body)}.text, []),
+  ...coalesce(boardMembers[].name, []), ...coalesce(boardMembers[].role, []),
+  ...coalesce(boardMembers[].affiliation, []), ...coalesce(boardMembers[].bio, []),
+  ...coalesce(staffMembers[].name, []), ...coalesce(staffMembers[].role, []),
+  ...coalesce(staffMembers[].affiliation, []), ...coalesce(staffMembers[].bio, []),
+  ...coalesce(partners[].name, []), ...coalesce(supporterYears[].groups[].supporters[].name, []),
+  ...coalesce(initiativeCards[!defined(page)].title, []), ...coalesce(initiativeCards[].summary, []),
+  ...coalesce(donationSections[].title, []), ...coalesce(donationSections[].label, []), ...coalesce(donationSections[].summary, []),
+  ...coalesce(donationSections[].ways[].title, []), ...coalesce(donationSections[].ways[].summary, []),
+  ...coalesce(donationSections[].levels[].title, []), ...coalesce(donationSections[].levels[].summary, []),
+  ...coalesce(timelineEntries[].dateLabel, []), ...coalesce(timelineEntries[].description, [])
+]), " ")`
 
-export const SEARCH_QUERY = defineQuery(`${searchMatches}{${routeFields}, title}`)
+export const SEARCH_CATALOG_QUERY = defineQuery(`*[_type in ["page", "place", "event", "article"] &&
+  defined(title) && (defined(slug.current) || defined(externalUrl))]{
+    ${routeFields}, title, "description": array::join(array::compact([subtitle, summary]), " "), "text": ${searchText}
+}`)
 
-export const SEARCH_CARDS_QUERY = defineQuery(`${searchMatches}{
+export const SEARCH_CARDS_QUERY =
+  defineQuery(`*[_type in ["page", "place", "event", "article"] && _id in $ids]{
   ${cardBase}, ${cardMeta}, subtitle,
   "image": select(_type == "place" => gallery[defined(asset)][0], image),
   "bodyText": select(!defined(externalUrl) && !defined(targetPage) =>

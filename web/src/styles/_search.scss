@@ -1,90 +1,97 @@
 @use 'tokens' as *;
-@use 'dots' as *;
-
 @use 'panel' as *;
 
+// The focused field is already in the sticky header. Applying the document’s anchor offset
+// when the browser reveals the caret would scroll the page on every keystroke.
+html:has(.header-search :focus) {
+  scroll-padding-block-start: 0;
+}
+
 .header-search {
-  --search-border-width: 0.12em;
   @include green-panel-fill;
   position: absolute;
   inset: 100% 0 auto;
   padding: 0.75em var(--gutter) 1.55em;
   color: var(--paper);
-  @include type-size(label);
+  @include display-type(label);
 
-  &:has(form:focus-within) {
-    --search-border-width: 0.18em;
-  }
   form,
   ul,
   [role='status']:not(.sr-only) {
     width: min(100%, 49%);
     margin: 0 auto;
   }
-  form {
-    display: flex;
-    align-items: stretch;
-    padding: 0.18em;
-    outline: var(--search-border-width) solid currentColor;
-    outline-offset: calc(-1 * var(--search-border-width));
-  }
-  input,
-  button {
-    font: inherit;
-    color: inherit;
-    text-transform: uppercase;
-    background: transparent;
-    border: 0;
-    padding: 0.58em 0.52em;
-    &:focus-visible {
-      outline: none;
-    }
-  }
   input {
-    flex: 1;
-    min-width: 0;
     &::-webkit-search-cancel-button {
       display: none;
     }
     &::placeholder {
-      color: var(--pale-green);
-      opacity: 1;
+      opacity: 0;
     }
   }
-  button {
-    @include submit-button-mark;
-    flex: none;
+  &__field {
     display: flex;
-    align-items: center;
-    gap: 0.18em;
-    &:focus-visible {
-      color: var(--green);
-      background: var(--paper);
+    position: relative;
+    flex: 1;
+    min-inline-size: 0;
+  }
+  &__placeholders {
+    position: absolute;
+    inset: 0;
+    display: none;
+    grid-template-columns: minmax(0, 1fr);
+    align-content: center;
+    pointer-events: none;
+    user-select: none;
+    @include fade-rotating-items(1.5);
+
+    > span {
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+  }
+  input:placeholder-shown + &__placeholders {
+    display: grid;
+  }
+  @media (forced-colors: active) {
+    input::placeholder {
+      color: GrayText;
+      opacity: 1;
+    }
+    input:placeholder-shown + &__placeholders {
+      display: none;
     }
   }
   ul {
     list-style: none;
+    margin-block-start: 0.5em;
     padding: 0;
-    border: var(--search-border-width) solid currentColor;
-    border-block-start: 0;
+    background: var(--inline-form-fill);
+    color: var(--green);
     max-height: 45svh;
     overflow-y: auto;
   }
   li a {
     display: block;
-    padding: 0.32em 0.52em;
+    padding: 0.32em 0.47em;
     &:focus-visible {
       text-decoration: underline;
     }
   }
   // Keep the list’s outer padding inside its first and last clickable links.
-  input,
   li:first-child a {
     padding-block-start: 0.66em;
   }
-  input,
   li:last-child a {
     padding-block-end: 0.5em;
+  }
+  .header-search__view-all {
+    display: block;
+    width: fit-content;
+    margin: 0.5em auto 0;
+    color: var(--inline-form-fill);
+    @include type-size(title);
   }
   [role='status']:not(:empty) {
     margin-top: 0.6em;

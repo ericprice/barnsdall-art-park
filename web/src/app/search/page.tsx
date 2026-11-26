@@ -13,11 +13,15 @@ export const metadata: Metadata = {
 }
 
 const graphemes = new Intl.Segmenter(undefined, {granularity: 'grapheme'})
+const headingQueryLimit = 24
 
 function resultsHeading(query: string) {
   if (!query) return 'Search results'
   const characters = Array.from(graphemes.segment(query), ({segment}) => segment)
-  const label = characters.length > 16 ? characters.slice(0, 16).join('') + '…' : query
+  const label =
+    characters.length > headingQueryLimit
+      ? characters.slice(0, headingQueryLimit).join('') + '…'
+      : query
   return `Results for “${label}”`
 }
 
