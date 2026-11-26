@@ -26,7 +26,16 @@ export function HomeFeatureCard({entry, index}: {entry: ContentEntry; index: num
               : undefined
           }
         >
-          <ParkImage editorial orgTheme={theme} image={image} />
+          <ParkImage
+            editorial
+            orgTheme={theme}
+            image={image}
+            sizes={
+              isCutout(image)
+                ? '(max-width: 44rem) 52vw, (max-width: 64rem) 35vw, 22rem'
+                : '(max-width: 44rem) 27vw, (max-width: 64rem) 18vw, 11.5rem'
+            }
+          />
         </div>
       }
       caption={

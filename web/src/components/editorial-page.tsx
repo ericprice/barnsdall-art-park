@@ -1,6 +1,5 @@
 import type {ReactNode} from 'react'
 import type {ContentEntry} from '@/lib/content'
-import {interfaceText} from '../../../shared/interface'
 import {SidebarLinks} from './action-links'
 import {PageHeading, type PageHeadingNavigation} from './page-heading'
 import {RichText} from './rich-text'
@@ -33,7 +32,7 @@ export function EditorialPage({
       className={className ? `editorial-page ${className}` : 'editorial-page'}
     >
       <PageHeading title={title} subtitle={entry.subtitle} label={label} navigation={navigation} />
-      <StoryGallery key={entry.id} images={images} text={interfaceText} showCaption />
+      <StoryGallery key={entry.id} images={images} showCaption />
       <div className="editorial-page__columns">
         <SidebarLinks
           links={entry.sidebarLinks}

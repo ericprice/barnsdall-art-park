@@ -1,0 +1,15 @@
+@mixin green-panel-fill {
+  background-color: var(--green);
+  isolation: isolate;
+
+  &::before {
+    // Extend the solid fill across the viewport without clipping the menu content.
+    content: '';
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    pointer-events: none;
+    box-shadow: 0 0 0 100vmax var(--green);
+    clip-path: inset(0 -100vmax);
+  }
+}

@@ -1,0 +1,119 @@
+@use 'tokens' as *;
+
+.park-footer {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  column-gap: var(--gutter);
+  row-gap: 1.35em;
+  margin: 5rem var(--gutter) 0;
+  padding-bottom: 4rem;
+  @include type-size(body);
+
+  p {
+    margin: 0.65em 0 0;
+  }
+  ul {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+  &__foundation,
+  &__connect {
+    display: grid;
+    grid-template-rows: subgrid;
+    grid-row: span 2;
+    align-items: start;
+  }
+  &__copy,
+  &__fineprint {
+    @include small-text;
+  }
+  &__copy > p:first-child,
+  &__fineprint > p:first-child {
+    margin-top: 0;
+  }
+  &__wordmark {
+    display: block;
+    @include display-type(display);
+    // Each line of the 391-unit-wide artwork has approximately 60 units of ink.
+    width: min(100%, 6.517cap);
+    position: relative;
+    aspect-ratio: 391 / 204;
+    img {
+      display: block;
+      width: 100%;
+      height: auto;
+    }
+  }
+  &__connect {
+    color: var(--green);
+  }
+  &__heading {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    @include display-type(display);
+    gap: 0.15em;
+    h2 {
+      font-size: inherit;
+      line-height: inherit;
+      letter-spacing: inherit;
+      text-box-trim: trim-both;
+      text-box-edge: cap alphabetic;
+    }
+    ul {
+      display: flex;
+      align-items: center;
+      justify-content: flex-end;
+      gap: 0.15em;
+    }
+    a,
+    img {
+      display: block;
+    }
+    a:has(img) {
+      position: relative;
+      width: 1cap;
+      aspect-ratio: 1;
+    }
+  }
+  &__details {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: var(--gutter);
+    margin: 0.48em 0 0;
+    @include display-type(label);
+    address {
+      font-style: normal;
+      p {
+        margin: 0;
+      }
+      em {
+        font-synthesis: style;
+      }
+    }
+    ul a {
+      text-decoration: none;
+    }
+  }
+  &__fineprint {
+    color: color-mix(in srgb, var(--green) 92%, black);
+  }
+  &__legal {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0 0.6em;
+  }
+}
+@media (max-width: 48rem) {
+  .park-footer {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 2rem;
+    &__foundation,
+    &__connect {
+      grid-row: auto;
+      grid-template-rows: auto auto;
+      gap: 1.35em;
+    }
+  }
+}

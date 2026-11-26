@@ -1,0 +1,69 @@
+@use 'tokens' as *;
+@use 'dots' as *;
+
+.lead {
+  @include publisher-type(publisher-lead);
+}
+.rich-text {
+  ul,
+  ol {
+    margin-block: 0;
+  }
+  ol {
+    padding-inline-start: 1.3rem;
+  }
+  > * + :not(p, ul, ol),
+  > :not(p, ul, ol, h2, h3) + * {
+    margin-block-start: 1rem;
+  }
+  > :is(p, ul, ol):has(+ :is(p, ul, ol)) {
+    margin-block-end: calc(var(--leading-body) * 2em / 3);
+  }
+  > :is(h2, h3):has(+ :is(p, ul, ol)) {
+    margin-block-end: var(--prose-heading-gap);
+  }
+  h2 {
+    @include type-size(title);
+    margin-top: 2.5rem;
+  }
+  h3 {
+    font: 400 var(--type-title)/var(--leading-title) var(--lead);
+    text-transform: none;
+    margin-top: 1.75rem;
+  }
+  figure {
+    margin-block: 2rem;
+  }
+  figcaption {
+    margin-top: 0.5rem;
+  }
+}
+.rich-text__bullets {
+  --marker-indent: calc(var(--small-seed-width) + var(--small-seed-gap));
+  list-style: none;
+  padding-inline-start: var(--marker-indent);
+  > li {
+    position: relative;
+    &::before {
+      @include olive-dot;
+      content: '';
+      position: absolute;
+      inset-inline-start: calc(-1 * var(--marker-indent));
+      inset-block-start: 0.36em;
+      width: var(--small-seed-width);
+      height: 0.64em;
+    }
+  }
+  @for $index from 1 through 14 {
+    > li:nth-child(14n + #{$index})::before {
+      --olive-dot: var(--list-dot-#{$index});
+    }
+  }
+}
+.rich-text__image {
+  position: relative;
+  aspect-ratio: 1.4;
+  img {
+    @include cover-image;
+  }
+}

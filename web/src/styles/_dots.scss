@@ -21,3 +21,14 @@
     pointer-events: none;
   }
 }
+
+@mixin submit-button-mark {
+  span {
+    text-box: trim-both cap alphabetic;
+  }
+  i {
+    @include olive-dot(14);
+    width: 0.7em;
+    height: 0.7em;
+  }
+}

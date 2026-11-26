@@ -29,7 +29,7 @@ npm run dev
 - Initiative and story templates: lead, image, rich text with headings, and links.
 - What’s On has Upcoming and Archive views with an Organization filter. Single-day events, inclusive exhibition spans, and weekly series use Los Angeles calendar dates.
 - News opens with a featured story above a three-column index. Stories appear in date order, including external partner news.
-- Search opens in the navigation on the current page. Existing search URLs open the same field and results on the homepage.
+- Search opens in the navigation and shows up to five matches as you type. Submit the search to open a dedicated results page.
 
 The **History / Timeline** page renders an ordered set of milestones. Editors open the canonical chronology under Pages → History and select which milestones appear on the homepage.
 
@@ -72,7 +72,7 @@ Upload original or neutral source photos in Studio. The site derives organizatio
 ## Checks
 
 ```sh
-npm run test -w web   # Event overlap, archive, LA dates, combined filters, leap-year/month handling
+npm run test -w web   # Routing, editorial content, LA event dates and archive grouping
 npm run typecheck
 npm run lint
 npm run build
@@ -85,7 +85,7 @@ VERCEL_ENV=preview BARNSDALL_PREVIEW=true npm run build -w web
 VERCEL_ENV=preview BARNSDALL_PREVIEW=true npm run start -w web -- --hostname 127.0.0.1 --port 3048
 ```
 
-The root lockfile manages both apps. Compatibility overrides patch `js-yaml` / `smol-toml` in Sanity CLI tooling and `undici` to 7.30.1 or newer within major 7. No forced major-version audit upgrade is applied.
+The root lockfile manages both apps. The hosted Studio ships the same Sanity runtime tested locally. The lockfile overrides affected minimatch 10 consumers to the patched 11.x API. Compatibility overrides patch `js-yaml` / `smol-toml` in Sanity CLI tooling and `undici` to 7.30.1 or newer within major 7.
 
 ## Deployment
 
@@ -98,6 +98,6 @@ npx vercel deploy --yes --scope studioericprice --project prj_GOCGgfVDZxcerrJPTG
 npm run deploy -w studio -- --url barnsdall-art-park-foundation --yes --schema-required
 ```
 
-Add each website origin to Sanity CORS. Configure `NEXT_PUBLIC_SITE_URL` for a real production launch and the hosted `NEXT_PUBLIC_SANITY_STUDIO_URL`. Frontend and Studio deploy independently; schema deployment does not publish editorial content. See `docs/content-handoff.md` for the remaining launch inputs.
+Add each website origin to Sanity CORS. Configure `NEXT_PUBLIC_SITE_URL` for production canonicals, robots and the sitemap. Preview deployments disallow crawling. Run `npm run check:published` to verify public content before launch. Frontend and Studio deploy independently; schema deployment does not publish editorial content. See `docs/content-handoff.md` for the remaining launch inputs.
 
 Vercel requires a new project's first deployment to target Production. An explicitly approved empty HTML bootstrap was submitted to establish the project; it failed the Next.js framework check and served no app or review content. The failed bootstrap counts as the first deployment, allowing subsequent real deployments to target Preview. Retain that bootstrap record; deleting every deployment would reset Vercel's first-deployment rule. No official client domain was assigned.

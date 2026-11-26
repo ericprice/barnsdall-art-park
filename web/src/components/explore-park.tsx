@@ -9,15 +9,23 @@ import {ParkImage} from './park-image'
 const dots = [1, 7, 9, 10, 11, 2, 5, 6, 8, 12, 3, 4, 13, 14]
 
 export function ExplorePark({places, title}: {places: ContentEntry[]; title: string}) {
-  const [selectedId, select] = useState(places[0]?.id)
+  const [selection, setSelection] = useState({current: places[0]?.id, previous: ''})
+  function select(id: string) {
+    setSelection((state) => (state.current === id ? state : {current: id, previous: state.current}))
+  }
   const previewTap = useRef(false)
-  const selected = places.find((place) => place.id === selectedId) ?? places[0]
+  const selected = places.find((place) => place.id === selection.current) ?? places[0]
   if (!selected) return null
 
   // A location keeps its silhouette when an editor reorders the list.
-  const ids = places.map((place) => place.id).sort()
+  const indexes = new Map(
+    places
+      .map((place) => place.id)
+      .sort()
+      .map((id, index) => [id, index]),
+  )
   const locations = places.map((place) => {
-    const index = ids.indexOf(place.id)
+    const index = indexes.get(place.id)!
     return {place, photoDot: dots[index % dots.length], labelDot: dots[(index + 5) % dots.length]}
   })
   const selectedIndex = places.indexOf(selected)
@@ -28,22 +36,25 @@ export function ExplorePark({places, title}: {places: ContentEntry[]; title: str
   return (
     <section className="explore" aria-labelledby="explore-heading">
       <div className="explore__picture" data-position={photoPosition} aria-hidden="true">
-        {locations.map(({place, photoDot}) => (
-          <div
-            key={place.id}
-            style={{
-              ...themeStyle(themeForEntry(place)),
-              maskImage: `url("/identity/dots/${photoDot}.svg")`,
-            }}
-            data-current={place.id === selected.id}
-          >
-            <ParkImage
-              orgTheme={themeForEntry(place)}
-              image={place.image}
-              sizes="(max-width: 44rem) 70vw, 35vw"
-            />
-          </div>
-        ))}
+        {locations.map(
+          ({place, photoDot}) =>
+            (place.id === selected.id || place.id === selection.previous) && (
+              <div
+                key={place.id}
+                style={{
+                  ...themeStyle(themeForEntry(place)),
+                  maskImage: `url("/identity/dots/${photoDot}.svg")`,
+                }}
+                data-current={place.id === selected.id}
+              >
+                <ParkImage
+                  orgTheme={themeForEntry(place)}
+                  image={place.image}
+                  sizes="(max-width: 44rem) 70vw, (max-width: 64rem) 35vw, 22.4rem"
+                />
+              </div>
+            ),
+        )}
       </div>
       <h2 id="explore-heading">{title}</h2>
       <ul className="explore__places">

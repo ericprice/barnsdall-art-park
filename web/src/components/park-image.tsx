@@ -1,6 +1,7 @@
 import Image from 'next/image'
-import {useId} from 'react'
-import {imageBuilder} from '@/sanity/image'
+import {useId, type CSSProperties} from 'react'
+import {SanityImage} from './sanity-image'
+import {imageAspectRatio, imageBuilder, imageFocus} from '@/sanity/image'
 import {isCutout, duotoneMatrix} from '@/lib/image-theme'
 import type {OrganizationTheme} from '../../../shared/organizations'
 import type {ImageSource} from '@/lib/content'
@@ -8,6 +9,8 @@ import type {ImageSource} from '@/lib/content'
 export function ParkImage({
   image,
   className,
+  intrinsicWidth,
+  fallbackAlt = '',
   priority = false,
   sizes = '(max-width: 44rem) 90vw, 33vw',
   editorial = false,
@@ -15,6 +18,8 @@ export function ParkImage({
 }: {
   image: ImageSource
   className?: string
+  intrinsicWidth?: number
+  fallbackAlt?: string
   priority?: boolean
   sizes?: string
   editorial?: boolean
@@ -22,18 +27,21 @@ export function ParkImage({
 }) {
   const filterId = 'duotone-' + useId().replace(/[^\w-]/g, '')
   if (!image) return null
-  const svgAsset = typeof image !== 'string' && image.asset?._ref.endsWith('-svg')
-  const src =
-    typeof image === 'string'
-      ? image
-      : image.asset
-        ? svgAsset
-          ? imageBuilder.image(image).url()
-          : imageBuilder.image(image).width(1600).auto('format').url()
-        : null
-  if (!src) return null
+  const ratio = imageAspectRatio(image)
+  if (typeof image !== 'string' && !ratio) return null
+  const local = typeof image === 'string'
+  const svg = local ? image.endsWith('.svg') : image.asset?._ref.endsWith('-svg')
+  const src = local ? image : imageBuilder.image(image).url()
+  const ImageComponent = local || svg ? Image : SanityImage
   const artwork = editorial ? image : undefined
   const tint = orgTheme && !isCutout(artwork)
+  const style = {
+    '--image-focus': imageFocus(image),
+    filter: tint ? `var(--duotone-adjustment) url(#${filterId})` : undefined,
+  } as CSSProperties
+  const dimensions = intrinsicWidth
+    ? {width: intrinsicWidth, height: Math.max(1, Math.round(intrinsicWidth / (ratio ?? 2)))}
+    : {fill: true}
   return (
     <>
       {tint && (
@@ -51,15 +59,15 @@ export function ParkImage({
           </defs>
         </svg>
       )}
-      <Image
+      <ImageComponent
         src={src}
-        alt={typeof image === 'string' ? '' : image.decorative ? '' : (image.alt ?? '')}
-        fill
-        unoptimized={svgAsset || (typeof image === 'string' && image.endsWith('.svg'))}
+        alt={local ? fallbackAlt : image.decorative ? '' : image.alt || fallbackAlt}
+        {...dimensions}
+        unoptimized={svg}
         className={className}
         sizes={sizes}
-        priority={priority}
-        style={tint ? {filter: `var(--duotone-adjustment) url(#${filterId})`} : undefined}
+        preload={priority}
+        style={style}
       />
     </>
   )

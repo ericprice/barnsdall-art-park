@@ -24,7 +24,7 @@
     position: relative;
     aspect-ratio: 0.92;
     img {
-      object-fit: cover;
+      @include cover-image;
     }
   }
   .visitor-map .action-links {

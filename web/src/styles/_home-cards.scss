@@ -1,0 +1,90 @@
+@use 'tokens' as *;
+
+.feature-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  @include content-grid-gap(3.2rem, 2.5rem);
+  padding: 1rem var(--gutter) 0;
+}
+.content-card__image {
+  position: relative;
+  overflow: hidden;
+  background: var(--org-light, var(--pale-green));
+  border-radius: 43% 57% 52% 48% / 51% 47% 53% 49%;
+  transition: transform 0.2s ease;
+  img {
+    @include cover-image;
+  }
+}
+.content-card--1 .content-card__image {
+  border-radius: 57% 43% 51% 49% / 48% 55% 45% 52%;
+}
+.content-card--2 .content-card__image {
+  border-radius: 47% 53% 34% 66% / 48% 60% 40% 52%;
+}
+.content-card--3 .content-card__image {
+  border-radius: 38% 62% 55% 45% / 47% 38% 62% 53%;
+}
+.content-card--4 .content-card__image {
+  transform: rotate(12deg);
+  img {
+    transform: rotate(-12deg) scale(1.15);
+  }
+}
+.content-card--5 .content-card__image {
+  border-radius: 37% 63% 29% 71% / 42% 52% 48% 58%;
+  transform: rotate(-12deg);
+}
+.home-feature {
+  .tile__title {
+    max-width: 13em;
+    margin: 0 auto;
+  }
+  .dot-link {
+    margin-inline: auto;
+  }
+  .content-card__image {
+    width: 51%;
+    aspect-ratio: 0.77;
+  }
+  .content-card__image[data-treatment='cutout'] {
+    background: none;
+    overflow: visible;
+    width: 55%;
+    &::before {
+      content: '';
+      position: absolute;
+      inset: 0 10%;
+      background: var(--org-light);
+      border-radius: 47% 53% 35% 65% / 50% 50% 50% 50%;
+    }
+    img {
+      object-fit: contain;
+      transform: scale(var(--cutout-scale, 1.35));
+      mix-blend-mode: multiply;
+    }
+  }
+}
+@media (max-width: 44rem) {
+  .feature-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    @include content-grid-gap(2rem, 1.2rem);
+    padding-top: 1rem;
+  }
+}
+@media (max-width: 32rem) {
+  .home-feature .content-card__image {
+    max-width: 12rem;
+  }
+}
+
+@media (width > 44rem) {
+  .feature-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    @include content-grid-gap(site-size(2.4), var(--gutter));
+  }
+  .home-feature .content-card__image {
+    height: site-size(21.8);
+    max-width: 100%;
+  }
+}

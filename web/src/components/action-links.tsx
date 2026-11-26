@@ -88,7 +88,9 @@ export function ActionLinks({
         <li key={link._key}>
           <ActionLink
             href={link.href}
-            download={(downloadPdf && link.href.endsWith('.pdf')) || undefined}
+            download={
+              link.download || (downloadPdf && /\.pdf(?:[?#]|$)/i.test(link.href)) || undefined
+            }
           >
             {link.label}
           </ActionLink>

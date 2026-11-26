@@ -1,7 +1,8 @@
 'use client'
 
 import {useState, type CSSProperties} from 'react'
-import type {ImageSource, InterfaceText} from '@/lib/content'
+import type {ImageSource} from '@/lib/content'
+import {interfaceText as labels} from '../../../shared/interface'
 import {imageAspectRatio} from '@/sanity/image'
 import type {OrganizationTheme} from '../../../shared/organizations'
 import {ParkImage} from './park-image'
@@ -12,28 +13,27 @@ export function StoryGallery({
   images,
   orgTheme,
   showCaption,
-  text,
 }: {
-  text: InterfaceText
   images: NonNullable<ImageSource>[]
   orgTheme?: OrganizationTheme
   showCaption: boolean
 }) {
   const [index, setIndex] = useState(0)
   function advance(direction: number) {
-    setIndex((value) => (value + direction + images.length) % images.length)
+    if (images.length < 2) return
+    setIndex(
+      (value) => (Math.min(value, images.length - 1) + direction + images.length) % images.length,
+    )
   }
   const swipe = useCarouselSwipe(images.length, advance)
-  const image = images[index]
+  const image = images[Math.min(index, images.length - 1)]
   if (!image) return null
   const caption = typeof image === 'string' ? undefined : image.caption
   const imageRatio = imageAspectRatio(image)
   return (
     <figure
       className="story-gallery"
-      style={
-        imageRatio ? ({'--story-image-ratio': imageRatio} as CSSProperties) : undefined
-      }
+      style={imageRatio ? ({'--story-image-ratio': imageRatio} as CSSProperties) : undefined}
       {...swipe}
     >
       <div className="story-gallery__frame">
@@ -42,15 +42,15 @@ export function StoryGallery({
             orgTheme={orgTheme}
             image={image}
             priority
-            sizes="(max-width: 44rem) 90vw, 64vw"
+            sizes="(max-width: 44rem) 90vw, (max-width: 64rem) 66vw, 42rem"
           />
         </div>
         {images.length > 1 && (
           <div className="story-gallery__buttons" style={orgTheme && {color: orgTheme.dark}}>
-            <button type="button" aria-label={text.previousPhoto} onClick={() => advance(-1)}>
+            <button type="button" aria-label={labels.previousPhoto} onClick={() => advance(-1)}>
               <CarouselChevron direction="previous" />
             </button>
-            <button type="button" aria-label={text.nextPhoto} onClick={() => advance(1)}>
+            <button type="button" aria-label={labels.nextPhoto} onClick={() => advance(1)}>
               <CarouselChevron direction="next" />
             </button>
           </div>

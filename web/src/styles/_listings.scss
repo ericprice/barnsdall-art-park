@@ -92,7 +92,7 @@
   aspect-ratio: 4/3;
   background: var(--org-dark);
   img {
-    object-fit: cover;
+    @include cover-image;
   }
   &:empty::after {
     position: absolute;
@@ -154,7 +154,7 @@
     overflow: hidden;
     border-radius: 43% 57% 29% 71% / 42% 53% 47% 58%;
     img {
-      object-fit: cover;
+      @include cover-image;
     }
     &[data-treatment='cutout'] img {
       opacity: 0.65;
@@ -174,21 +174,10 @@
     margin-inline: auto;
     padding-inline: 0;
   }
-  .story-gallery {
-    margin: site-size(4) auto;
-    figcaption {
-      margin: 0.5em auto 0;
-      width: 64%;
-    }
-  }
-  .story-gallery__photo {
-    position: relative;
-    width: 64%;
-    margin: 0 auto;
-    img {
-      object-fit: contain;
-    }
-  }
+  --story-photo-width: 64%;
+  --gallery-margin: #{site-size(4)} auto;
+  --gallery-caption-width: 64%;
+  --gallery-caption-gap: 0.5em;
   &__columns {
     display: grid;
     grid-template-columns: 1fr 2fr 1fr;
@@ -224,7 +213,7 @@
     border-radius: 42% 58% 34% 66% / 48% 50% 50% 52%;
     overflow: hidden;
     img {
-      object-fit: cover;
+      @include cover-image;
     }
   }
   &__schedule {
@@ -236,36 +225,6 @@
     }
     p + nav {
       margin-block-start: 1em;
-    }
-  }
-}
-.home-feature {
-  .tile__title {
-    max-width: 13em;
-    margin: 0 auto;
-  }
-  .dot-link {
-    margin-inline: auto;
-  }
-  .content-card__image {
-    width: 51%;
-    aspect-ratio: 0.77;
-  }
-  .content-card__image[data-treatment='cutout'] {
-    background: none;
-    overflow: visible;
-    width: 55%;
-    &::before {
-      content: '';
-      position: absolute;
-      inset: 0 10%;
-      background: var(--org-light);
-      border-radius: 47% 53% 35% 65% / 50% 50% 50% 50%;
-    }
-    img {
-      object-fit: contain;
-      transform: scale(var(--cutout-scale, 1.35));
-      mix-blend-mode: multiply;
     }
   }
 }
@@ -287,8 +246,8 @@
   .listing-story .listing-head {
     max-width: 96%;
   }
-  .listing-story .story-gallery__photo {
-    width: 88%;
+  .listing-story {
+    --story-photo-width: 88%;
   }
   .listing-story__columns {
     display: flex;
@@ -300,9 +259,6 @@
   .listing-grid {
     grid-template-columns: 1fr;
     @include content-grid-gap(2rem);
-  }
-  .home-feature .content-card__image {
-    max-width: 12rem;
   }
 }
 

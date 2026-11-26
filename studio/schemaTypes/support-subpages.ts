@@ -143,7 +143,13 @@ export const supportPageFields = [
             description: 'Defaults to the introduction on the detail page.',
           }),
           // Keep earlier tiles readable while existing drafts and published versions coexist.
-          defineField({name: 'title', type: 'string', hidden: true, readOnly: true}),
+          defineField({
+            name: 'title',
+            type: 'string',
+            hidden: true,
+            readOnly: true,
+            deprecated: {reason: 'The detail page supplies the title.'},
+          }),
           defineField({
             name: 'completed',
             title: 'Completed initiative',
@@ -154,7 +160,12 @@ export const supportPageFields = [
             ...image,
             hidden: ({parent}: ConditionalPropertyCallbackContext) => Boolean(parent?.completed),
           },
-          defineField({...link, hidden: true, readOnly: true}),
+          defineField({
+            ...link,
+            hidden: true,
+            readOnly: true,
+            deprecated: {reason: 'The detail page supplies the destination.'},
+          }),
           defineField({
             name: 'color',
             hidden: ({parent}) => Boolean(parent?.completed),

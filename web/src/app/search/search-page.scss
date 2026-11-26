@@ -1,0 +1,54 @@
+@use '../../styles/scale' as *;
+
+.search-page {
+  padding-inline: var(--gutter);
+
+  &__content {
+    width: min(100%, 38rem);
+    margin-inline: auto;
+    @include publisher-type;
+  }
+
+  &__form {
+    display: flex;
+    border: 0.1em solid currentColor;
+
+    input {
+      flex: 1;
+      min-width: 0;
+      padding: 0.65em;
+      border: 0;
+      background: transparent;
+      font-size: max(1rem, 1em);
+    }
+
+    button {
+      font: 400 var(--type-label) / var(--leading-label) var(--display);
+      letter-spacing: var(--heading-tracking);
+      text-transform: uppercase;
+      padding: 0.55em 0.75em;
+      background: var(--ink);
+      color: var(--paper);
+    }
+  }
+
+  &__results {
+    list-style: none;
+    margin: 1.75em 0 0;
+    padding: 0;
+
+    li + li {
+      border-block-start: 0.0625rem solid currentColor;
+    }
+
+    a {
+      display: block;
+      padding-block: 0.65em;
+      overflow-wrap: anywhere;
+    }
+  }
+
+  &__empty {
+    margin-block-start: 1.75em;
+  }
+}

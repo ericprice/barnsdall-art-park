@@ -1,4 +1,5 @@
-import type {ContentEntry, SiteContent} from '@/lib/content'
+import '../styles/_support-subpages.scss'
+import type {ContentEntry, SiteSettings} from '@/lib/content'
 import {interfaceText} from '../../../shared/interface'
 import {Tile} from './tile'
 import {EntryLabel} from './entry-meta'
@@ -188,21 +189,21 @@ function Donate({entry}: {entry: ContentEntry}) {
 
 export function SupportSubpage({
   entry,
-  site,
+  settings,
   path,
 }: {
   entry: ContentEntry
-  site: SiteContent
+  settings: SiteSettings
   path: string
 }) {
-  const department = site.settings.navigation.find((item) => item.href === '/support')
+  const department = settings.navigation.find((item) => item.href === '/support')
   const introductoryAction = entry.supportLink
   return (
     <main id="main-content" className="interior support-subpage">
       <PageHeading
         title={department?.title ?? entry.title}
         subtitle={entry.subtitle}
-        navigation={{path, settings: site.settings}}
+        navigation={{path, settings}}
       />
       {!!entry.body?.length && (
         <div className="support-copy">

@@ -161,7 +161,7 @@
     background: var(--pink);
   }
   img {
-    object-fit: cover;
+    @include cover-image;
     filter: var(--duotone-adjustment);
     mix-blend-mode: multiply;
   }
@@ -225,8 +225,7 @@
     }
     .donation-feature-shape img {
       width: 70% !important;
-      object-fit: cover;
-      object-position: 30% center;
+      @include cover-image(30% center);
       filter: var(--duotone-adjustment);
       mix-blend-mode: multiply;
       opacity: 0.7;

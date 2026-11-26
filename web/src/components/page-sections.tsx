@@ -2,7 +2,7 @@ import {ActionLinks} from './action-links'
 import Link from './route-link'
 import type {PageSection} from '@/lib/content'
 import {RichText} from './rich-text'
-import {ParkImage} from './park-image'
+import {PhotoFigure} from './photo-figure'
 
 export function PageSections({
   sections,
@@ -29,51 +29,48 @@ export function SectionContent({
     <>
       <h2>{section.title}</h2>
       <RichText value={section.body} />
-      {section.entries?.length ? (
-        section.collapsible ? (
-          <div className="accordion">
-            {section.entries.map((entry) => (
+      {!!section.entries?.length && (
+        <div className={section.collapsible ? 'accordion' : 'section-items'}>
+          {section.entries.map((entry) => {
+            const content = (
+              <>
+                <RichText value={entry.body} />
+                {entry.links.map((link) => (
+                  <Link
+                    key={link._key}
+                    href={link.href}
+                    download={link.download || undefined}
+                    className={section.collapsible ? 'text-link' : undefined}
+                  >
+                    {link.label} <span aria-hidden="true">{section.collapsible ? '↗' : '»'}</span>
+                  </Link>
+                ))}
+              </>
+            )
+            return section.collapsible ? (
               <details key={entry._key}>
                 <summary>
                   {entry.title}
                   <span aria-hidden="true" />
                 </summary>
-                <div>
-                  <RichText value={entry.body} />
-                  {entry.links.map((link) => (
-                    <Link className="text-link" key={link._key} href={link.href}>
-                      {link.label} <span aria-hidden="true">↗</span>
-                    </Link>
-                  ))}
-                </div>
+                <div>{content}</div>
               </details>
-            ))}
-          </div>
-        ) : (
-          <div className="section-items">
-            {section.entries.map((entry) => (
+            ) : (
               <div key={entry._key}>
                 <h3>{entry.title}</h3>
-                <RichText value={entry.body} />
-                {entry.links.map((link) => (
-                  <Link key={link._key} href={link.href}>
-                    {link.label} <span aria-hidden="true">»</span>
-                  </Link>
-                ))}
+                {content}
               </div>
-            ))}
-          </div>
-        )
-      ) : null}
-      <ActionLinks links={section.links} downloadPdf={downloadPdf} />
-      {section.image && (
-        <figure className="section-figure">
-          <div className="section-image">
-            <ParkImage image={section.image} sizes="(max-width: 44rem) 90vw, 49vw" />
-          </div>
-          {section.image.caption && <figcaption>{section.image.caption}</figcaption>}
-        </figure>
+            )
+          })}
+        </div>
       )}
+      <ActionLinks links={section.links} downloadPdf={downloadPdf} />
+      <PhotoFigure
+        className="section-figure"
+        frameClassName="section-image"
+        image={section.image}
+        sizes="(max-width: 44rem) 90vw, (max-width: 64rem) 49vw, 31rem"
+      />
     </>
   )
 }

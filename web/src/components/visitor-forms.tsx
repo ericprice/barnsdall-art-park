@@ -7,7 +7,7 @@ import {interfaceText} from '../../../shared/interface'
 
 const newsletterScript =
   'https://s3-us-west-2.amazonaws.com/bloomerang-public-cdn/barnsdallartparkfoundation/.widget-js/2146304.js'
-const newsletterFallback = 'https://www.barnsdall.org/contact'
+const signupHelp = 'mailto:connect@barnsdall.org?subject=Newsletter%20signup'
 
 export function LegacyPoliciesLink() {
   const navigate = useRouteNavigation()
@@ -24,7 +24,7 @@ export function LegacyPoliciesLink() {
 
 export function ContactSignup() {
   const container = useRef<HTMLDivElement>(null)
-  const [failed, setFailed] = useState(false)
+  const [ready, setReady] = useState(false)
   const {subscribeConsent: consent, subscribe} = interfaceText
   useEffect(() => {
     const host = container.current
@@ -47,12 +47,10 @@ export function ContactSignup() {
     const observer = new MutationObserver(() => {
       prefill()
       const form = host.querySelector('form')
-      if (!form && host.querySelector('p')) {
-        setFailed(true)
-        return
-      }
       const submit = form?.querySelector<HTMLElement>('input[type="submit"],button[type="submit"]')
-      if (!form || !submit || form.querySelector('[name="newsletter-consent"]')) return
+      if (!form || !submit) return
+      setReady(true)
+      if (form.querySelector('[name="newsletter-consent"]')) return
       if (submit instanceof HTMLInputElement) submit.value = subscribe
       form.querySelectorAll<HTMLInputElement>('input.required').forEach((input) => {
         input.required = true
@@ -82,13 +80,25 @@ export function ContactSignup() {
     const script = document.createElement('script')
     script.src = newsletterScript
     script.async = true
-    script.onerror = () => setFailed(true)
     let active = true
-    queueMicrotask(() => {
-      if (active) host.appendChild(script)
-    })
+    function loadWidget() {
+      if (active && !script.isConnected) host?.appendChild(script)
+    }
+    const section = host.closest('section') ?? host
+    const nearSignup = new IntersectionObserver(
+      (entries) => {
+        if (entries.some((entry) => entry.isIntersecting)) {
+          nearSignup.disconnect()
+          loadWidget()
+        }
+      },
+      {rootMargin: '300px'},
+    )
+    if (window.location.hash === '#subscribe') queueMicrotask(loadWidget)
+    else nearSignup.observe(section)
     return () => {
       active = false
+      nearSignup.disconnect()
       window.removeEventListener(newsletterPrefillKey, prefill)
       observer.disconnect()
       host.replaceChildren()
@@ -96,8 +106,8 @@ export function ContactSignup() {
   }, [consent, subscribe])
   return (
     <>
-      <div className="contact-subscription" hidden={failed} ref={container} />
-      {failed && <a href={newsletterFallback}>{subscribe}</a>}
+      <div className="contact-subscription" ref={container} />
+      {!ready && <a href={signupHelp}>Email the Foundation for newsletter signup help</a>}
     </>
   )
 }

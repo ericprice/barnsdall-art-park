@@ -1,18 +1,32 @@
+import {contentRoute} from '../../../shared/routes'
 import {historyPageId} from '../../../shared/page-layouts'
 import {footerFromPlainText} from '../../../shared/footer-text'
 import {contentDestination, contentPath, resolveInternalLinks} from './internal-links'
 import {pageSections, type PageSection} from './body-layout'
 export type {PageSection} from './body-layout'
-import {organizationTheme, type OrganizationTheme} from '../../../shared/organizations'
+import {
+  organizationDocuments,
+  publicOrganizationId,
+  organizationTheme,
+  type OrganizationTheme,
+} from '../../../shared/organizations'
 export type {InterfaceText} from '../../../shared/interface'
 import 'server-only'
 import {cache} from 'react'
 import {readContent} from '@/sanity/read'
-import {CONTENT_QUERY, SEARCH_QUERY, SITE_QUERY, DESTINATIONS_QUERY} from '@/sanity/queries'
+import {
+  CONTENT_QUERY,
+  SHELL_QUERY,
+  HOME_QUERY,
+  EVENTS_QUERY,
+  DESTINATIONS_QUERY,
+} from '@/sanity/queries'
 import type {
   CONTENT_QUERY_RESULT,
-  SITE_QUERY_RESULT,
-  SEARCH_QUERY_RESULT,
+  SHELL_QUERY_RESULT,
+  HOME_QUERY_RESULT,
+  NEWS_CARDS_QUERY_RESULT,
+  EVENTS_QUERY_RESULT,
   ParkImage,
   EditorialImage,
   RichText,
@@ -47,7 +61,8 @@ export type ContentEntry = {
   subtitle?: string
   sidebarLinks?: Place['sidebarLinks']
   template?: Page['template']
-  relatedStoryIds?: string[]
+  excludedFromNews?: boolean
+  relatedStories?: ContentEntry[]
   sections?: PageSection[]
   boardMembers?: Page['boardMembers']
   staffMembers?: Page['staffMembers']
@@ -65,43 +80,38 @@ export type NavItem = {
   href?: string
   children?: {label: string; href: string}[]
 }
-export type SiteContent = {
-  organizationColors: SITE_QUERY_RESULT['organizationColors']
-  settings: {
-    footerLinks?: {label?: string; href?: string; _key?: string}[]
+export type SiteSettings = {
+  footerLinks?: {label?: string; href?: string; _key?: string}[]
+  title: string
+  description: string
+  eventsSubtitle?: string
+  newsSubtitle?: string
+  footer: NonNullable<NonNullable<SHELL_QUERY_RESULT['settings']>['footer']>
+  navigation: NavItem[]
+  legalLinks: {id: string; label: string; href: string}[]
+  quotes: NonNullable<SHELL_QUERY_RESULT['settings']>['quotes']
+  socialLinks?: {label?: string; href?: string; _key: string}[]
+}
+
+export type HomeContent = {
+  historyLink?: {label?: string; href?: string}
+  slides: {
+    orgTheme?: OrganizationTheme
+    id: string
     title: string
-    description: string
-    eventsSubtitle?: string
-    newsSubtitle?: string
-    footer: NonNullable<NonNullable<SITE_QUERY_RESULT['settings']>['footer']>
-    navigation: NavItem[]
-    legalLinks: {id: string; label: string; href: string}[]
-    quotes: NonNullable<SITE_QUERY_RESULT['settings']>['quotes']
-    socialLinks?: {label?: string; href?: string; _key: string}[]
-  }
-  home: {
-    subtitle?: string
-    historyLink?: {label?: string; href?: string}
-    slides: {
-      orgTheme?: OrganizationTheme
-      id: string
-      title: string
-      summary?: string
-      image?: ImageSource
-      link?: {label?: string; href?: string}
-    }[]
-    celebration?: {title?: string; link?: {label?: string; href?: string}} | null
-    timeline: {
-      id: string
-      year?: string
-      summary?: string
-      link?: {label?: string; href?: string}
-    }[]
-    features: ContentEntry[]
-    places: ContentEntry[]
-  }
-  events: ContentEntry[]
-  articles: ContentEntry[]
+    summary?: string
+    image?: ImageSource
+    link?: {label?: string; href?: string}
+  }[]
+  celebration?: {title?: string; link?: {label?: string; href?: string}} | null
+  timeline: {
+    id: string
+    year?: string
+    summary?: string
+    link?: {label?: string; href?: string}
+  }[]
+  features: ContentEntry[]
+  places: ContentEntry[]
 }
 
 const withLinks = <T>(data: T) =>
@@ -109,15 +119,15 @@ const withLinks = <T>(data: T) =>
 
 type DocumentEntry =
   | NonNullable<CONTENT_QUERY_RESULT>
-  | NonNullable<NonNullable<NonNullable<SITE_QUERY_RESULT['home']>['features']>[number]['entry']>
+  | NonNullable<NonNullable<NonNullable<HOME_QUERY_RESULT['home']>['features']>[number]['entry']>
   | NonNullable<
-      NonNullable<NonNullable<SITE_QUERY_RESULT['home']>['exploreLocations']>[number]['location']
+      NonNullable<NonNullable<HOME_QUERY_RESULT['home']>['exploreLocations']>[number]['location']
     >
-  | SITE_QUERY_RESULT['events'][number]
-  | SITE_QUERY_RESULT['articles'][number]
-  | SEARCH_QUERY_RESULT[number]
-function toEntry(doc: DocumentEntry): ContentEntry {
-  const owner = doc.orgTheme
+  | EVENTS_QUERY_RESULT[number]
+  | NEWS_CARDS_QUERY_RESULT[number]
+export function toContentEntry(doc: DocumentEntry): ContentEntry {
+  const owner = doc.organizationRef?._ref
+  const theme = organizationTheme(doc.orgTheme, owner)
   return {
     id: doc._id,
     type: doc._type,
@@ -133,8 +143,8 @@ function toEntry(doc: DocumentEntry): ContentEntry {
         : 'publishedAt' in doc
           ? doc.publishedAt
           : null,
-    orgTheme: organizationTheme(owner),
-    organization: owner?.title,
+    orgTheme: theme,
+    organization: owner || doc.orgTheme ? theme.title : undefined,
     repeatsUntil: 'repeatsUntil' in doc ? doc.repeatsUntil : null,
     allDay: 'allDay' in doc ? doc.allDay : null,
     gallery: 'gallery' in doc ? doc.gallery : undefined,
@@ -143,8 +153,15 @@ function toEntry(doc: DocumentEntry): ContentEntry {
     subtitle: 'subtitle' in doc ? doc.subtitle || undefined : undefined,
     sidebarLinks: 'sidebarLinks' in doc ? doc.sidebarLinks : undefined,
     template: 'template' in doc ? doc.template || undefined : undefined,
-    relatedStoryIds:
-      'relatedStories' in doc ? doc.relatedStories?.map((story) => story._ref) : undefined,
+    excludedFromNews: 'excludeFromNews' in doc ? doc.excludeFromNews : undefined,
+    relatedStories:
+      'relatedCards' in doc
+        ? (doc.relatedCards ?? []).flatMap((story) =>
+            story && story._id !== doc._id && contentDestination(story)
+              ? [toContentEntry(story)]
+              : [],
+          )
+        : undefined,
     boardMembers: 'boardMembers' in doc ? doc.boardMembers : undefined,
     staffMembers: 'staffMembers' in doc ? doc.staffMembers : undefined,
     partners: 'partners' in doc ? doc.partners : undefined,
@@ -158,10 +175,10 @@ function toEntry(doc: DocumentEntry): ContentEntry {
   }
 }
 
-function settingsFor(s: SITE_QUERY_RESULT['settings']): SiteContent['settings'] {
+function settingsFor(s: SHELL_QUERY_RESULT['settings']): SiteSettings {
   return {
     footerLinks: s?.footerLinks ?? undefined,
-    title: s?.title || '',
+    title: s?.title || 'Barnsdall Art Park Foundation',
     description: s?.description || '',
     eventsSubtitle: s?.eventsSubtitle ?? undefined,
     newsSubtitle: s?.newsSubtitle ?? undefined,
@@ -185,49 +202,58 @@ function settingsFor(s: SITE_QUERY_RESULT['settings']): SiteContent['settings'] 
   }
 }
 
-export const getSite = cache(async (): Promise<SiteContent> => {
-  const data = await withLinks(await readContent(SITE_QUERY, {historyId: historyPageId}))
+export const getShell = cache(async () => {
+  const data = await withLinks(await readContent(SHELL_QUERY))
+  const colors = new Map<string, SHELL_QUERY_RESULT['organizationColors'][number]>()
+  for (const row of data.organizationColors) {
+    const id = publicOrganizationId(row._id)!
+    if (row._id === id || !colors.has(id)) colors.set(id, {...row, _id: id})
+  }
+  // Anonymous published readers cannot see the old dotted organization IDs.
+  const organizationColors = colors.size ? [...colors.values()] : organizationDocuments
   return {
-    organizationColors: data.organizationColors,
     settings: settingsFor(data.settings),
-    events: data.events.map(toEntry),
-    articles: data.articles.filter(contentDestination).map(toEntry),
-    home: {
-      subtitle: data.home?.subtitle ?? undefined,
-      historyLink: data.home?.historyLink || undefined,
-      slides:
-        data.home?.heroSlides?.map((s) => ({
-          id: s._key,
-          orgTheme: organizationTheme(s.orgTheme),
-          title: s.title || '',
-          summary: s.summary,
-          image: s.image,
-          link: s.link,
-        })) || [],
-      celebration: data.home?.celebration,
-      timeline:
-        data.milestones?.map((t) => ({
-          id: t._key,
-          year: t.year ?? undefined,
-          summary: t.summary ?? undefined,
-          link: t.link ?? undefined,
-        })) || [],
-      features: (data.home?.features || []).flatMap(({entry, image, background, caption}) =>
-        entry && contentDestination(entry)
-          ? [
-              {
-                ...toEntry(entry),
-                featureImage: image,
-                featureBackground: background,
-                featureCaption: caption,
-              },
-            ]
-          : [],
-      ),
-      places: (data.home?.exploreLocations || []).flatMap(({location, image}) =>
-        location ? [{...toEntry(location), image}] : [],
-      ),
-    },
+    organizationColors,
+    homeSubtitle: data.homeSubtitle ?? undefined,
+  }
+})
+
+export const getHome = cache(async (): Promise<HomeContent> => {
+  const data = await withLinks(await readContent(HOME_QUERY, {historyId: historyPageId}))
+  return {
+    historyLink: data.home?.historyLink || undefined,
+    slides:
+      data.home?.heroSlides?.map((s) => ({
+        id: s._key,
+        orgTheme: organizationTheme(s.orgTheme, s.organizationRef?._ref),
+        title: s.title || '',
+        summary: s.summary ?? undefined,
+        image: s.image,
+        link: s.link ?? undefined,
+      })) || [],
+    celebration: data.home?.celebration,
+    timeline:
+      data.milestones?.map((t) => ({
+        id: t._key,
+        year: t.year ?? undefined,
+        summary: t.summary ?? undefined,
+        link: t.link ?? undefined,
+      })) || [],
+    features: (data.home?.features || []).flatMap(({entry, image, background, caption}) =>
+      entry && contentDestination(entry)
+        ? [
+            {
+              ...toContentEntry(entry),
+              featureImage: image,
+              featureBackground: background,
+              featureCaption: caption,
+            },
+          ]
+        : [],
+    ),
+    places: (data.home?.exploreLocations || []).flatMap(({location, image}) =>
+      location && contentDestination(location) ? [{...toContentEntry(location), image}] : [],
+    ),
   }
 })
 
@@ -247,22 +273,20 @@ function useCaptionsAsAlt(value: unknown) {
 }
 
 export const getEntry = cache(async (path: string): Promise<ContentEntry | undefined> => {
-  const parts = path.slice(1).split('/')
-  const types: Record<string, string> = {park: 'place', 'whats-on': 'event', news: 'article'}
-  const type = parts.length > 1 && types[parts[0]] ? types[parts[0]] : 'page'
-  const slug = type === 'page' ? parts.join('/') : parts.slice(1).join('/')
+  const {type, slug} = contentRoute(path)
   const data = await readContent(CONTENT_QUERY, {type, slug})
   if (!data && path === '/history')
     return (await getEntry('/timeline')) ?? getEntry('/grove-history')
   if (!data || !contentDestination(data)) return
   const entry = await withLinks(data)
-  if (entry._type !== 'page' || entry.template !== 'timeline') return toEntry(entry)
+  if (entry._type !== 'page' || entry.template !== 'timeline') return toContentEntry(entry)
   const timeline = structuredClone(entry)
   useCaptionsAsAlt(timeline)
-  return toEntry(timeline)
+  return toContentEntry(timeline)
 })
 
-export async function searchContent(query: string): Promise<ContentEntry[]> {
-  const data = await readContent(SEARCH_QUERY, {searchTerm: `${query}*`})
-  return data.filter(contentDestination).map(toEntry)
-}
+export const getEvents = cache(async () => {
+  const events = await readContent(EVENTS_QUERY)
+  // A scheduled event can still supply useful dates when its partner URL is unavailable.
+  return events.map(toContentEntry)
+})

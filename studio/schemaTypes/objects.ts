@@ -12,14 +12,14 @@ export const destinationFields = [
     type: 'reference',
     weak: true,
     to: ['page', 'place', 'event', 'article'].map((type) => ({type})),
-    hidden: ({parent}) => Boolean(parent?.href),
+    hidden: ({parent}) => Boolean(parent?.href && !parent?.internal),
   }),
   defineField({
     name: 'href',
     title: 'URL or fragment',
     type: 'string',
     description: 'For external websites, email, telephone, or a specific site path or anchor.',
-    hidden: ({parent}) => Boolean(parent?.internal),
+    hidden: ({parent}) => Boolean(parent?.internal && !parent?.href),
     validation: (rule) => rule.regex(destinationPattern),
   }),
 ]
@@ -70,7 +70,8 @@ const imageFields = [
     title: 'Alternative text',
     type: 'string',
     hidden: ({document, parent}) =>
-      Boolean(parent?.decorative) || (document?._type === 'page' && document?.template === 'timeline'),
+      Boolean(parent?.decorative) ||
+      (document?._type === 'page' && document?.template === 'timeline'),
   }),
   defineField({
     name: 'caption',

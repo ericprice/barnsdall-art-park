@@ -23,3 +23,9 @@ The website’s production configuration reads published documents. Review and p
 The footer signup prefills the email address on the Foundation’s Bloomerang registration form on Contact. The provider’s form collects first name, last name and email. Annual giving amounts and benefits, confirmed event dates and image permissions remain launch inputs.
 
 The roster and supporters’ acknowledgments follow the Foundation’s records. Historical dates follow the Foundation’s timeline and grove history. The six-organization color plate and desktop interface supply the colors, type sizes and spacing. The responsive layouts adapt those dimensions for narrower screens. [Leadership](https://www.barnsdall.org/leadership) · [Timeline](https://www.barnsdall.org/timeline) · [Grove history](https://www.barnsdall.org/grove-history)
+
+## Launch verification
+
+Run `npm run check:published` from the repository root to check the public homepage, navigation, Visit, Donate and organization references in the published perspective. Add `-- https://your-public-domain` to verify the deployed routes, sitemap and robots file after configuring the public origin. Draft-only pages will appear as outstanding until their editors publish them.
+
+Before public launch, review the first homepage slide, Volunteer and the seven initiative detail pages for placeholder copy. Replace the sample telephone number in the footer address. Confirm the display dates of the News spotlights with the editorial team.

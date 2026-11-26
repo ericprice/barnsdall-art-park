@@ -1,13 +1,13 @@
 'use client'
 
 import {useLayoutEffect, useRef, useState, type CSSProperties} from 'react'
-import type {SiteContent} from '@/lib/content'
+import type {SiteSettings} from '@/lib/content'
 import {DotLink} from './action-links'
 import {CarouselChevron} from './carousel-chevron'
 import {useCarouselSwipe} from './use-carousel-swipe'
 
 type Quote = Pick<
-  NonNullable<SiteContent['settings']['quotes']>[number],
+  NonNullable<SiteSettings['quotes']>[number],
   'attribution' | 'link'
 > & {
   text: string

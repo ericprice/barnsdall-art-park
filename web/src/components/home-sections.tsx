@@ -1,13 +1,14 @@
+import '../styles/_home.scss'
 import {drawDots} from '@/lib/identity-dots'
 import type {CSSProperties} from 'react'
 import {QuoteBand} from './quote-band'
-import type {SiteContent} from '@/lib/content'
+import type {HomeContent} from '@/lib/content'
 import {DisplayLink} from './action-links'
 import {HomeFeatureCard} from './content-card'
 import {ExplorePark} from './explore-park'
 import {interfaceText as labels} from '../../../shared/interface'
 
-export function HomeSections({home}: {home: SiteContent['home']}) {
+export function HomeSections({home}: {home: HomeContent}) {
   const dots = drawDots(home.timeline.length)
   return (
     <>

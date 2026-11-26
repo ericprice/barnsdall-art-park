@@ -3,7 +3,7 @@ import {drawDots} from '@/lib/identity-dots'
 import {PortableText} from 'next-sanity'
 import {DotLink} from './action-links'
 import Link from './route-link'
-import {ParkImage} from './park-image'
+import {PhotoFigure} from './photo-figure'
 import {headingAnchor, linkDestination, standaloneLink} from '@/lib/body-layout'
 import type {OrganizationTheme} from '../../../shared/organizations'
 import type {
@@ -72,16 +72,12 @@ export function RichText({value, orgTheme}: {value?: RichTextValue; orgTheme?: O
           },
           types: {
             parkImage: ({value}: {value: ImageValue}) => (
-              <figure>
-                <div className="rich-text__image">
-                  <ParkImage
-                    image={value}
-                    orgTheme={orgTheme}
-                    sizes="(max-width: 44rem) 95vw, 65vw"
-                  />
-                </div>
-                {value.caption && <figcaption>{value.caption}</figcaption>}
-              </figure>
+              <PhotoFigure
+                image={value}
+                orgTheme={orgTheme}
+                frameClassName="rich-text__image"
+                sizes="(max-width: 44rem) 90vw, (max-width: 64rem) 49vw, 31rem"
+              />
             ),
           },
           marks: {

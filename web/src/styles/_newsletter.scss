@@ -1,0 +1,63 @@
+@use 'tokens' as *;
+@use 'dots' as *;
+
+.foundation-newsletter {
+  margin: 0.48em 0 0;
+  @include display-type(label);
+  form {
+    display: flex;
+    align-items: stretch;
+    width: 100%;
+    @include type-size(display);
+    letter-spacing: inherit;
+    block-size: 1cap;
+    padding: calc(0.18 * var(--type-label));
+    background: color-mix(
+      in srgb,
+      var(--newsletter-background, var(--pale-green)) 50%,
+      transparent
+    );
+  }
+  input,
+  button {
+    font: inherit;
+    @include type-size(label);
+    padding: 0 0.29em;
+    letter-spacing: inherit;
+  }
+  input {
+    min-width: 0;
+    width: 0;
+    flex: 1;
+    background: transparent;
+    border: 0;
+    // The native email control places the capital letters slightly above center.
+    padding-block-start: 0.1em;
+    text-transform: none;
+    @media (forced-colors: none) {
+      &:focus-visible {
+        outline: none;
+        background: color-mix(in srgb, var(--paper) 40%, transparent);
+      }
+    }
+    &::placeholder {
+      color: var(--green);
+      opacity: 0.5;
+      text-transform: uppercase;
+    }
+  }
+  button {
+    @include submit-button-mark;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.15em;
+    text-transform: uppercase;
+  }
+  @media (max-width: 22rem) {
+    input,
+    button {
+      @include type-size(compact-label);
+    }
+  }
+}

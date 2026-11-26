@@ -1,29 +1,29 @@
 import {randomInt} from 'node:crypto'
 import type {Metadata} from 'next'
 import {Suspense} from 'react'
-import {getSite} from '@/lib/content'
+import {getShell} from '@/lib/content'
 import {getParkSunset} from '@/lib/park-sunset'
 import {SiteShell} from '@/components/site-shell'
 import {SiteHeader} from '@/components/site-header'
 import {SiteFooter} from '@/components/site-footer'
 import {SanityLive} from '@/sanity/live'
+import {readsDrafts} from '@/sanity/read'
+import {publicOrigin} from '@/lib/site-origin'
 import {interfaceText} from '../../../shared/interface'
 import './globals.scss'
 
 export async function generateMetadata(): Promise<Metadata> {
-  const {settings} = await getSite()
+  const {settings} = await getShell()
   return {
     title: {default: settings.title, template: `%s — ${settings.title}`},
     description: settings.description,
-    ...(process.env.VERCEL_ENV === 'preview' ? {robots: {index: false, follow: false}} : {}),
-    ...(process.env.NEXT_PUBLIC_SITE_URL
-      ? {metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL)}
-      : {}),
+    ...(!publicOrigin ? {robots: {index: false, follow: false}} : {}),
+    ...(publicOrigin ? {metadataBase: publicOrigin} : {}),
   }
 }
 
 export default async function RootLayout({children}: {children: React.ReactNode}) {
-  const {settings, home} = await getSite()
+  const {settings, homeSubtitle} = await getShell()
   return (
     <html lang="en" data-scroll-behavior="smooth">
       <body>
@@ -33,15 +33,17 @@ export default async function RootLayout({children}: {children: React.ReactNode}
         <SiteShell seed={randomInt(2 ** 32)}>
           <SiteHeader
             settings={{title: settings.title, navigation: settings.navigation}}
-            homeSubtitle={home.subtitle}
+            homeSubtitle={homeSubtitle}
             initialSunset={getParkSunset(new Date()).toISOString()}
           />
           {children}
           <SiteFooter />
         </SiteShell>
-        <Suspense>
-          <SanityLive />
-        </Suspense>
+        {!readsDrafts && (
+          <Suspense>
+            <SanityLive />
+          </Suspense>
+        )}
       </body>
     </html>
   )

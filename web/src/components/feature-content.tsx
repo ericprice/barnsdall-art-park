@@ -1,4 +1,4 @@
-import {useId, type ReactNode} from 'react'
+import type {ReactNode} from 'react'
 import {DisplayLinkContent} from './action-links'
 import {EntryLabel} from './entry-meta'
 import Link from './route-link'
@@ -20,13 +20,10 @@ export function FeatureContent({
   link?: {label?: string; href?: string} | null
   className?: string
 }) {
-  const titleId = useId()
   const content = (
     <div className={className ? `feature-content ${className}` : 'feature-content'}>
       <EntryLabel label={label} large />
-      <Heading className="feature-content__title" id={titleId}>
-        {title}
-      </Heading>
+      <Heading className="feature-content__title">{title}</Heading>
       {meta}
       {summary && <p className="feature-content__summary">{summary}</p>}
       {link?.href && link.label && (
@@ -37,7 +34,7 @@ export function FeatureContent({
     </div>
   )
   return link?.href ? (
-    <Link className="feature-link" href={link.href} aria-labelledby={titleId}>
+    <Link className="feature-link" href={link.href}>
       {content}
     </Link>
   ) : (

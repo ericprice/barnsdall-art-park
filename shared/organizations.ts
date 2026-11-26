@@ -1,20 +1,33 @@
 // Identity colors are sampled from the supplied interface plates (palette, listings, and News).
 export const organizationDocuments = [
-  {_id: 'organization.park', title: 'The Park', light: '#99D289', dark: '#458933'},
-  {_id: 'organization.hollyhock', title: 'Hollyhock House', light: '#FCC200', dark: '#C38500'},
+  {_id: 'organization-park', title: 'The Park', light: '#99D289', dark: '#458933'},
+  {_id: 'organization-hollyhock', title: 'Hollyhock House', light: '#FCC200', dark: '#C38500'},
   {
-    _id: 'organization.gallery',
+    _id: 'organization-gallery',
     title: 'LA Municipal Art Gallery',
     light: '#D4C3FF',
     dark: '#5C489D',
   },
-  {_id: 'organization.arts', title: 'Arts Center', light: '#F2DBDF', dark: '#B36C8F'},
-  {_id: 'organization.theatre', title: 'Gallery Theatre', light: '#8E8B55', dark: '#605A4A'},
-  {_id: 'organization.foundation', title: 'The Foundation', light: '#99D289', dark: '#458933'},
+  {_id: 'organization-arts', title: 'Arts Center', light: '#F2DBDF', dark: '#B36C8F'},
+  {_id: 'organization-theatre', title: 'Gallery Theatre', light: '#8E8B55', dark: '#605A4A'},
+  {_id: 'organization-foundation', title: 'The Foundation', light: '#99D289', dark: '#458933'},
 ].map((org) => ({...org, _type: 'organization' as const}))
 
+const legacyOrganizationIds = new Map(
+  organizationDocuments.map(({_id}) => [_id.replace('organization-', 'organization.'), _id]),
+)
+
+export function publicOrganizationId(id?: string | null) {
+  return id ? (legacyOrganizationIds.get(id) ?? id) : undefined
+}
+
+// While old records remain available for rollback, offer the old ID only until its public copy exists.
+export const currentOrganizationFilter =
+  '(!(_id in path("organization.*")) || !(("organization-" + string::split(_id, ".")[1]) in *[_type == "organization"]._id))'
+
 export function hostsDetailPage(organizationId?: string | null) {
-  return organizationId === 'organization.foundation' || organizationId === 'organization.park'
+  const id = publicOrganizationId(organizationId)
+  return id === 'organization-foundation' || id === 'organization-park'
 }
 
 export function isExternalStoryUrl(href?: string | null): href is string {
@@ -58,7 +71,10 @@ const aliases: Record<string, string> = {
 }
 
 export function organizationIdFor(name?: string | null) {
-  return 'organization.' + (aliases[name?.trim().toLowerCase() || ''] || 'foundation')
+  const id = publicOrganizationId(name)
+  return organizationDocuments.some((doc) => doc._id === id)
+    ? id
+    : 'organization-' + (aliases[name?.trim().toLowerCase() || ''] || 'foundation')
 }
 
 export function organizationTheme(
@@ -67,7 +83,11 @@ export function organizationTheme(
 ): OrganizationTheme {
   const fallback = organizationDocuments.find((doc) => doc._id === organizationIdFor(name))!
   return {
-    title: projected?.title || name || fallback.title,
+    title:
+      projected?.title ||
+      (name && !name.startsWith('organization.') && !name.startsWith('organization-')
+        ? name
+        : fallback.title),
     light: hexColor(projected?.light) ?? fallback.light,
     dark: hexColor(projected?.dark) ?? fallback.dark,
   }

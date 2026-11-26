@@ -1,6 +1,6 @@
 import {hostsDetailPage, isExternalStoryUrl} from '../../../shared/organizations.ts'
 
-const routePrefixes: Record<string, string> = {place: '/park', event: '/whats-on', article: '/news'}
+import {routePrefixes} from '../../../shared/routes.ts'
 
 export function contentPath(type: string, slug?: string | null) {
   return slug ? (routePrefixes[type] || '') + '/' + slug : '/'
@@ -25,6 +25,11 @@ export function contentDestination(doc: Route) {
   return doc.slug?.current ? contentPath(_type, doc.slug.current) : undefined
 }
 
+export function routeSummary(doc: Route & {_id: string; title: string | null}) {
+  const href = contentDestination(doc)
+  return href && doc.title ? {id: doc._id, title: doc.title, href} : undefined
+}
+
 type StoredLink = {internal: {_ref: string}; href?: string}
 function collectLinks(value: unknown, links: StoredLink[]) {
   if (!value || typeof value !== 'object') return
@@ -44,12 +49,14 @@ export async function resolveInternalLinks<T>(
   data: T,
   fetchRoutes: (ids: string[]) => Promise<(Route & {_id: string})[]>,
 ): Promise<T> {
-  const copy = structuredClone(data)
   const links: StoredLink[] = []
-  collectLinks(copy, links)
+  collectLinks(data, links)
   if (!links.length) return data
   const routes = await fetchRoutes([...new Set(links.map((link) => link.internal._ref))])
   const hrefs = new Map(routes.map((doc) => [doc._id, contentDestination(doc)]))
-  for (const link of links) link.href = hrefs.get(link.internal._ref)
+  const copy = structuredClone(data)
+  const resolved: StoredLink[] = []
+  collectLinks(copy, resolved)
+  for (const link of resolved) link.href = hrefs.get(link.internal._ref)
   return copy
 }

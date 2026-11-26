@@ -1,3 +1,4 @@
+import {currentOrganizationFilter, publicOrganizationId} from '../../shared/organizations'
 import {createElement} from 'react'
 import {ColorPair} from './organization-preview'
 import {OrganizationColorInput} from './organization-color-input'
@@ -17,6 +18,10 @@ export const organization = defineType({
   name: 'organization',
   title: 'Organization',
   type: 'document',
+  readOnly: ({document}) => {
+    const id = document?._id?.replace(/^drafts\./, '')
+    return Boolean(id && publicOrganizationId(id) !== id)
+  },
   icon: TagIcon,
   orderings: [organizationDisplayOrder],
   fields: [
@@ -60,4 +65,5 @@ export const organizationReference = defineField({
   title: 'Organization',
   type: 'reference',
   to: [{type: 'organization'}],
+  options: {filter: currentOrganizationFilter},
 })

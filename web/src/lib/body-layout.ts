@@ -4,7 +4,7 @@ import type {Page, ParkImage, RichText} from '../../sanity.types'
 
 type TextBlock = Extract<RichText[number], {_type: 'block'}>
 type Mark = NonNullable<TextBlock['markDefs']>[number]
-type BodyLink = {_key: string; label: string; href: string}
+type BodyLink = {_key: string; label: string; href: string; download?: boolean}
 type LayoutItem = {_key: string; title: string; body: RichText; links: BodyLink[]}
 export type PageSection = LayoutItem & {
   anchor: string
@@ -16,7 +16,9 @@ export type PageSection = LayoutItem & {
 
 export function linkDestination(mark: Mark) {
   if (mark._type === 'download') {
-    return mark.asset && tryGetFileAsset(mark.asset, {projectId, dataset})?.url
+    const file = mark.asset && tryGetFileAsset(mark.asset, {projectId, dataset})
+    // With an empty dl parameter the CDN serves an attachment using the original upload filename.
+    return file ? file.url + '?dl=' : undefined
   }
   return typeof mark.href === 'string' && /^(\/(?!\/)|#|https?:\/\/|mailto:|tel:)/.test(mark.href)
     ? mark.href
@@ -69,7 +71,16 @@ type StoredSection = NonNullable<Page['contentSections']>[number]
 function actions(links: StoredSection['links']): BodyLink[] {
   return (links || []).flatMap((link) => {
     const href = linkDestination(link)
-    return href && link.label ? [{_key: link._key, label: link.label, href}] : []
+    return href && link.label
+      ? [
+          {
+            _key: link._key,
+            label: link.label,
+            href,
+            download: link._type === 'download' || undefined,
+          },
+        ]
+      : []
   })
 }
 export function pageSections(stored: Page['contentSections']): PageSection[] | undefined {

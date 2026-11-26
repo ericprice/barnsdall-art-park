@@ -7,23 +7,11 @@
   @include publisher-type;
 
   .story-gallery {
-    margin: 0;
-  }
-  .story-gallery__photo {
-    position: relative;
-    width: var(--story-photo-width);
-    margin-inline: auto;
-    img {
-      object-fit: contain;
-    }
-  }
-  .story-gallery figcaption {
-    // Match the visible photograph when its aspect ratio is narrower than the frame.
-    width: calc(
+    // Align the caption to a narrow photograph within its fixed-ratio frame.
+    --gallery-caption-width: calc(
       var(--story-photo-width) *
         min(1, var(--story-image-ratio, var(--featured-image-ratio)) / var(--featured-image-ratio))
     );
-    margin: 0.35em auto 0;
   }
   &__columns {
     display: grid;

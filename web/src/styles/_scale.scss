@@ -27,3 +27,8 @@ $site-width: 64rem;
   letter-spacing: 0.02em;
   text-wrap: pretty;
 }
+
+@mixin cover-image($position: center) {
+  object-fit: cover;
+  object-position: var(--image-focus, #{$position});
+}

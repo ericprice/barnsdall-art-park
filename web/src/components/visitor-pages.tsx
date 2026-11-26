@@ -1,4 +1,4 @@
-import type {ContentEntry, SiteContent} from '@/lib/content'
+import type {ContentEntry, SiteSettings} from '@/lib/content'
 import {leadingBodyBlock} from '@/lib/body-layout'
 import {ParkImage} from './park-image'
 import {ActionLinks} from './action-links'
@@ -10,8 +10,8 @@ import {PageHeading} from './page-heading'
 import {ContactSignup, LegacyPoliciesLink} from './visitor-forms'
 import './visitor-pages.scss'
 
-type Props = {entry: ContentEntry; site: SiteContent}
-export function VisitPage({entry, site}: Props) {
+type Props = {entry: ContentEntry; settings: SiteSettings}
+export function VisitPage({entry, settings}: Props) {
   const policies = entry.template === 'policies'
   const map = entry.sections?.find((section) => section.role === 'map')
   const lead = policies ? undefined : leadingBodyBlock(entry.body)
@@ -20,7 +20,7 @@ export function VisitPage({entry, site}: Props) {
       <PageHeading
         title={entry.title}
         subtitle={entry.subtitle}
-        navigation={{path: entry.href, settings: site.settings}}
+        navigation={{path: entry.href, settings}}
       />
       {lead && (
         <div className="visitor-prose">

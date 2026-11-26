@@ -1,0 +1,104 @@
+@use 'tokens' as *;
+@use 'dots' as *;
+
+@use 'panel' as *;
+
+.header-search {
+  --search-border-width: 0.12em;
+  @include green-panel-fill;
+  position: absolute;
+  inset: 100% 0 auto;
+  padding: 0.75em var(--gutter) 1.55em;
+  color: var(--paper);
+  @include type-size(label);
+
+  &:has(form:focus-within) {
+    --search-border-width: 0.18em;
+  }
+  form,
+  ul,
+  [role='status']:not(.sr-only) {
+    width: min(100%, 49%);
+    margin: 0 auto;
+  }
+  form {
+    display: flex;
+    align-items: stretch;
+    padding: 0.18em;
+    outline: var(--search-border-width) solid currentColor;
+    outline-offset: calc(-1 * var(--search-border-width));
+  }
+  input,
+  button {
+    font: inherit;
+    color: inherit;
+    text-transform: uppercase;
+    background: transparent;
+    border: 0;
+    padding: 0.58em 0.52em;
+    &:focus-visible {
+      outline: none;
+    }
+  }
+  input {
+    flex: 1;
+    min-width: 0;
+    &::-webkit-search-cancel-button {
+      display: none;
+    }
+    &::placeholder {
+      color: var(--pale-green);
+      opacity: 1;
+    }
+  }
+  button {
+    @include submit-button-mark;
+    flex: none;
+    display: flex;
+    align-items: center;
+    gap: 0.18em;
+    &:focus-visible {
+      color: var(--green);
+      background: var(--paper);
+    }
+  }
+  ul {
+    list-style: none;
+    padding: 0;
+    border: var(--search-border-width) solid currentColor;
+    border-block-start: 0;
+    max-height: 45svh;
+    overflow-y: auto;
+  }
+  li a {
+    display: block;
+    padding: 0.32em 0.52em;
+    &:focus-visible {
+      text-decoration: underline;
+    }
+  }
+  // Keep the list’s outer padding inside its first and last clickable links.
+  input,
+  li:first-child a {
+    padding-block-start: 0.66em;
+  }
+  input,
+  li:last-child a {
+    padding-block-end: 0.5em;
+  }
+  [role='status']:not(:empty) {
+    margin-top: 0.6em;
+  }
+}
+
+@media (max-width: 48rem) {
+  .header-search {
+    padding-block-start: 0;
+
+    form,
+    ul,
+    [role='status']:not(.sr-only) {
+      width: 100%;
+    }
+  }
+}

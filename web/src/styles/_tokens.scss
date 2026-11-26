@@ -1,30 +1,6 @@
 @forward 'scale';
 @use 'scale' as *;
 
-:root {
-  --green: #458933;
-  --pink: #e0a8b5;
-  --olive: #8e8b55;
-  --yellow: #fcc200;
-  --pale-green: #99d289;
-  --lavender: #d4c3ff;
-  --ink: #080808;
-  --paper: #fff;
-  --site-width: #{$site-width};
-  --heading-tracking: -0.02em;
-  --display-tracking: -0.03em;
-  --gutter: max(1rem, #{site-size(2)});
-  --display: 'Barnsdall Low', var(--body);
-  --lead: 'Barnsdall High', var(--body);
-  --body: 'Publisher Rounded Slab', Georgia, serif;
-  --body-sans: 'Publisher Rounded Sans', Arial, sans-serif;
-  --prose-heading-gap: calc(2lh / 3);
-  --featured-image-ratio: calc(3 / 2);
-  --duotone-adjustment: contrast(150%) brightness(120%);
-  --small-seed-width: 0.5em;
-  --small-seed-gap: 0.6em;
-}
-
 @mixin display {
   font-family: var(--display);
   font-weight: 400;
@@ -35,25 +11,4 @@
 @mixin display-type($step) {
   @include display;
   @include type-size($step);
-}
-
-// Barnsdall Low is wider than the display face on the 1024-wide boards.
-:root {
-  --type-display: max(2.75rem, #{site-size(7.15)});
-  --type-section: max(2rem, #{site-size(4.7)});
-  --type-title: max(1.45rem, #{site-size(3)});
-  --type-label: max(1.1rem, #{site-size(2.15)});
-  --publisher-scale: 0.75;
-  --type-body: calc(max(1rem, #{site-size(1.465)}) * var(--publisher-scale) + 0.125rem);
-  --type-publisher-lead: calc(var(--type-body) * 4 / 3);
-  --type-small: calc(var(--type-body) * 0.875);
-  --type-compact-label: clamp(0.875rem, 4.4vw, var(--type-label));
-
-  // Baseline distances divided by type sizes on the original design plates.
-  --leading-display: calc(69 / 84);
-  --leading-section: calc(46 / 54);
-  --leading-title: calc(28 / 34);
-  --leading-label: calc(21 / 24);
-  --leading-compact-label: var(--leading-label);
-  --leading-body: calc(20 / 15);
 }

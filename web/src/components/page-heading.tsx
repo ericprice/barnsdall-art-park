@@ -1,9 +1,9 @@
 import type {ReactNode} from 'react'
 import Link from './route-link'
-import type {SiteContent} from '@/lib/content'
+import type {SiteSettings} from '@/lib/content'
 import {EntryLabel} from './entry-meta'
 
-export type PageHeadingNavigation = {path: string; settings: SiteContent['settings']}
+export type PageHeadingNavigation = {path: string; settings: SiteSettings}
 
 export function PageSubtitle({subtitle}: {subtitle?: string | null}) {
   return subtitle ? <p className="page-heading__subtitle">{subtitle}</p> : null

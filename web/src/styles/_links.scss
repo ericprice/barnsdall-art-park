@@ -1,0 +1,56 @@
+@use 'tokens' as *;
+@use 'dots' as *;
+
+.display-link {
+  @include display-type(label);
+  display: inline-block;
+  text-decoration: none;
+}
+.feature-link {
+  display: grid;
+  justify-items: center;
+  width: 100%;
+  text-decoration: none;
+
+  &::after {
+    // Fill the positioned feature, including the image behind the copy.
+    content: '';
+    position: absolute;
+    inset: 0;
+  }
+}
+.seed-dot {
+  @include olive-dot;
+  width: 1cap;
+  height: 1cap;
+  mask-position: left center;
+  margin-inline-end: 0.12em;
+  vertical-align: baseline;
+}
+.small-seed {
+  @include olive-dot;
+  width: var(--small-seed-width);
+  height: 0.64em;
+  margin-inline-end: var(--small-seed-gap);
+}
+.dot-link {
+  @include publisher-type;
+  display: flex;
+  align-items: baseline;
+  inline-size: fit-content;
+  max-inline-size: 100%;
+  text-align: start;
+  text-decoration: underline;
+  text-underline-offset: 0.16em;
+
+  > .small-seed {
+    flex: none;
+  }
+}
+.action-links {
+  display: grid;
+  gap: 0.4rem;
+  list-style: none;
+  padding: 0;
+  margin: 1rem 0 0;
+}

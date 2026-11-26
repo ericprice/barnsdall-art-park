@@ -6,6 +6,7 @@ import {
   useLayoutEffect,
   useRef,
   useState,
+  useSyncExternalStore,
   useTransition,
   type CSSProperties,
   type ReactNode,
@@ -22,9 +23,9 @@ const loadingFrames = Array.from({length: 42}, (_, frame) => frame)
 function placeLoadingDot(dot: HTMLSpanElement, image: HTMLImageElement, quadrant: number) {
   // All dimensions are percentages of the square container.
   const width = 50
-  const height = width * image.naturalHeight / image.naturalWidth
+  const height = (width * image.naturalHeight) / image.naturalWidth
   const tiltDegrees = (Math.random() * 2 - 1) * 30
-  const angle = tiltDegrees * Math.PI / 180
+  const angle = (tiltDegrees * Math.PI) / 180
   const cos = Math.abs(Math.cos(angle))
   const sin = Math.abs(Math.sin(angle))
   const rotatedWidth = width * cos + height * sin
@@ -40,13 +41,26 @@ function placeLoadingDot(dot: HTMLSpanElement, image: HTMLImageElement, quadrant
   dot.style.maskImage = `url("${image.src}")`
 }
 
+const motionPreference = '(prefers-reduced-motion: reduce)'
+
+function subscribeToMotion(notify: () => void) {
+  const preference = window.matchMedia(motionPreference)
+  preference.addEventListener('change', notify)
+  return () => preference.removeEventListener('change', notify)
+}
+
 export function LoadingDot({active = true}: {active?: boolean}) {
+  const reducedMotion = useSyncExternalStore(
+    subscribeToMotion,
+    () => window.matchMedia(motionPreference).matches,
+    () => true,
+  )
   const firstDot = useRef<HTMLSpanElement>(null)
   const secondDot = useRef<HTMLSpanElement>(null)
   const previousStart = useRef(-1)
 
   useEffect(() => {
-    if (!active || !firstDot.current || !secondDot.current) return
+    if (!active || reducedMotion || !firstDot.current || !secondDot.current) return
     const layers = [firstDot.current, secondDot.current]
     for (const layer of layers) layer.hidden = true
     let last = previousStart.current
@@ -110,7 +124,7 @@ export function LoadingDot({active = true}: {active?: boolean}) {
       window.clearInterval(timer)
       window.clearTimeout(overlapTimer)
     }
-  }, [active])
+  }, [active, reducedMotion])
 
   return (
     <span className="loading-dot" aria-hidden="true">

@@ -1,7 +1,6 @@
-import Image from 'next/image'
+import {ParkImage} from './park-image'
 import {foundationHeadings} from '../../../shared/foundation'
 import type {ContentEntry, Partner} from '@/lib/content'
-import {imageBuilder} from '@/sanity/image'
 import styles from './foundation-directory.module.scss'
 
 function People({
@@ -39,31 +38,17 @@ function People({
 
 function PartnerMark({partner}: {partner: Partner}) {
   const {logo, name = ''} = partner
-  const svgAsset =
-    typeof logo === 'string' ? logo.endsWith('.svg') : logo?.asset?._ref.endsWith('-svg')
-  const src =
-    typeof logo === 'string'
-      ? logo
-      : logo?.asset &&
-        (svgAsset
-          ? imageBuilder.image(logo).url()
-          : imageBuilder.image(logo).width(540).auto('format').url())
-  const alt =
-    typeof logo === 'object' && logo?.decorative
-      ? ''
-      : (typeof logo === 'object' && logo?.alt) || name
-  const mark = src ? (
-    <Image
-      src={src}
-      unoptimized={svgAsset}
-      alt={alt}
-      width={400}
-      height={200}
-      sizes="(max-width: 44rem) 35vw, 16vw"
-    />
-  ) : (
-    name
-  )
+  const mark =
+    typeof logo === 'string' || logo?.asset ? (
+      <ParkImage
+        image={logo}
+        intrinsicWidth={400}
+        fallbackAlt={name}
+        sizes="(max-width: 44rem) 35vw, 16vw"
+      />
+    ) : (
+      name
+    )
   return partner.website ? (
     <a href={partner.website} aria-label={name}>
       {mark}

@@ -1,6 +1,7 @@
 import {themeForEntry, themeStyle} from '@/lib/image-theme'
 import Link from './route-link'
-import type {ContentEntry, SiteContent} from '@/lib/content'
+import type {ContentEntry} from '@/lib/content'
+import {getNewsNeighbors} from '@/lib/news'
 import {blockText} from '@/lib/body-layout'
 import {scheduleLabel} from '@/lib/event-filters'
 import {SidebarLinks} from './action-links'
@@ -17,7 +18,7 @@ function subtitleComparison(text?: string | null) {
   return text?.trim().replace(/\.$/, '').toLowerCase()
 }
 
-export function ListingStory({entry, site}: {entry: ContentEntry; site: SiteContent}) {
+export async function ListingStory({entry}: {entry: ContentEntry}) {
   const event = entry.type === 'event'
   const news = entry.type === 'article'
   const firstBlock = entry.body?.[0]
@@ -32,12 +33,8 @@ export function ListingStory({entry, site}: {entry: ContentEntry; site: SiteCont
   const ticketLinks = entry.link?.href
     ? [{_key: 'tickets', href: entry.link.href, label: entry.link.label || text.getTickets}]
     : undefined
-  const index = site.articles.findIndex((article) => article.id === entry.id)
-  const related = (entry.relatedStoryIds || []).flatMap(
-    (id) => site.articles.find((item) => item.id === id && id !== entry.id) || [],
-  )
-  const previous = index >= 0 ? site.articles[index + 1] : undefined
-  const next = index > 0 ? site.articles[index - 1] : undefined
+  const related = entry.relatedStories ?? []
+  const {previous, next} = await getNewsNeighbors(entry)
   return (
     <main
       id="main-content"
@@ -54,7 +51,6 @@ export function ListingStory({entry, site}: {entry: ContentEntry; site: SiteCont
           {news && <EntryDate entry={entry} />}
         </PageHeading>
         <StoryGallery
-          text={text}
           key={entry.id}
           images={images}
           showCaption={!event}
@@ -87,9 +83,9 @@ export function ListingStory({entry, site}: {entry: ContentEntry; site: SiteCont
       )}
       {news && (previous || next) && (
         <nav className="listing-paging" aria-label="News stories">
-          {previous && <Link href={previous.href}>‹‹ {text.previousStory}</Link>}
+          {previous && <Link href={previous}>‹‹ {text.previousStory}</Link>}
           {next && (
-            <Link className="listing-paging__next" href={next.href}>
+            <Link className="listing-paging__next" href={next}>
               {text.nextStory} »
             </Link>
           )}

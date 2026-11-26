@@ -2,6 +2,7 @@ import {defineConfig} from 'sanity'
 import {structureTool} from 'sanity/structure'
 import {visionTool} from '@sanity/vision'
 import {schemaTypes} from './schemaTypes'
+import {publicOrganizationId} from '../shared/organizations'
 import {structure, singletonTypes} from './structure'
 export default defineConfig({
   name: 'default',
@@ -25,10 +26,16 @@ export default defineConfig({
             (item) => !['support-page', 'visit-page', 'initiative-page'].includes(item.templateId),
           )
         : items,
-    actions: (actions, context) =>
-      singletonTypes.has(context.schemaType)
+    actions: (actions, context) => {
+      if (
+        context.schemaType === 'organization' &&
+        publicOrganizationId(context.documentId) !== context.documentId
+      )
+        return []
+      return singletonTypes.has(context.schemaType)
         ? actions.filter(({action}) => action !== 'duplicate' && action !== 'delete')
-        : actions,
+        : actions
+    },
   },
 
   schema: {

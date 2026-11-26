@@ -6,7 +6,8 @@ import {foundationHeadings} from '../../../../shared/foundation'
 import {interfaceText} from '../../../../shared/interface'
 import type {Metadata} from 'next'
 import {notFound, redirect} from 'next/navigation'
-import {getEntry, getSite} from '@/lib/content'
+import {getEntry, getShell, getEvents} from '@/lib/content'
+import {getNewsPage} from '@/lib/news'
 import {VisitPage, CentennialPage, ContactPage} from '@/components/visitor-pages'
 import {EventsBrowser, type ListingParams} from '@/components/events-browser'
 import {ListingStory} from '@/components/listing-story'
@@ -15,20 +16,35 @@ import {PageSections} from '@/components/page-sections'
 import {DisplayLink} from '@/components/action-links'
 import {HistoryTimeline} from '@/components/history-timeline'
 import {imageBuilder} from '@/sanity/image'
+import {publicOrigin} from '@/lib/site-origin'
 import {bodyLeadText} from '@/lib/body-layout'
 
 type Props = {params: Promise<{slug: string[]}>; searchParams: Promise<ListingParams>}
-export async function generateMetadata({params}: Props): Promise<Metadata> {
+export async function generateMetadata({params, searchParams}: Props): Promise<Metadata> {
   const {slug} = await params
   const path = `/${slug.join('/')}`
-  const site = await getSite()
   const listingTitle =
     path === '/whats-on' ? interfaceText.whatsOn : path === '/news' ? interfaceText.news : undefined
-  const entry = listingTitle ? undefined : await getEntry(path)
+  const [{settings}, entry] = await Promise.all([
+    getShell(),
+    listingTitle ? undefined : getEntry(path),
+  ])
+  const canonical =
+    publicOrigin && (listingTitle || entry) ? new URL(path, publicOrigin) : undefined
+  if (canonical && listingTitle) {
+    const filters = await searchParams
+    if (path === '/whats-on' && filters.period === 'archive')
+      canonical.searchParams.set('period', 'archive')
+    if (path === '/news' && filters.page) {
+      const {page} = await getNewsPage(filters.page)
+      if (page > 1) canonical.searchParams.set('page', String(page))
+    }
+  }
   return {
+    ...(canonical ? {alternates: {canonical}} : {}),
     title: listingTitle || entry?.title || interfaceText.notFound,
     description:
-      entry?.summary || entry?.subtitle || bodyLeadText(entry?.body) || site.settings.description,
+      entry?.summary || entry?.subtitle || bodyLeadText(entry?.body) || settings.description,
     ...(entry?.image && typeof entry.image !== 'string' && entry.image.asset
       ? {
           openGraph: {
@@ -42,25 +58,24 @@ export async function generateMetadata({params}: Props): Promise<Metadata> {
 export default async function ContentPage({params, searchParams}: Props) {
   const {slug} = await params
   const path = `/${slug.join('/')}`
-  const site = await getSite()
-  if (path === '/whats-on')
+  if (path === '/whats-on') {
+    const [{settings}, events, filters] = await Promise.all([getShell(), getEvents(), searchParams])
     return (
       <EventsBrowser
         text={interfaceText}
-        events={site.events}
-        params={await searchParams}
-        subtitle={site.settings.eventsSubtitle}
+        events={events}
+        params={filters}
+        subtitle={settings.eventsSubtitle}
       />
     )
-  if (path === '/news')
-    return (
-      <NewsListing
-        text={interfaceText}
-        articles={site.articles}
-        params={await searchParams}
-        subtitle={site.settings.newsSubtitle}
-      />
-    )
+  }
+  if (path === '/news') {
+    const [{settings}, listing] = await Promise.all([
+      getShell(),
+      searchParams.then((filters) => getNewsPage(filters.page)),
+    ])
+    return <NewsListing text={interfaceText} listing={listing} subtitle={settings.newsSubtitle} />
+  }
   const entry = await getEntry(path)
   if (!entry) notFound()
   const external = /^https?:\/\//.test(entry.href)
@@ -79,13 +94,13 @@ export default async function ContentPage({params, searchParams}: Props) {
     )
   if (entry.template === 'centennial') return <CentennialPage entry={entry} />
   if (entry.template === 'visit' || entry.template === 'policies')
-    return <VisitPage entry={entry} site={site} />
+    return <VisitPage entry={entry} settings={(await getShell()).settings} />
   if (entry.template === 'timeline') return <HistoryTimeline entry={entry} />
   if (external || (path.startsWith('/news/') && entry.href !== path)) redirect(entry.href)
   if (entry.type === 'event' || entry.type === 'article' || entry.template === 'initiative')
-    return <ListingStory entry={entry} site={site} />
+    return <ListingStory entry={entry} />
   if (['initiatives', 'supporters', 'donate'].includes(entry.template || ''))
-    return <SupportSubpage entry={entry} site={site} path={path} />
+    return <SupportSubpage entry={entry} settings={(await getShell()).settings} path={path} />
   const foundation = entry.template === 'foundation'
   return (
     <EditorialPage
@@ -93,7 +108,7 @@ export default async function ContentPage({params, searchParams}: Props) {
       className={foundation ? 'foundation-page' : undefined}
       introHeading={foundation ? foundationHeadings.mission : undefined}
       title={path.startsWith('/support/') ? interfaceText.support : entry.title}
-      navigation={{path, settings: site.settings}}
+      navigation={{path, settings: (await getShell()).settings}}
       afterBody={
         <>
           {foundation && <FoundationDirectory entry={entry} />}

@@ -7,6 +7,7 @@ import {HeartIcon} from '@sanity/icons/Heart'
 import {ClockIcon} from '@sanity/icons/Clock'
 import {historyPageId} from '../shared/page-layouts'
 import {interfaceText} from '../shared/interface'
+import {currentOrganizationFilter} from '../shared/organizations'
 import {organizationDisplayOrder} from './schemaTypes/organization'
 
 export const singletonTypes = new Set(['siteSettings', 'homePage'])
@@ -19,6 +20,7 @@ export const structure: StructureResolver = (S) => {
       .child(
         S.documentTypeList('page')
           .title(title)
+          .apiVersion('2026-10-23')
           .filter(
             '_type == "page" && (slug.current == $prefix || string::startsWith(slug.current, $prefix + "/"))',
           )
@@ -66,6 +68,8 @@ export const structure: StructureResolver = (S) => {
         .child(
           S.documentTypeList('organization')
             .title('Organizations')
+            .apiVersion('2026-10-23')
+            .filter('_type == "organization" && ' + currentOrganizationFilter)
             .defaultOrdering(organizationDisplayOrder.by),
         ),
       S.listItem()

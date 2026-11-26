@@ -1,0 +1,154 @@
+@use 'tokens' as *;
+
+.hero {
+  --slide-fade: 800ms;
+  position: relative;
+  isolation: isolate;
+  z-index: 1;
+  display: grid;
+  place-items: center;
+  height: site-size(53);
+  // The top of the active silhouette sits behind the navigation and masthead.
+  margin: calc(-1 * max(3.5rem, #{site-size(8)})) var(--gutter) 0;
+  @media (width > 48rem) {
+    margin-block-start: calc(-1 * #{site-size(5.2)});
+  }
+}
+.hero__shape {
+  position: absolute;
+  inset: 0 12%;
+  display: grid;
+  grid-template: minmax(0, 1fr) / minmax(0, 1fr);
+  place-items: center;
+  container-type: size;
+  pointer-events: none;
+}
+.hero__frame {
+  grid-area: 1 / 1;
+  display: grid;
+  grid-template: minmax(0, 1fr) / minmax(0, 1fr);
+  place-items: center;
+  // Lay the original portrait-shaped dots on their side for the landscape slideshow.
+  width: 100cqh;
+  height: 100cqw;
+  --dot-turn: 90deg;
+  rotate: var(--dot-turn);
+  mask-position: center;
+  mask-size: contain;
+  mask-repeat: no-repeat;
+  background: var(--org-light);
+  opacity: 0;
+  transition: opacity var(--slide-fade) ease;
+  &[data-flipped='true'] {
+    --dot-turn: -90deg;
+  }
+  &[data-current='true'] {
+    opacity: 1;
+  }
+}
+.hero__photo {
+  position: relative;
+  width: 100cqw;
+  height: 100cqh;
+  rotate: calc(0deg - var(--dot-turn));
+  img {
+    @include cover-image;
+    scale: 1.055;
+    transition: scale 1.25s ease;
+  }
+}
+.hero__frame[data-current='true'] img {
+  scale: 1;
+}
+.hero__story {
+  position: relative;
+  width: min(72%, 58rem);
+  gap: max(0.9rem, #{site-size(1.7)});
+  animation: story-in 0.8s ease both;
+  .feature-content__title {
+    white-space: pre-line;
+  }
+  .feature-content__summary {
+    max-width: 21em;
+  }
+}
+.hero__pause {
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  translate: -50% 0;
+  padding: 0.35em 0.75em;
+  color: var(--ink);
+  @include publisher-type;
+  text-decoration: underline;
+  @media (prefers-reduced-motion: reduce) {
+    display: none;
+  }
+}
+.hero__controls button {
+  color: var(--org-dark);
+  transition: color var(--slide-fade) ease;
+}
+.celebration {
+  position: fixed;
+  z-index: 2;
+  transition: opacity 360ms ease;
+  &[data-at-page-end='true'] {
+    opacity: 0;
+  }
+  inset-inline-end: max(
+    var(--gutter),
+    calc((100% - var(--site-width)) / 2 + var(--gutter)),
+    env(safe-area-inset-right)
+  );
+  inset-block-end: max(var(--gutter), env(safe-area-inset-bottom));
+  width: min(max(8rem, #{site-size(20.5)}), 38svh);
+  aspect-ratio: 0.95;
+  container-type: inline-size;
+  display: grid;
+  align-content: center;
+  justify-items: center;
+  gap: 0.45em;
+  background: color-mix(in srgb, var(--green) 96%, black);
+  color: var(--paper);
+  border-radius: 44% 56% 47% 53% / 43% 41% 59% 57%;
+  text-align: center;
+  text-decoration: none;
+  h2 {
+    width: 90%;
+    font-size: 19cqi;
+    line-height: var(--leading-section);
+    white-space: pre-line;
+  }
+}
+@keyframes story-in {
+  from {
+    opacity: 0;
+    transform: translateY(0.6rem);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@media (max-width: 44rem) {
+  .hero {
+    --slide-height: clamp(22rem, 124vw, 34rem);
+    height: var(--slide-height);
+  }
+  .hero__shape {
+    inset-inline: calc(var(--carousel-control-inset) + var(--carousel-control-size) / 2 + 1rem);
+  }
+  .hero__frame {
+    width: 100cqw;
+    height: 100cqh;
+    --dot-turn: 0deg;
+    &[data-flipped='true'] {
+      --dot-turn: 180deg;
+    }
+  }
+  .hero__story {
+    width: calc(100% - 3rem);
+  }
+}

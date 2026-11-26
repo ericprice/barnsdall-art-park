@@ -1,11 +1,22 @@
+import '../styles/_listings.scss'
+import {createHash} from 'node:crypto'
 import {themeForEntry, themeStyle} from '@/lib/image-theme'
 import {drawDots} from '@/lib/identity-dots'
+import {organizationDocuments} from '../../../shared/organizations'
+import {interfaceText} from '../../../shared/interface'
 import {Tile} from './tile'
 import type {CSSProperties} from 'react'
 import type {ContentEntry} from '@/lib/content'
 import {EntryDate} from './entry-meta'
 import {ParkImage} from './park-image'
 import {DotLink} from './action-links'
+
+const categories = {
+  page: 'Page',
+  place: 'Place',
+  event: 'Event',
+  article: interfaceText.news,
+} satisfies Record<ContentEntry['type'], string>
 
 export function ListingGrid({
   entries,
@@ -24,7 +35,7 @@ export function ListingGrid({
           key={entry.id}
           entry={entry}
           dot={dots[index]}
-          news={news}
+          variant={news ? 'news' : 'event'}
           readMore={readMore}
         />
       ))}
@@ -32,40 +43,62 @@ export function ListingGrid({
   )
 }
 
+export function SearchResultCard({entry}: {entry: ContentEntry}) {
+  // Keep the dot and palette stable when the same result appears in another search.
+  const [shape, color, direction] = createHash('sha256').update(entry.id).digest()
+  const dot = (shape % 14) + 1
+  const palette = organizationDocuments[color % organizationDocuments.length]
+  const baseTheme = !entry.image && !entry.organization ? palette : themeForEntry(entry)
+  const theme =
+    !entry.image && direction % 2 === 0
+      ? {...baseTheme, light: baseTheme.dark, dark: baseTheme.light}
+      : baseTheme
+  const label = [categories[entry.type], entry.organization].filter(Boolean).join(' · ')
+  return <ListingCard entry={entry} dot={dot} variant="search" theme={theme} label={label} />
+}
+
 function ListingCard({
   entry,
   dot,
-  news,
+  variant,
   readMore,
+  theme = themeForEntry(entry),
+  label = entry.organization,
 }: {
   entry: ContentEntry
   dot: number
-  news: boolean
+  variant: 'event' | 'news' | 'search'
   readMore?: string
+  theme?: ReturnType<typeof themeForEntry>
+  label?: string | null
 }) {
-  const theme = themeForEntry(entry)
+  const editorial = variant === 'news' || (variant === 'search' && entry.type === 'article')
   return (
     <Tile
       className="listing-card"
-      style={themeStyle(theme, news ? entry.image : undefined)}
+      style={themeStyle(theme, editorial ? entry.image : undefined)}
       href={entry.href}
       title={entry.title}
-      label={entry.organization}
+      label={label}
+      heading={variant === 'search' ? 'h2' : undefined}
       media={
         <div
           className="tile__media listing-card__photo"
           style={{'--olive-dot': `url('/identity/dots/${dot}.svg')`} as CSSProperties}
         >
-          <ParkImage editorial={news} orgTheme={theme} image={entry.image} />
+          <ParkImage
+            editorial={editorial}
+            orgTheme={theme}
+            image={entry.image}
+            sizes="(max-width: 32rem) 92vw, (max-width: 44rem) 45vw, (max-width: 64rem) 31vw, 20rem"
+          />
         </div>
       }
     >
       <EntryDate entry={entry} />
-      {news && (
-        <>
-          {entry.summary && <p className="tile__summary">{entry.summary}</p>}
-          {entry.href && readMore && <DotLink href={entry.href}>{readMore}</DotLink>}
-        </>
+      {variant !== 'event' && entry.summary && <p className="tile__summary">{entry.summary}</p>}
+      {variant === 'news' && entry.href && readMore && (
+        <DotLink href={entry.href}>{readMore}</DotLink>
       )}
     </Tile>
   )

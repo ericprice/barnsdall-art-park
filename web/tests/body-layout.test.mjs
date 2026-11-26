@@ -3,7 +3,7 @@ import test from 'node:test'
 import {createHistoryPage} from '../../shared/history-timeline.ts'
 import {migrateSectionsToBody} from '../../shared/migrate-sections.ts'
 import {bodyForLayout} from '../../shared/migrations/legacy-layout.ts'
-import {standaloneLink} from '../src/lib/body-layout.ts'
+import {linkDestination, pageSections, standaloneLink} from '../src/lib/body-layout.ts'
 
 const paragraph = (_key, text, style = 'normal') => ({
   _type: 'block',
@@ -56,7 +56,7 @@ test('a Visit map file and its public anchor survive migration and a subsequent 
     ['map', 'getting-here'],
   )
   assert.equal(sections[0].title, 'Park map')
-  assert.match(sections[0].links[0].href, /4821178d166e1478946553b304524a749221c966\.pdf$/)
+  assert.match(sections[0].links[0].href, /4821178d166e1478946553b304524a749221c966\.pdf\?dl=$/)
 })
 
 test('standard headings form grouped items for Support and prose sections for Olive Grove', () => {
@@ -141,4 +141,20 @@ test('the initial History template has editable heading blocks and individual da
     new Set(history.timelineEntries.map(({_key}) => _key)).size,
     history.timelineEntries.length,
   )
+})
+
+test('file downloads retain attachment semantics in rich text and grouped actions', () => {
+  const file = {
+    _type: 'download',
+    _key: 'file',
+    label: 'Download map',
+    asset: {_type: 'reference', _ref: 'file-4821178d166e1478946553b304524a749221c966-pdf'},
+  }
+  const [section] = pageSections([
+    {_key: 's', role: 'columns', links: [file], entries: [{_key: 'i', links: [file]}]},
+  ])
+  assert.equal(new URL(linkDestination(file)).searchParams.has('dl'), true)
+  assert.equal(section.links[0].download, true)
+  assert.deepEqual(section.entries[0].links, section.links)
+  assert.equal(linkDestination({_type: 'download'}), undefined)
 })

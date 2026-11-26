@@ -3,18 +3,12 @@
 import {ParkImage} from './park-image'
 import Link from './route-link'
 import {usePathname} from 'next/navigation'
-import {
-  useCallback,
-  useEffect,
-  useLayoutEffect,
-  useRef,
-  useState,
-  useSyncExternalStore,
-  type KeyboardEvent as ReactKeyboardEvent,
-} from 'react'
-import type {SiteContent} from '@/lib/content'
+import {useCallback, useEffect, useRef, useState} from 'react'
+import type {SiteSettings} from '@/lib/content'
 import {interfaceText} from '../../../shared/interface'
-import {formatParkSunset, getParkSunset} from '@/lib/park-sunset'
+import {ParkUtilityInfo} from './park-utility-info'
+import {NavigationGroup} from './navigation-group'
+import {usePinnedHeader} from './use-pinned-header'
 import {HeaderSearch} from './header-search'
 import {PageSubtitle} from './page-heading'
 
@@ -27,73 +21,8 @@ function Magnifier() {
   )
 }
 
-type Settings = Pick<SiteContent['settings'], 'title' | 'navigation'>
+type Settings = Pick<SiteSettings, 'title' | 'navigation'>
 type HeaderProps = {settings: Settings; initialSunset: string; homeSubtitle?: string}
-
-function subscribeToClock(refresh: () => void) {
-  const interval = window.setInterval(refresh, 60_000)
-  document.addEventListener('visibilitychange', refresh)
-  window.addEventListener('pageshow', refresh)
-  return () => {
-    window.clearInterval(interval)
-    document.removeEventListener('visibilitychange', refresh)
-    window.removeEventListener('pageshow', refresh)
-  }
-}
-
-function currentSunset() {
-  return getParkSunset(new Date()).toISOString()
-}
-
-function Sunset({initialSunset}: {initialSunset: string}) {
-  const sunset = useSyncExternalStore(subscribeToClock, currentSunset, () => initialSunset)
-  return (
-    <>
-      <time dateTime={sunset}>{formatParkSunset(new Date(sunset))}</time> Sunset
-    </>
-  )
-}
-
-function ParkUtilityInfo({initialSunset}: {initialSunset: string}) {
-  const [active, setActive] = useState(0)
-  const items = [
-    {id: 'city-run', content: 'City-run since 1927'},
-    {id: 'hours', content: 'Open Until 10 PM'},
-    {id: 'sunset', content: <Sunset initialSunset={initialSunset} />},
-  ]
-  const itemCount = items.length
-
-  useEffect(() => {
-    const mobile = window.matchMedia('(max-width: 48rem)')
-    let timer: number | undefined
-    function updateTimer() {
-      window.clearInterval(timer)
-      if (mobile.matches) {
-        timer = window.setInterval(() => setActive((item) => (item + 1) % itemCount), 4000)
-      }
-    }
-    function onViewportChange() {
-      setActive(0)
-      updateTimer()
-    }
-    updateTimer()
-    mobile.addEventListener('change', onViewportChange)
-    return () => {
-      window.clearInterval(timer)
-      mobile.removeEventListener('change', onViewportChange)
-    }
-  }, [itemCount])
-
-  return (
-    <div className="park-utility__info">
-      {items.map(({id, content}, index) => (
-        <span data-active={index === active} key={id}>
-          {content}
-        </span>
-      ))}
-    </div>
-  )
-}
 
 export function SiteHeader({settings, initialSunset, homeSubtitle}: HeaderProps) {
   const pathname = usePathname()
@@ -108,16 +37,18 @@ export function SiteHeader({settings, initialSunset, homeSubtitle}: HeaderProps)
   )
 }
 
-function Navigation({pathname, settings, initialSunset, homeSubtitle}: HeaderProps & {pathname: string}) {
+function Navigation({
+  pathname,
+  settings,
+  initialSunset,
+  homeSubtitle,
+}: HeaderProps & {pathname: string}) {
   const isHome = pathname === '/'
-  const [pinned, setPinned] = useState(false)
+  const {pinned, header, intro} = usePinnedHeader()
   const compact = !isHome || pinned
   const [open, setOpen] = useState<number | 'search' | null>(null)
   const [mobile, setMobile] = useState(false)
   const [initialQuery, setInitialQuery] = useState('')
-  const header = useRef<HTMLElement>(null)
-  const intro = useRef<HTMLDivElement>(null)
-  const previousNavPositions = useRef<Map<HTMLElement, number> | null>(null)
   const opener = useRef<HTMLElement | null>(null)
   const mobileButton = useRef<HTMLButtonElement>(null)
 
@@ -126,52 +57,6 @@ function Navigation({pathname, settings, initialSunset, homeSubtitle}: HeaderPro
     setMobile(false)
     setInitialQuery('')
   }, [])
-
-  useEffect(() => {
-    if (!intro.current) return
-    let wasPinned: boolean | undefined
-    const observer = new IntersectionObserver(([entry]) => {
-      const nextPinned = entry.boundingClientRect.bottom < 0
-      if (nextPinned === wasPinned) return
-      if (
-        wasPinned !== undefined &&
-        !window.matchMedia('(prefers-reduced-motion: reduce)').matches
-      ) {
-        const labels = header.current?.querySelectorAll<HTMLElement>(
-          '.park-navigation__label, .park-navigation__mobile > button:first-child',
-        )
-        previousNavPositions.current = new Map(
-          Array.from(labels ?? [], (label) => [label, label.getBoundingClientRect().left]),
-        )
-      }
-      wasPinned = nextPinned
-      setPinned(nextPinned)
-    })
-    observer.observe(intro.current)
-    return () => observer.disconnect()
-  }, [])
-
-  useLayoutEffect(() => {
-    const previous = previousNavPositions.current
-    previousNavPositions.current = null
-    if (!previous) return
-
-    // Let flexbox set the final spacing, then ease each label from its previous position.
-    const moves = Array.from(
-      previous,
-      ([label, left]) => [label, left - label.getBoundingClientRect().left] as const,
-    )
-    const timing = {duration: 260, easing: 'ease-out'}
-    const animations = moves.flatMap(([label, distance]) =>
-      distance ? [label.animate({transform: [`translateX(${distance}px)`, 'none']}, timing)] : [],
-    )
-    if (pinned) {
-      header.current?.querySelectorAll('.compact-home').forEach((mark) => {
-        animations.push(mark.animate({opacity: [0, 1]}, {...timing, easing: 'ease-in'}))
-      })
-    }
-    return () => animations.forEach((animation) => animation.cancel())
-  }, [pinned])
 
   useEffect(() => {
     function openFromFooter(event: MouseEvent) {
@@ -237,7 +122,7 @@ function Navigation({pathname, settings, initialSunset, homeSubtitle}: HeaderPro
       document.removeEventListener('keydown', onKey)
       document.removeEventListener(outsideEvent, dismissFromOutside, true)
     }
-  }, [open, mobile, close])
+  }, [open, mobile, close, header])
 
   function toggleSearch(trigger: HTMLButtonElement) {
     opener.current = trigger
@@ -336,84 +221,24 @@ function Navigation({pathname, settings, initialSunset, homeSubtitle}: HeaderPro
                 B
               </Link>
             )}
-            {settings.navigation.map((item, index) => {
-              const panelId = `navigation-panel-${index}`
-              const hasChildren = Boolean(item.children?.length)
-              if (!item.href && !hasChildren) return null
-              const current = item.href
-                ? pathname === item.href || pathname.startsWith(item.href + '/')
-                : item.children?.some((child) => {
-                    const target = child.href.split(/[?#]/)[0]
-                    return pathname === target || pathname.startsWith(target + '/')
-                  })
-
-              function toggleSubmenu(trigger: HTMLElement) {
-                opener.current = trigger
-                setOpen(open === index ? null : index)
-              }
-
-              function focusSubmenu(event: ReactKeyboardEvent<HTMLElement>) {
-                if (event.key !== 'ArrowDown' || !hasChildren) return
-                event.preventDefault()
-                opener.current = event.currentTarget
-                setOpen(index)
-                requestAnimationFrame(() => {
-                  header.current?.querySelector<HTMLAnchorElement>(`#${panelId} a`)?.focus()
-                })
-              }
-              return (
-                <div
-                  key={item.title}
-                  className="park-navigation__group"
-                  data-open={open === index}
-                  data-current={current}
-                >
-                  <span className="park-navigation__label">
-                    {item.href ? (
-                      <Link
-                        href={item.href}
-                        aria-current={current ? 'page' : undefined}
-                        aria-expanded={hasChildren ? open === index : undefined}
-                        aria-controls={hasChildren ? panelId : undefined}
-                        onClick={(event) => {
-                          if (event.metaKey || event.ctrlKey || event.shiftKey || event.altKey)
-                            return
-                          if (hasChildren) {
-                            event.preventDefault()
-                            toggleSubmenu(event.currentTarget)
-                          } else {
-                            close()
-                          }
-                        }}
-                        onKeyDown={focusSubmenu}
-                      >
-                        {item.title}
-                      </Link>
-                    ) : (
-                      <button
-                        type="button"
-                        aria-current={current ? 'true' : undefined}
-                        aria-expanded={open === index}
-                        aria-controls={panelId}
-                        onClick={(event) => toggleSubmenu(event.currentTarget)}
-                        onKeyDown={focusSubmenu}
-                      >
-                        {item.title}
-                      </button>
-                    )}
-                  </span>
-                  {!!item.children?.length && (
-                    <div className="park-navigation__links" id={panelId} inert={open !== index}>
-                      {item.children.map((child) => (
-                        <Link key={child.href} href={child.href} onClick={close}>
-                          {child.label}
-                        </Link>
-                      ))}
-                    </div>
-                  )}
-                </div>
-              )
-            })}
+            {settings.navigation.map((item, index) => (
+              <NavigationGroup
+                key={item.title}
+                item={item}
+                pathname={pathname}
+                panelId={`navigation-panel-${index}`}
+                expanded={open === index}
+                onOpen={(trigger) => {
+                  opener.current = trigger
+                  setOpen(index)
+                }}
+                onToggle={(trigger) => {
+                  opener.current = trigger
+                  setOpen(open === index ? null : index)
+                }}
+                onClose={close}
+              />
+            ))}
             <button
               className="park-navigation__search"
               type="button"

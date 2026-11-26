@@ -1,8 +1,14 @@
 import {contentSections} from './sections'
+import {validateContentSlug} from '../../shared/routes'
 import {destinationFields, quoteFields, validDestination} from './objects'
 import {FeatureColor} from './feature-color'
 import {footerFromPlainText} from '../../shared/footer-text'
-import {pageLayouts, pageHasMainImage, historyPageId, rolesByLayout} from '../../shared/page-layouts'
+import {
+  pageLayouts,
+  pageHasMainImage,
+  historyPageId,
+  rolesByLayout,
+} from '../../shared/page-layouts'
 import {organizationReference} from './organization'
 import {hostsDetailPage, isExternalStoryUrl} from '../../shared/organizations'
 import {supportPageFields} from './support-subpages'
@@ -23,9 +29,6 @@ import {CalendarIcon} from '@sanity/icons/Calendar'
 import {DocumentTextIcon} from '@sanity/icons/DocumentText'
 
 const title = defineField({name: 'title', type: 'string', validation: (r) => r.required()})
-const validSlug = (value?: {current?: string}) =>
-  (value?.current && /^[^/?#]+(?:\/[^/?#]+)*$/.test(value.current)) ||
-  'Generate a complete page path.'
 const slug = defineField({
   name: 'slug',
   type: 'slug',
@@ -42,7 +45,12 @@ const slug = defineField({
         .replace(/[^a-z0-9/]+/g, '-')
         .replace(/^-+|-+$/g, ''),
   },
-  validation: (r) => r.required().custom(validSlug),
+  validation: (r) =>
+    r
+      .required()
+      .custom((value, {document}) =>
+        validateContentSlug(value?.current, document?._type ?? 'page'),
+      ),
 })
 const summary = defineField({name: 'summary', type: 'text', rows: 3})
 const subtitle = defineField({
@@ -101,6 +109,21 @@ export const siteSettings = defineType({
             ...destinationFields,
             defineField({name: 'children', type: 'array', of: [defineArrayMember({type: 'link'})]}),
           ],
+          validation: (rule) =>
+            rule.custom((item) => {
+              if (!item) return true
+              const destination = item as {
+                internal?: {_ref?: string}
+                href?: string
+                children?: unknown[]
+              }
+              if (destination.internal?._ref || destination.href)
+                return validDestination(destination)
+              return (
+                Boolean(destination.children?.length) ||
+                'Add a destination or at least one child link.'
+              )
+            }),
           preview: {select: {title: 'title'}},
         }),
       ],
@@ -141,9 +164,27 @@ export const siteSettings = defineType({
       ],
     }),
     // Older site builds still read the original plain-text fields.
-    defineField({name: 'address', type: 'text', hidden: true, readOnly: true}),
-    defineField({name: 'footerText', type: 'text', hidden: true, readOnly: true}),
-    defineField({name: 'landAcknowledgment', type: 'text', hidden: true, readOnly: true}),
+    defineField({
+      name: 'address',
+      type: 'text',
+      hidden: true,
+      readOnly: true,
+      deprecated: {reason: 'Use the rich text field under Footer.'},
+    }),
+    defineField({
+      name: 'footerText',
+      type: 'text',
+      hidden: true,
+      readOnly: true,
+      deprecated: {reason: 'Use the rich text field under Footer.'},
+    }),
+    defineField({
+      name: 'landAcknowledgment',
+      type: 'text',
+      hidden: true,
+      readOnly: true,
+      deprecated: {reason: 'Use the rich text field under Footer.'},
+    }),
   ],
 })
 
@@ -415,8 +456,8 @@ function externalStoryUrl(kind: 'event' | 'article') {
     group: 'content',
     description:
       kind === 'event'
-        ? 'Link directly to the event on the organizer’s website.'
-        : 'Required for partner news. Leave empty for an on-site Foundation or Park story.',
+        ? 'Link directly to the event on the organizer’s website. On-site body, gallery and ticket information is retained if ownership changes.'
+        : 'Required for partner news. Leave empty for an on-site Foundation or Park story. Changing the destination retains existing on-site text and images.',
     hidden: ({document}) =>
       kind === 'event' ? !partnerOwned(document) : Boolean(document?.targetPage),
     validation: (rule) =>
@@ -494,6 +535,14 @@ export const article = defineType({
       group: 'publishing',
       type: 'datetime',
       options: eventClock,
+      validation: (rule) =>
+        rule
+          .custom(
+            (date, {document}) =>
+              Boolean(date || document?.excludeFromNews) ||
+              'Add a display date to place this story in chronological order.',
+          )
+          .warning(),
     }),
     defineField({
       name: 'sourceLink',
@@ -551,7 +600,10 @@ export const event = defineType({
       group: 'content',
       hidden: partnerEvent,
       validation: (rule) =>
-        rule.custom((value, {document}) => partnerOwned(document) || validSlug(value)),
+        rule.custom(
+          (value, {document}) =>
+            partnerOwned(document) || validateContentSlug(value?.current, 'event'),
+        ),
     }),
     {...mainImage, group: 'images'},
     {...gallery, group: 'images', hidden: partnerEvent},

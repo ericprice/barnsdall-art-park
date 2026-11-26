@@ -1,6 +1,6 @@
 import {ParkImage} from './park-image'
 import Link from './route-link'
-import {getSite} from '@/lib/content'
+import {getShell} from '@/lib/content'
 import {NewsletterSignup} from './newsletter-signup'
 import {FooterText} from './rich-text'
 import {interfaceText} from '../../../shared/interface'
@@ -23,8 +23,8 @@ function platformIcon(href: string) {
   }
 }
 export async function SiteFooter() {
-  const {settings, organizationColors} = await getSite()
-  const foundation = organizationColors.find(({_id}) => _id === 'organization.foundation')
+  const {settings, organizationColors} = await getShell()
+  const foundation = organizationColors.find(({_id}) => _id === 'organization-foundation')
   return (
     <footer className="park-footer" id="connect">
       <div className="park-footer__foundation">

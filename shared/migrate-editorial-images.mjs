@@ -1,4 +1,5 @@
-// Called on both published documents and drafts, without mutating the input document.
+// Only historical image shapes need conversion. Modern copies can appear alongside them.
+const legacyImageFields = ['credit', 'light', 'dark', 'cutoutScale', 'treatment']
 export function migrateEditorialImages(document) {
   function visit(value, path) {
     if (Array.isArray(value)) return value.map((item) => visit(item, [...path, '[]']))
@@ -8,15 +9,17 @@ export function migrateEditorialImages(document) {
       Object.entries(value).map(([key, child]) => [key, visit(child, [...path, key])]),
     )
 
-    if (
-      ['parkImage', 'editorialImage', 'image'].includes(result._type) ||
-      result.asset?._ref?.startsWith('image-')
-    ) {
+    const isOldImage =
+      result._type === 'image' ||
+      (result.asset?._ref?.startsWith('image-') && legacyImageFields.some((key) => key in result))
+    if (isOldImage) {
       const editorial =
+        result._type === 'editorialImage' ||
         (document._type === 'article' &&
           path.length === 1 &&
           ['image', 'featureImage'].includes(path[0])) ||
-        (document._type === 'homePage' && path.join('.') === 'heroSlides.[].image')
+        (document._type === 'homePage' &&
+          ['heroSlides.[].image', 'features.[].image'].includes(path.join('.')))
       result._type = editorial ? 'editorialImage' : 'parkImage'
       const caption = (result.caption || '').trim() || (result.alt || '').trim()
       const credit = (result.credit || '').trim()
@@ -38,8 +41,7 @@ export function migrateEditorialImages(document) {
           result.presentation = 'rose'
         }
       }
-      for (const key of ['credit', 'alt', 'light', 'dark', 'cutoutScale', 'treatment'])
-        delete result[key]
+      for (const key of legacyImageFields) delete result[key]
     }
 
     if (document._type === 'siteSettings' && path.join('.') === 'socialLinks.[]') {
