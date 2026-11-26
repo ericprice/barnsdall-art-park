@@ -104,7 +104,7 @@
     transition: opacity 360ms ease;
   }
 
-  &[data-at-page-end='true'] {
+  &[data-footer-visible='true'] {
     &::before,
     .celebration__content {
       opacity: 0;

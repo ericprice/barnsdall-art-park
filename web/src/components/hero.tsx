@@ -122,28 +122,15 @@ export function Hero({slides}: Pick<HomeContent, 'slides'>) {
 }
 
 export function CelebrationBadge({celebration}: Pick<HomeContent, 'celebration'>) {
-  const [atPageEnd, setAtPageEnd] = useState(false)
+  const [footerVisible, setFooterVisible] = useState(false)
   useEffect(() => {
     if (!celebration?.title) return
+    const footer = document.getElementById('connect')
+    if (!footer) return
 
-    function updatePageEnd() {
-      const page = document.scrollingElement
-      if (!page) return
-
-      const scrollLimit = page.scrollHeight - page.clientHeight
-      setAtPageEnd(scrollLimit > 0 && scrollLimit - page.scrollTop <= 1)
-    }
-
-    updatePageEnd()
-    window.addEventListener('scroll', updatePageEnd, {passive: true})
-    window.addEventListener('resize', updatePageEnd)
-    const observer = new ResizeObserver(updatePageEnd)
-    observer.observe(document.body)
-    return () => {
-      window.removeEventListener('scroll', updatePageEnd)
-      window.removeEventListener('resize', updatePageEnd)
-      observer.disconnect()
-    }
+    const observer = new IntersectionObserver(([entry]) => setFooterVisible(entry.isIntersecting))
+    observer.observe(footer)
+    return () => observer.disconnect()
   }, [celebration?.title])
 
   if (!celebration?.title) return null
@@ -158,7 +145,7 @@ export function CelebrationBadge({celebration}: Pick<HomeContent, 'celebration'>
     </>
   )
   return (
-    <div className="celebration" data-at-page-end={atPageEnd} inert={atPageEnd}>
+    <div className="celebration" data-footer-visible={footerVisible} inert={footerVisible}>
       {celebration.link?.href ? (
         <Link className="celebration__content" href={celebration.link.href}>
           {content}
