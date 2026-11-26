@@ -1,6 +1,6 @@
 @use 'tokens' as *;
 
-@mixin webfont($family, $file, $style: normal) {
+@mixin webfont($family, $file, $style: normal, $features: null) {
   @font-face {
     font-family: $family;
     src:
@@ -9,15 +9,16 @@
     font-weight: 400;
     font-style: $style;
     font-display: swap;
+    font-feature-settings: $features;
   }
 }
 
 @include webfont('Barnsdall Low', 'barnsdall-low');
 @include webfont('Barnsdall High', 'barnsdall-high');
-@include webfont('Publisher Rounded Slab', 'publisher');
-@include webfont('Publisher Rounded Slab', 'publisher-italic', italic);
-@include webfont('Publisher Rounded Sans', 'publisher-sans');
-@include webfont('Publisher Rounded Sans', 'publisher-sans-italic', italic);
+@include webfont('Publisher Rounded Slab', 'publisher', $features: 'onum');
+@include webfont('Publisher Rounded Slab', 'publisher-italic', italic, 'onum');
+@include webfont('Publisher Rounded Sans', 'publisher-sans', $features: 'onum');
+@include webfont('Publisher Rounded Sans', 'publisher-sans-italic', italic, 'onum');
 * {
   box-sizing: border-box;
   -webkit-tap-highlight-color: transparent;
@@ -55,6 +56,7 @@ button {
 }
 a {
   color: inherit;
+  text-decoration-thickness: var(--link-underline-thickness);
   text-underline-offset: 0.16em;
 }
 :where(button, a, input, select, summary):focus-visible {
