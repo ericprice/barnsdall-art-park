@@ -88,40 +88,6 @@
     @include cover-image;
   }
 }
-.accordion {
-  margin-top: 1.5rem;
-  border-top: 0.0625rem solid;
-  details {
-    border-bottom: 0.0625rem solid;
-  }
-  summary {
-    cursor: pointer;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    gap: 1rem;
-    padding: 1rem 0;
-    font: 400 var(--type-label)/var(--leading-label) var(--lead);
-    list-style: none;
-    &::-webkit-details-marker {
-      display: none;
-    }
-    span::after {
-      content: '+';
-      font-family: var(--body);
-    }
-  }
-  details[open] summary span::after {
-    content: '−';
-  }
-  details > div {
-    padding: 0 0 1.5rem;
-  }
-  .text-link {
-    display: inline-block;
-    margin-top: 1rem;
-  }
-}
 @media (max-width: 44rem) {
   .subnav {
     gap: 0.7rem 1rem;

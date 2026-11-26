@@ -89,7 +89,7 @@ export const contentSections = defineField({
           name: 'entries',
           title: 'Items',
           type: 'array',
-          hidden: ({parent}) => !['columns', 'accordion'].includes(parent?.role),
+          hidden: ({parent}) => parent?.role !== 'columns',
           of: [
             defineArrayMember({
               name: 'sectionItem',
@@ -115,7 +115,7 @@ export const contentSections = defineField({
       for (const {anchor, role} of (sections || []) as {anchor?: string; role?: string}[]) {
         if (anchor && anchors.has(anchor)) return 'Each page anchor must be unique.'
         if (anchor) anchors.add(anchor)
-        if (role && !['prose', 'columns', 'accordion'].includes(role)) {
+        if (role && !['prose', 'columns'].includes(role)) {
           if (slots.has(role)) return 'Use each special layout only once on a page.'
           slots.add(role)
         }

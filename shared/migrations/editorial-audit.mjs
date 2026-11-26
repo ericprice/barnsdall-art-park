@@ -93,9 +93,7 @@ function migrateSections(doc, layout) {
       ? sections.filter(({anchor}) => anchor !== 'past-initiatives' && anchor !== 'related-news')
       : sections
   doc.contentSections = retained.map((s) => {
-    const role =
-      slots[layout]?.[s.anchor] ||
-      (s.collapsible ? 'accordion' : s.entries.length ? 'columns' : 'prose')
+    const role = slots[layout]?.[s.anchor] || (s.entries.length ? 'columns' : 'prose')
     return {
       _key: s._key,
       _type: 'contentSection',

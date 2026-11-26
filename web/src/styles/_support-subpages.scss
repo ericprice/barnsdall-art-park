@@ -25,38 +25,6 @@
 .supporter-years {
   margin-top: 3rem;
 }
-.supporter-year,
-.support-initiatives.is-completed {
-  border-top: 0.05rem solid #989898;
-  summary {
-    @include display-type(section);
-    display: grid;
-    place-items: center;
-    padding: 0.2em 1em;
-    text-align: center;
-    > span,
-    &::before {
-      text-box-trim: trim-both;
-      text-box-edge: cap alphabetic;
-    }
-    list-style: none;
-    position: relative;
-    cursor: pointer;
-    &::-webkit-details-marker {
-      display: none;
-    }
-    &::before {
-      content: '+';
-      position: absolute;
-      left: 0;
-      top: 50%;
-      translate: 0 -50%;
-    }
-  }
-  &[open] > summary::before {
-    content: '−';
-  }
-}
 .supporter-year {
   .supporter-groups {
     display: grid;
@@ -91,16 +59,25 @@
   .supporter-logos {
     display: grid;
     grid-template-columns: repeat(2, minmax(0, 1fr));
-    @include content-grid-gap(var(--gutter));
+    gap: var(--gutter);
     li {
       position: relative;
+      inline-size: 100%;
       min-height: 5rem;
       aspect-ratio: 2.65;
-      background: #eee;
       padding: 0.8rem;
       display: grid;
       place-items: center;
       text-align: center;
+    }
+    li:not(.has-logo) {
+      @include display-type(label);
+      color: var(--green);
+      background: var(--inline-form-fill);
+
+      @media (max-width: 22rem) {
+        @include type-size(compact-label);
+      }
     }
     li a {
       display: grid;
@@ -168,7 +145,7 @@
 }
 .support-initiatives.is-completed {
   margin-block: 4rem;
-  > .support-card-grid {
+  .support-card-grid {
     margin-block-start: 2rem;
   }
 }
@@ -253,9 +230,6 @@
 @media (max-width: 44rem) {
   .supporter-year .supporter-groups {
     grid-template-columns: 1fr;
-  }
-  .supporter-year summary {
-    padding-block: 0.35em;
   }
   .support-card-grid,
   .donation-level-grid {

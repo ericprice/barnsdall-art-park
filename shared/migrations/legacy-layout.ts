@@ -44,7 +44,6 @@ export function bodyForLayout(body: RichText | undefined, path: string, template
         body: [],
         links: [],
         entries: [],
-        collapsible: block._key.startsWith('disclosure-'),
       }
       sections.push(section)
       item = undefined
@@ -59,7 +58,7 @@ export function bodyForLayout(body: RichText | undefined, path: string, template
       block.style === 'h3' &&
       (template === 'foundation' ||
         path === '/support' ||
-        section.collapsible ||
+        section._key.startsWith('disclosure-') ||
         block._key.startsWith('entry-'))
     ) {
       item = {_key: block._key.replace(/^entry-/, ''), title: blockText(block), body: [], links: []}

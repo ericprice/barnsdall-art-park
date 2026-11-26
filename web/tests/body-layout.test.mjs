@@ -1,7 +1,8 @@
 import assert from 'node:assert/strict'
 import test from 'node:test'
 import {createHistoryPage} from '../../shared/history-timeline.ts'
-import {migrateSectionsToBody} from '../../shared/migrate-sections.ts'
+import {migrateSectionsToBody, moveProseSections} from '../../shared/migrate-sections.ts'
+import {editorialDocuments} from '../../shared/migrations/editorial-audit.mjs'
 import {bodyForLayout} from '../../shared/migrations/legacy-layout.ts'
 import {linkDestination, pageSections, standaloneLink} from '../src/lib/body-layout.ts'
 
@@ -76,9 +77,33 @@ test('standard headings form grouped items for Support and prose sections for Ol
     [paragraph('first', 'The plan', 'h2'), ...body],
     '/support/olive-grove',
   ).sections
-  assert.equal(olive[1].collapsible, false)
+  assert.deepEqual(olive[1].entries, [])
   assert.deepEqual(olive[1].body, body.slice(1, -1))
   assert.deepEqual(bodyForLayout(body, '/whats-on/fridays'), {body, sections: undefined})
+})
+
+test('legacy disclosure headings keep their anchors and content as ordinary sections', () => {
+  const body = [
+    paragraph('disclosure-history', 'Our history', 'h2'),
+    paragraph('history', 'How it began.'),
+    paragraph('disclosure-vision', 'Our vision', 'h2'),
+    paragraph('mission', 'Our mission', 'h3'),
+    paragraph('text', 'Caring for the park.'),
+    linkedParagraph('link', 'Read more', '/about'),
+  ]
+  const [page] = editorialDocuments([
+    {_id: 'foundation', _type: 'page', slug: {current: 'support'}, template: 'foundation', body},
+  ])
+  const {contentSections, body: prose} = moveProseSections(page)
+  assert.equal(contentSections.length, 1)
+  const [vision] = contentSections
+  assert.equal(vision.role, 'columns')
+  assert.equal(vision.anchor, 'vision')
+  assert.deepEqual(vision.entries.map(({title}) => title), ['Our mission'])
+  assert.deepEqual(vision.entries[0].body, [body[4]])
+  assert.equal(vision.entries[0].links[0].href, '/about')
+  assert.equal(prose[0]._key, 'heading-history')
+  assert.deepEqual(prose[1], body[1])
 })
 
 test('paragraph order, inline links, numbered lists and duplicate heading fragments survive layout', () => {

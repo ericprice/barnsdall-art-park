@@ -38,7 +38,7 @@ The **History / Timeline** page renders an ordered set of milestones. Editors op
 `studio/schemaTypes` is the schema source of truth:
 
 - **Homepage** holds featured slides, the anniversary callout, Explore photographs, and featured items with optional artwork and caption overrides.
-- **Pages** holds narrative pages and their layouts. Sections support prose, columns, accordions, and template-specific content. The Foundation directory and History milestones have structured editors.
+- **Pages** holds narrative pages and their layouts. Sections support prose, columns, and template-specific content. The Foundation directory and History milestones have structured editors.
 - **Park locations** holds each facility’s website or its managed page content.
 - **What’s On** holds events, Los Angeles schedules, optional weekly recurrence, ticket links, and images.
 - **News** holds on-site stories, promotions, and external partner stories. Display date controls chronological order.

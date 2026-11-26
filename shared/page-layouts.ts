@@ -18,7 +18,6 @@ export const historyPageId = 'e12abb4a-ab48-47bf-af10-1e629027ab37'
 export const sectionRoles = {
   prose: 'Text and links',
   columns: 'Grouped items',
-  accordion: 'Accordion',
   map: 'Map actions',
   inquiries: 'Rental inquiries',
   campaign: 'Campaign introduction',
@@ -28,7 +27,7 @@ export const sectionRoles = {
 
 export const rolesByLayout: Record<string, (keyof typeof sectionRoles)[]> = {
   visit: ['map'],
-  foundation: ['columns', 'accordion'],
+  foundation: ['columns'],
   centennial: ['campaign'],
   contact: ['signup'],
 }

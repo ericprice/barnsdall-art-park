@@ -30,38 +30,18 @@ export function SectionContent({
       <h2>{section.title}</h2>
       <RichText value={section.body} />
       {!!section.entries?.length && (
-        <div className={section.collapsible ? 'accordion' : 'section-items'}>
-          {section.entries.map((entry) => {
-            const content = (
-              <>
-                <RichText value={entry.body} />
-                {entry.links.map((link) => (
-                  <Link
-                    key={link._key}
-                    href={link.href}
-                    download={link.download || undefined}
-                    className={section.collapsible ? 'text-link' : undefined}
-                  >
-                    {link.label} <span aria-hidden="true">{section.collapsible ? '↗' : '»'}</span>
-                  </Link>
-                ))}
-              </>
-            )
-            return section.collapsible ? (
-              <details key={entry._key}>
-                <summary>
-                  {entry.title}
-                  <span aria-hidden="true" />
-                </summary>
-                <div>{content}</div>
-              </details>
-            ) : (
-              <div key={entry._key}>
-                <h3>{entry.title}</h3>
-                {content}
-              </div>
-            )
-          })}
+        <div className="section-items">
+          {section.entries.map((entry) => (
+            <div key={entry._key}>
+              <h3>{entry.title}</h3>
+              <RichText value={entry.body} />
+              {entry.links.map((link) => (
+                <Link key={link._key} href={link.href} download={link.download || undefined}>
+                  {link.label} <span aria-hidden="true">»</span>
+                </Link>
+              ))}
+            </div>
+          ))}
         </div>
       )}
       <ActionLinks links={section.links} downloadPdf={downloadPdf} />

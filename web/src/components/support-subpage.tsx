@@ -10,6 +10,7 @@ import {PageHeading} from './page-heading'
 import {PageSections} from './page-sections'
 import {QuoteBand} from './quote-band'
 import {RichText} from './rich-text'
+import {SectionDisclosure} from './section-disclosure'
 
 type Action = {label?: string; href?: string} | null | undefined
 
@@ -22,15 +23,13 @@ function SupporterDirectory({entry}: {entry: ContentEntry}) {
   return (
     <div className="supporter-years">
       {entry.supporterYears?.map((period, index) => (
-        <details
+        <SectionDisclosure
           className="supporter-year"
           key={period._key}
+          label={period.title}
           open={index === 0}
           id={'supporters-' + period._key}
         >
-          <summary>
-            <span>{period.title}</span>
-          </summary>
           <div className="supporter-groups">
             {period.groups?.map((group) => (
               <section key={group._key} aria-label={group.title}>
@@ -62,7 +61,7 @@ function SupporterDirectory({entry}: {entry: ContentEntry}) {
               </section>
             ))}
           </div>
-        </details>
+        </SectionDisclosure>
       ))}
     </div>
   )
@@ -115,12 +114,13 @@ function Initiatives({entry}: {entry: ContentEntry}) {
       </div>
     )
     return completed ? (
-      <details className="support-initiatives is-completed" key="past">
-        <summary>
-          <span>{entry.completedHeading || 'Past Initiatives'}</span>
-        </summary>
+      <SectionDisclosure
+        className="support-initiatives is-completed"
+        key="past"
+        label={entry.completedHeading || 'Past Initiatives'}
+      >
         {grid}
-      </details>
+      </SectionDisclosure>
     ) : (
       <section className="support-initiatives" key="current">
         {grid}

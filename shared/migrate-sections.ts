@@ -8,7 +8,6 @@ type StoredSection = {
   body?: StoredObject[]
   image?: StoredObject
   links?: StoredObject[]
-  collapsible?: boolean
   entries?: Array<{_key?: string; title?: string; body?: StoredObject[]; link?: StoredObject}>
 }
 
@@ -51,7 +50,7 @@ export function migrateSectionsToBody<T extends StoredObject>(document: T): Stor
 
   for (const [i, section] of (sections as StoredSection[]).entries()) {
     const anchor = section.anchor || section._key || `section-${i + 1}`
-    const headingKey = `${section.collapsible ? 'disclosure' : 'heading'}-${anchor}`
+    const headingKey = `heading-${anchor}`
     append(textBlock(headingKey, 'h2', section.title || ''), headingKey)
     if (section.lead) append(textBlock('lead', 'normal', section.lead), `${anchor}-lead`)
     for (const [index, block] of (section.body || []).entries()) {

@@ -65,8 +65,8 @@ test('event ownership controls the destination across cards, search and internal
 test('section roles and anchors survive reordering and renaming', () => {
   const sections = pageSections([
     {
-      _key: 'drawer',
-      role: 'accordion',
+      _key: 'project-group',
+      role: 'columns',
       anchor: 'projects',
       title: 'Earlier projects',
       entries: [{_key: 'one', title: 'First project'}],
@@ -74,10 +74,10 @@ test('section roles and anchors survive reordering and renaming', () => {
     {_key: 'plan', role: 'plan', anchor: 'restoration-plan', title: 'New plan heading'},
   ])
   assert.deepEqual(
-    sections.map((s) => [s.role, s.anchor, s.collapsible, s.entries.length]),
+    sections.map((s) => [s.role, s.anchor, s.entries.length]),
     [
-      ['accordion', 'projects', true, 1],
-      ['plan', 'restoration-plan', false, 0],
+      ['columns', 'projects', 1],
+      ['plan', 'restoration-plan', 0],
     ],
   )
 })

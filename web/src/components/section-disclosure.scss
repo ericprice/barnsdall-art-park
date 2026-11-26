@@ -1,0 +1,51 @@
+@use '../styles/tokens' as *;
+
+.section-disclosure {
+  > summary {
+    @include display-type(section);
+    display: grid;
+    place-items: center;
+    padding: 0.25em 1em;
+    text-align: center;
+    > span,
+    &::before {
+      text-box-trim: trim-both;
+      text-box-edge: cap alphabetic;
+    }
+    list-style: none;
+    position: relative;
+    cursor: pointer;
+    &::-webkit-details-marker {
+      display: none;
+    }
+    &::before {
+      content: '+';
+      position: absolute;
+      left: 0;
+      top: 50%;
+      translate: 0 -50%;
+    }
+  }
+  &[open] > summary::before {
+    content: '–';
+  }
+  &::details-content {
+    display: grid;
+    grid-template-rows: 0fr;
+    // Keep the content available for layout while the closing row shrinks.
+    content-visibility: visible;
+    visibility: hidden;
+    transition:
+      grid-template-rows 320ms ease-in-out,
+      visibility 0s 320ms;
+  }
+  &[open]::details-content {
+    grid-template-rows: 1fr;
+    visibility: visible;
+    transition-delay: 0s;
+  }
+  &__content {
+    min-block-size: 0;
+    overflow-y: clip;
+  }
+}

@@ -5,7 +5,7 @@ The standalone Studio and website use project `i18fhbsv`, dataset `production`. 
 ## Editing
 
 - **Homepage** holds the hero slides, anniversary callout, Explore photographs, and ordered featured cards. Choose an item and optionally override its homepage artwork or caption.
-- **Pages** contains All Pages and shortcuts for Visit, Support the Park, and History. Choose the page layout under Page settings. Use Body for prose and Sections for columns, accordions, links, and layout-specific features. Keep an existing page anchor when renaming a section that readers link to.
+- **Pages** contains All Pages and shortcuts for Visit, Support the Park, and History. Choose the page layout under Page settings. Use Body for prose and Sections for columns, links, and layout-specific features. Keep an existing page anchor when renaming a section that readers link to.
 - **History** contains the chronology. Drag milestones into chronological order. Select **Show on homepage** for the short overview. A selected milestone uses its date and description unless you supply shorter wording.
 - **Support the Park** contains the Foundation directory and the Support pages. Edit people and partners under Directory. Under Supporters, open the year, group, and acknowledgment. Edit annual giving levels inside their donation section.
 - **Park Locations** contains The Park and the facility websites. Subtitle supplies the short text in the homepage’s Explore the Park section and beneath the title on an on-site location page. On The Park, use Body for prose and quotations, Sidebar links for page actions, and Images for the slideshow.
