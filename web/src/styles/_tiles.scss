@@ -24,6 +24,11 @@
     margin-block-end: 0.5em;
   }
 }
+.entry-date {
+  @include publisher-type;
+  display: block;
+  white-space: pre-wrap;
+}
 .tile {
   text-align: center;
   min-width: 0;

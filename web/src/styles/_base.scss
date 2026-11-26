@@ -25,7 +25,7 @@ html {
   scroll-behavior: smooth;
   scroll-padding-block-start: calc(2rem + var(--compact-header-height));
   font-synthesis: none;
-  hanging-punctuation: first last;
+  hanging-punctuation: first;
   text-rendering: optimizeLegibility;
 }
 body {

@@ -102,11 +102,6 @@
     background-color: var(--org-light);
   }
 }
-.entry-date {
-  @include publisher-type;
-  display: block;
-  white-space: pre-wrap;
-}
 .listing-head > .entry-date,
 .feature-content > .entry-date {
   margin-block-start: 0.85em;
