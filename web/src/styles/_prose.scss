@@ -22,6 +22,10 @@
   > :is(h2, h3):has(+ :is(p, ul, ol)) {
     margin-block-end: var(--prose-heading-gap);
   }
+  h2,
+  h3 {
+    text-align: center;
+  }
   h2 {
     @include type-size(title);
     margin-top: 2.5rem;
@@ -32,7 +36,7 @@
     margin-top: 1.75rem;
   }
   > blockquote.rich-text__pull-quote {
-    margin-block: 1.2em;
+    margin-block: var(--page-heading-gap);
     font: 400 var(--type-section)/var(--leading-section) var(--lead);
     text-align: center;
     text-transform: none;
@@ -47,8 +51,11 @@
   }
 }
 @media (width > 44rem) {
+  :is(.news-story .listing-story__columns, .editorial-page__columns) {
+    container-type: inline-size;
+  }
   :is(.news-story .listing-story__body, .editorial-page__body) .rich-text > .rich-text__pull-quote {
-    margin-inline: -15%;
+    margin-inline: calc((100% - 100cqi) / 2);
   }
 }
 .rich-text__bullets {

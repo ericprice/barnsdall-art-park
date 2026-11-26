@@ -8,7 +8,7 @@ type LinkProps = ComponentProps<typeof NextLink>
 type NavigationOptions = Pick<LinkProps, 'replace' | 'scroll' | 'transitionTypes'>
 
 export const RouteTransition =
-  createContext<(action: () => void, href: string) => void>(startTransition)
+  createContext<(action: () => void, target: URL, anchor?: string) => void>(startTransition)
 
 export function useRouteNavigation() {
   const router = useRouter()
@@ -16,10 +16,30 @@ export function useRouteNavigation() {
 
   return useCallback(
     (href: string, {replace, ...options}: NavigationOptions = {}) => {
-      transition(() => {
-        if (replace) router.replace(href, options)
-        else router.push(href, options)
-      }, href)
+      const current = window.location
+      const target = new URL(href, current.href)
+      const fragment = target.hash.slice(1)
+      // These legacy fragments trigger actions through the URL instead of scrolling to an element.
+      const legacyAction =
+        fragment.split('?')[0] === 'site-search' ||
+        (target.pathname === '/visit' && fragment === 'policies')
+      const anchor = target.origin === current.origin && !legacyAction ? fragment : ''
+      const destination = anchor ? target.pathname + target.search : href
+      const samePage = anchor && destination === current.pathname + current.search
+
+      transition(
+        () => {
+          if (samePage) {
+            if (current.hash) window.history.replaceState(window.history.state, '', destination)
+            return
+          }
+          const navigationOptions = anchor ? {...options, scroll: false} : options
+          if (replace) router.replace(destination, navigationOptions)
+          else router.push(destination, navigationOptions)
+        },
+        target,
+        anchor && options.scroll !== false ? anchor : undefined,
+      )
     },
     [router, transition],
   )

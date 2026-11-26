@@ -45,6 +45,7 @@
   [aria-current] {
     @include active-nav-dot(var(--section-nav-dot), var(--section-nav-color));
     mix-blend-mode: multiply;
+    pointer-events: none;
   }
 }
 .mission-heading {

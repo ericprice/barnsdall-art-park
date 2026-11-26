@@ -1,6 +1,8 @@
 @use 'tokens' as *;
 
 .feature-content {
+  // Account for the space below the display headline when spacing a CTA after body text.
+  --feature-cta-offset: calc(0.15 * var(--type-display));
   display: flex;
   flex-direction: column;
   align-items: center;

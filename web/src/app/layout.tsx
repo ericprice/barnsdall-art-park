@@ -5,6 +5,7 @@ import {hexColor} from '../../../shared/organizations'
 import {getShell} from '@/lib/content'
 import {getParkSunset} from '@/lib/park-sunset'
 import {SiteShell} from '@/components/site-shell'
+import Link from '@/components/route-link'
 import {SiteHeader} from '@/components/site-header'
 import {SiteFooter} from '@/components/site-footer'
 import {SanityLive} from '@/sanity/live'
@@ -35,10 +36,10 @@ export default async function RootLayout({children}: {children: React.ReactNode}
       style={{'--foundation-light': foundationLight} as CSSProperties}
     >
       <body>
-        <a href="#main-content" className="skip-link">
-          {interfaceText.skip}
-        </a>
         <SiteShell seed={randomInt(2 ** 32)} navigation={settings.navigation}>
+          <Link href="#main-content" className="skip-link">
+            {interfaceText.skip}
+          </Link>
           <SiteHeader
             settings={{
               title: settings.title,

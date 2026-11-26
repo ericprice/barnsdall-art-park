@@ -130,6 +130,47 @@ function nextIndex(count: number, hash: number, previous: number, reserved?: num
   return choices[hash % choices.length]
 }
 
+function scrollToAnchor(fragment: string, focus: boolean) {
+  let id: string
+  try {
+    id = decodeURIComponent(fragment)
+  } catch {
+    return
+  }
+  const href = window.location.href
+  function scroll() {
+    if (window.location.href !== href) return false
+    const target = document.getElementById(id)
+    if (!target?.getClientRects().length || target.closest('[hidden]')) return false
+    target.scrollIntoView({block: 'start', behavior: 'instant'})
+    if (focus && !target.contains(document.activeElement)) {
+      if (target.tabIndex < 0) target.tabIndex = -1
+      target.focus({preventScroll: true})
+    }
+    return true
+  }
+  if (scroll()) return
+
+  // The destination can commit before its target has streamed in.
+  const shell = document.querySelector('.site-shell')
+  if (!shell) return
+  const observer = new MutationObserver(() => {
+    if (scroll()) stop()
+  })
+  observer.observe(shell, {
+    childList: true,
+    subtree: true,
+    attributes: true,
+    attributeFilter: ['hidden'],
+  })
+  const timeout = window.setTimeout(stop, 5000)
+  function stop() {
+    observer.disconnect()
+    window.clearTimeout(timeout)
+  }
+  return stop
+}
+
 export function SiteShell({
   seed,
   navigation,
@@ -143,10 +184,25 @@ export function SiteShell({
   const pathname = usePathname()
   const [navigating, startNavigation] = useTransition()
   const [keepsSectionHeading, setKeepsSectionHeading] = useState(false)
+  const previousPath = useRef<string | null>(null)
+  const historyPath = useRef<string | null>(null)
+  const pendingAnchor = useRef<{destination: string; fragment: string} | null>(null)
+  const cancelAnchorScroll = useRef<(() => void) | undefined>(undefined)
   const navigate = useCallback(
-    (action: () => void, href: string) => {
-      const target = new URL(href, window.location.href)
+    (action: () => void, target: URL, anchor?: string) => {
       const current = window.location
+      cancelAnchorScroll.current?.()
+      historyPath.current = null
+      pendingAnchor.current = null
+      if (anchor) {
+        const destination = target.pathname + target.search
+        if (destination === current.pathname + current.search) {
+          action()
+          cancelAnchorScroll.current = scrollToAnchor(anchor, true)
+          return
+        }
+        pendingAnchor.current = {destination, fragment: anchor}
+      }
       // A detail page can have the same URL prefix and a different heading.
       // Only sibling destinations in the current section menu share its heading.
       const sectionLinks = document.querySelectorAll<HTMLAnchorElement>(
@@ -199,63 +255,42 @@ export function SiteShell({
     setHighlight(active)
   }
 
-  const previousPath = useRef(pathname)
-  const historyPath = useRef<string | null>(null)
-
   useLayoutEffect(() => {
     function allowBrowserRestoration() {
+      pendingAnchor.current = null
+      cancelAnchorScroll.current?.()
       historyPath.current = window.location.pathname
     }
     window.addEventListener('popstate', allowBrowserRestoration)
-    return () => window.removeEventListener('popstate', allowBrowserRestoration)
+    return () => {
+      window.removeEventListener('popstate', allowBrowserRestoration)
+      cancelAnchorScroll.current?.()
+      previousPath.current = null
+    }
   }, [])
 
   useLayoutEffect(() => {
-    const changed = pathname !== previousPath.current
+    if (navigating) return
+    const previous = previousPath.current
     previousPath.current = pathname
     const restoringHistory = pathname === historyPath.current
     historyPath.current = null
     if (restoringHistory) return
 
-    const fragment = window.location.hash.slice(1)
-    if (!fragment) {
-      if (changed) window.scrollTo({top: 0, left: 0, behavior: 'instant'})
+    const current = window.location
+    const requested = pendingAnchor.current
+    pendingAnchor.current = null
+    if (requested?.destination === current.pathname + current.search) {
+      cancelAnchorScroll.current = scrollToAnchor(requested.fragment, true)
       return
     }
-
-    let anchor: string
-    try {
-      anchor = decodeURIComponent(fragment)
-    } catch {
-      return
+    if (pathname === previous) return
+    if (current.hash) {
+      cancelAnchorScroll.current = scrollToAnchor(current.hash.slice(1), false)
+    } else if (previous !== null) {
+      window.scrollTo({top: 0, left: 0, behavior: 'instant'})
     }
-    function scrollToAnchor() {
-      if (window.location.hash.slice(1) !== fragment) return false
-      const target = document.getElementById(anchor)
-      if (!target?.getClientRects().length || target.closest('[hidden]')) return false
-      target.scrollIntoView({block: 'start', behavior: 'instant'})
-      return true
-    }
-    if (scrollToAnchor()) return
-
-    // A direct fragment URL can arrive before its target has streamed in.
-    const observer = new MutationObserver(() => {
-      if (scrollToAnchor()) observer.disconnect()
-    })
-    const shell = document.querySelector('.site-shell')
-    if (!shell) return
-    observer.observe(shell, {
-      childList: true,
-      subtree: true,
-      attributes: true,
-      attributeFilter: ['hidden'],
-    })
-    const timeout = window.setTimeout(() => observer.disconnect(), 5000)
-    return () => {
-      observer.disconnect()
-      window.clearTimeout(timeout)
-    }
-  }, [pathname])
+  }, [pathname, navigating])
 
   const style = {
     '--nav-dot': `url('/identity/dots/${active.dot + 1}.svg')`,

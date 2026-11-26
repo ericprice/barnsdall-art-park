@@ -5,6 +5,11 @@ export function LeadStyle({children}: BlockStyleProps) {
   return <span style={{fontSize: '1.333em'}}>{children}</span>
 }
 
+export function CenteredHeadingStyle(props: BlockStyleProps) {
+  if (!props.renderDefault) return props.children
+  return <div style={{textAlign: 'center'}}>{props.renderDefault(props)}</div>
+}
+
 export function PullQuoteStyle({children}: BlockStyleProps) {
   return (
     <span style={{display: 'block', fontSize: '1.5em', lineHeight: 1.1, textAlign: 'center'}}>

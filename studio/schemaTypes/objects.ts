@@ -1,7 +1,7 @@
 import {defineArrayMember, defineField, defineType} from 'sanity'
 import {LinkIcon} from '@sanity/icons/Link'
 import {ImageIcon} from '@sanity/icons/Image'
-import {DottedLinkStyle, LeadStyle, PullQuoteStyle} from './body-styles'
+import {CenteredHeadingStyle, DottedLinkStyle, LeadStyle, PullQuoteStyle} from './body-styles'
 
 const label = defineField({name: 'label', type: 'string', validation: (rule) => rule.required()})
 const destinationPattern = /^(\/(?!\/)|#|https?:\/\/|mailto:|tel:)/
@@ -156,8 +156,8 @@ export const richText = defineType({
           value: 'dotLink',
           component: DottedLinkStyle,
         },
-        {title: 'Heading', value: 'h2'},
-        {title: 'Subheading', value: 'h3'},
+        {title: 'Heading', value: 'h2', component: CenteredHeadingStyle},
+        {title: 'Subheading', value: 'h3', component: CenteredHeadingStyle},
       ],
       marks: {
         decorators: [emphasis],
