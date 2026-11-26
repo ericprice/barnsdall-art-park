@@ -91,7 +91,6 @@
 
   &::before,
   &::after,
-  &__dot,
   &__content {
     position: fixed;
     z-index: 2;
@@ -110,7 +109,6 @@
   &[data-footer-visible='true'] {
     &::before,
     &::after,
-    .celebration__dot,
     .celebration__content {
       opacity: 0;
     }
@@ -119,18 +117,9 @@
   &::after {
     content: '';
     pointer-events: none;
-  }
-  &__dot,
-  &::after {
     background-color: var(--celebration-background);
   }
-  // Filter the page first, then paint the two colored layers above it.
   &::before {
-    -webkit-backdrop-filter: blur(0.2rem);
-    backdrop-filter: blur(0.2rem);
-  }
-  &__dot {
-    pointer-events: none;
     mix-blend-mode: multiply;
   }
   &::after {
