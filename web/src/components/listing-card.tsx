@@ -3,20 +3,12 @@ import {createHash} from 'node:crypto'
 import {themeForEntry, themeStyle} from '@/lib/image-theme'
 import {drawDots} from '@/lib/identity-dots'
 import {organizationDocuments} from '../../../shared/organizations'
-import {interfaceText} from '../../../shared/interface'
 import {Tile} from './tile'
 import type {CSSProperties} from 'react'
 import type {ContentEntry} from '@/lib/content'
 import {EntryDate} from './entry-meta'
 import {ParkImage} from './park-image'
 import {DotLink} from './action-links'
-
-const categories = {
-  page: 'Page',
-  place: 'Place',
-  event: 'Event',
-  article: interfaceText.news,
-} satisfies Record<ContentEntry['type'], string>
 
 export function ListingGrid({
   entries,
@@ -45,16 +37,13 @@ export function ListingGrid({
 
 export function SearchResultCard({entry}: {entry: ContentEntry}) {
   // Keep the dot and palette stable when the same result appears in another search.
-  const [shape, background, foreground] = createHash('sha256').update(entry.id).digest()
+  const [shape, palette] = createHash('sha256').update(entry.id).digest()
   const dot = (shape % 14) + 1
-  const baseTheme =
+  const theme =
     !entry.image && !entry.organization
-      ? organizationDocuments[background % organizationDocuments.length]
+      ? organizationDocuments[palette % organizationDocuments.length]
       : themeForEntry(entry)
-  const dotColor = organizationDocuments[foreground % organizationDocuments.length].light
-  const theme = entry.image ? baseTheme : {...baseTheme, light: dotColor}
-  const label = [categories[entry.type], entry.organization].filter(Boolean).join(' · ')
-  return <ListingCard entry={entry} dot={dot} variant="search" theme={theme} label={label} />
+  return <ListingCard entry={entry} dot={dot} variant="search" theme={theme} />
 }
 
 function ListingCard({
@@ -63,14 +52,12 @@ function ListingCard({
   variant,
   readMore,
   theme = themeForEntry(entry),
-  label = entry.organization,
 }: {
   entry: ContentEntry
   dot: number
   variant: 'event' | 'news' | 'search'
   readMore?: string
   theme?: ReturnType<typeof themeForEntry>
-  label?: string | null
 }) {
   const editorial = variant === 'news' || (variant === 'search' && entry.type === 'article')
   return (
@@ -79,7 +66,7 @@ function ListingCard({
       style={themeStyle(theme, editorial ? entry.image : undefined)}
       href={entry.href}
       title={entry.title}
-      label={label}
+      label={entry.organization}
       heading={variant === 'search' ? 'h2' : undefined}
       media={
         <div

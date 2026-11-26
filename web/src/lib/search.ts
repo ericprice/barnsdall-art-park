@@ -4,6 +4,7 @@ import type {SEARCH_QUERY_RESULT} from '../../sanity.types'
 import {toContentEntry, type ContentEntry} from './content'
 import {routeSummary} from './internal-links'
 import {SEARCH_CARDS_QUERY, SEARCH_QUERY} from '@/sanity/queries'
+import {imageAspectRatio} from '@/sanity/image'
 import {readContent} from '@/sanity/read'
 
 const pageSize = 12
@@ -81,6 +82,7 @@ export async function searchResultPage(
   return {
     entries: matches.slice(0, limit).map(({doc}) => ({
       ...toContentEntry(doc),
+      image: imageAspectRatio(doc.image) ? doc.image : undefined,
       summary: excerpt(doc.summary, doc.subtitle, doc.bodyText),
     })),
     hasMore: page < maxPage && matches.length > limit,

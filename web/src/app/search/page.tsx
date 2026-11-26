@@ -18,7 +18,7 @@ function resultsHeading(query: string) {
   if (!query) return 'Search results'
   const characters = Array.from(graphemes.segment(query), ({segment}) => segment)
   const label = characters.length > 16 ? characters.slice(0, 16).join('') + '…' : query
-  return `Results for ${label}`
+  return `Results for “${label}”`
 }
 
 export default async function Search({
