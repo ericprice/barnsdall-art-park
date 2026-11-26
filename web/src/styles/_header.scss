@@ -107,17 +107,27 @@ $compact-nav-height: $compact-nav-start + $compact-mark-height + $compact-nav-en
     min-width: 0;
     gap: 0.08em;
     padding: 0.36em 0 #{$desktop-nav-end}em;
-
-    :is(a, .park-navigation__label button):focus-visible {
-      outline: none;
-      text-decoration: none;
-    }
-    button:focus-visible {
-      outline-color: currentColor;
-    }
+  }
+  :is(a, button):focus {
+    outline: none;
+  }
+  [data-keyboard-navigation] & :is(a, button):focus {
+    text-decoration: underline;
+    text-underline-offset: 0.16em;
   }
   button {
     line-height: inherit;
+    // Icon-only search buttons need a line of their own.
+    &:has(> svg) {
+      position: relative;
+      [data-keyboard-navigation] &:focus::after {
+        content: '';
+        position: absolute;
+        inset-inline: 0;
+        top: calc(50% + #{$nav-search-size * 0.5 + 0.1}em);
+        border-block-end: 0.07em solid currentColor;
+      }
+    }
   }
   svg {
     display: block;

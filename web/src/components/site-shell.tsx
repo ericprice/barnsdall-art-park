@@ -13,6 +13,7 @@ import {
 } from 'react'
 import {usePathname} from 'next/navigation'
 import {RouteTransition} from './route-link'
+import {trackKeyboardNavigation} from '@/lib/keyboard-navigation'
 
 const colors = ['pink', 'lavender', 'yellow', 'pale-green', 'olive', 'green']
 const dotCount = 14
@@ -135,6 +136,7 @@ export function LoadingDot({active = true}: {active?: boolean}) {
 }
 
 export function SiteShell({seed, children}: {seed: number; children: ReactNode}) {
+  useLayoutEffect(trackKeyboardNavigation, [])
   const pathname = usePathname()
   const [navigating, startNavigation] = useTransition()
   const [keepsSectionHeading, setKeepsSectionHeading] = useState(false)

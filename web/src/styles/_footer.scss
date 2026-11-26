@@ -48,6 +48,15 @@
   &__connect {
     color: var(--green);
   }
+  .foundation-newsletter input:focus {
+    background: transparent;
+    outline: none;
+
+    [data-keyboard-navigation] & {
+      outline: 0.16rem solid currentColor;
+      outline-offset: -0.16rem;
+    }
+  }
   &__heading {
     display: flex;
     align-items: center;
