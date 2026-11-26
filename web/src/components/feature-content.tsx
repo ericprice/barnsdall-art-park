@@ -1,5 +1,5 @@
 import type {ReactNode} from 'react'
-import {DisplayLinkContent} from './action-links'
+import {DisplayLinkContent} from './display-link'
 import {EntryLabel} from './entry-meta'
 import Link from './route-link'
 

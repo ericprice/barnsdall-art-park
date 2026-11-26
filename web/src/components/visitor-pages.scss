@@ -51,6 +51,10 @@
   }
 }
 .contact-subscription {
+  &__status .loading-dot {
+    inline-size: 3rem;
+    margin-inline: auto;
+  }
   form {
     font: inherit !important;
   }
@@ -61,27 +65,59 @@
   }
   .visitor-consent {
     display: flex !important;
-    align-items: baseline;
+    align-items: flex-start;
     gap: 0.6rem;
     margin: 1rem 0;
     font: inherit !important;
+    color: var(--green);
+    cursor: pointer;
+    input[type='checkbox'] {
+      flex: none;
+      inline-size: 1em;
+      block-size: 1em;
+      margin: calc((1lh - 1em) / 2) 0 0;
+      padding: 0;
+      cursor: inherit;
+      @media (forced-colors: none) {
+        appearance: none;
+        display: grid;
+        border: 0;
+        background: transparent;
+        &::before {
+          content: '';
+          background: var(--green);
+          mask-image: url('/identity/dots/14.svg'), url('/identity/dots/14.svg');
+          mask-position: center;
+          mask-repeat: no-repeat;
+          mask-size: contain, 86%;
+          mask-composite: exclude;
+        }
+        &:checked::before {
+          mask-size: contain, 0 0;
+        }
+      }
+    }
   }
-  input:not([type='submit']):not([type='checkbox']):not([type='hidden']) {
-    max-width: 100%;
-    width: 100%;
-    border: 0.0625rem solid currentColor;
-    padding: 0.5em;
-    color: inherit;
-    background: white;
-    font: inherit;
+  .visitor-required {
+    @include small-text;
+    margin: 0 0 1rem;
   }
   form input[type='submit'] {
+    appearance: none;
+    display: block;
+    margin-inline: auto;
+    block-size: var(--inline-form-height);
     border: 0;
-    padding: 0.5em 0.8em;
+    border-radius: 0;
+    padding: 0.1em calc(var(--inline-form-inset) + var(--inline-form-text-padding)) 0;
     background: var(--green);
     color: white;
     font: 400 var(--type-label)/var(--leading-label) var(--display);
     text-transform: uppercase;
+    cursor: pointer;
+    @media (max-width: 22rem) {
+      @include type-size(compact-label);
+    }
   }
 }
 @media (max-width: 44rem) {
@@ -92,6 +128,16 @@
   }
 }
 .contact-subscription .email-registration-form .section.contact {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  align-items: start;
+  gap: 0.5rem;
+  > .field {
+    padding: 0;
+  }
+  > :not(.first-name, .last-name) {
+    grid-column: 1 / -1;
+  }
   > h3,
   > .consent {
     display: none;

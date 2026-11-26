@@ -26,7 +26,6 @@ $compact-nav-height: $compact-nav-start + $compact-mark-height + $compact-nav-en
   z-index: 20;
   padding: 0 var(--gutter);
   container-type: inline-size;
-  --menu-fade: 150ms;
   @include display;
 
   a,

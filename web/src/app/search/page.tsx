@@ -1,5 +1,5 @@
 import type {Metadata} from 'next'
-import {DisplayLinkContent} from '@/components/action-links'
+import {DisplayLinkContent} from '@/components/display-link'
 import {SearchResultCard} from '@/components/listing-card'
 import {PageHeading} from '@/components/page-heading'
 import Link from '@/components/route-link'

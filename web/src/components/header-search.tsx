@@ -2,7 +2,8 @@
 
 import type {InterfaceText} from '@/lib/content'
 import type {QuickSearchResult} from '@/lib/search'
-import {DisplayLink} from './action-links'
+import {DisplayLink} from './display-link'
+import {RotatingPlaceholderInput} from './rotating-placeholder-input'
 import Link, {useRouteNavigation} from './route-link'
 import {useEffect, useRef, useState} from 'react'
 
@@ -23,12 +24,6 @@ export function HeaderSearch({
 }) {
   const [query, setQuery] = useState(initialQuery)
   const [preview, setPreview] = useState<Preview>()
-  const [placeholderIndex, setPlaceholderIndex] = useState(initialPlaceholderIndex)
-  const placeholderCount = placeholderOptions.length
-  const initialPlaceholder = placeholderCount
-    ? placeholderOptions[initialPlaceholderIndex % placeholderCount]
-    : undefined
-  const showPlaceholder = query === ''
   const term = query.trim()
   const resultsHref = '/search?' + new URLSearchParams({q: term})
   // Keep the list in place while a refinement loads. Clear it on an empty or unrelated query.
@@ -45,13 +40,6 @@ export function HeaderSearch({
   useEffect(() => {
     field.current?.focus({preventScroll: true})
   }, [])
-  useEffect(() => {
-    if (!showPlaceholder || placeholderCount < 2) return
-    const timer = window.setInterval(() => {
-      setPlaceholderIndex((index) => (index + 1) % placeholderCount)
-    }, 4000 / 1.5)
-    return () => window.clearInterval(timer)
-  }, [placeholderCount, showPlaceholder])
   useEffect(() => {
     if (!term) return
     const abort = new AbortController()
@@ -90,33 +78,17 @@ export function HeaderSearch({
         <label htmlFor="site-search-field" className="sr-only">
           {labels.search}
         </label>
-        <div className="header-search__field">
-          <input
-            ref={field}
-            id="site-search-field"
-            type="search"
-            name="q"
-            placeholder={initialPlaceholder}
-            value={query}
-            onChange={(event) => setQuery(event.target.value)}
-            maxLength={200}
-          />
-          {placeholderCount > 0 && (
-            <div
-              className="inline-form__placeholder header-search__placeholders"
-              aria-hidden="true"
-            >
-              {placeholderOptions.map((placeholder, index) => (
-                <span
-                  key={`${index}:${placeholder}`}
-                  data-active={index === placeholderIndex % placeholderCount}
-                >
-                  {placeholder}
-                </span>
-              ))}
-            </div>
-          )}
-        </div>
+        <RotatingPlaceholderInput
+          ref={field}
+          id="site-search-field"
+          type="search"
+          name="q"
+          phrases={placeholderOptions}
+          initialIndex={initialPlaceholderIndex}
+          value={query}
+          onChange={(event) => setQuery(event.target.value)}
+          maxLength={200}
+        />
         <button type="submit">
           <span>{labels.search}</span>
           <i aria-hidden="true" />

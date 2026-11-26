@@ -28,10 +28,7 @@
   vertical-align: baseline;
 }
 .small-seed {
-  @include olive-dot;
-  width: var(--small-seed-width);
-  height: 0.64em;
-  margin-inline-end: var(--small-seed-gap);
+  @include text-dot;
 }
 .dot-link {
   @include publisher-type;

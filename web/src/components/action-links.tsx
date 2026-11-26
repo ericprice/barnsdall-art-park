@@ -1,49 +1,34 @@
-import Link from './route-link'
-import type {ComponentProps, ReactNode} from 'react'
+import type {ComponentProps, CSSProperties, ReactNode} from 'react'
 import type {PageSection} from '@/lib/content'
+import {nextLinkDot} from '@/lib/identity-dots'
+import {DisplayLink} from './display-link'
+import Link from './route-link'
 
 type LinkProps = ComponentProps<typeof Link>
 
-export function DotLinkContent({children}: {children: ReactNode}) {
+export function DotLinkContent({
+  children,
+  dot = nextLinkDot(),
+}: {
+  children: ReactNode
+  dot?: number
+}) {
   return (
     <>
-      <span className="small-seed" aria-hidden="true" />
+      <span
+        className="small-seed"
+        style={{'--olive-dot': `url('/identity/dots/${dot}.svg')`} as CSSProperties}
+        aria-hidden="true"
+      />
       <span>{children}</span>
     </>
   )
 }
 
-export function DotLink({children, className, ...props}: LinkProps) {
+export function DotLink({children, className, dot, ...props}: LinkProps & {dot?: number}) {
   return (
     <Link {...props} className={className ? `dot-link ${className}` : 'dot-link'}>
-      <DotLinkContent>{children}</DotLinkContent>
-    </Link>
-  )
-}
-
-export function DisplayLinkContent({
-  children,
-  arrow = '»',
-}: {
-  children: ReactNode
-  arrow?: '»' | '↗'
-}) {
-  return (
-    <>
-      {children} <span aria-hidden="true">{arrow}</span>
-    </>
-  )
-}
-
-export function DisplayLink({
-  children,
-  className,
-  arrow,
-  ...props
-}: LinkProps & {arrow?: '»' | '↗'}) {
-  return (
-    <Link {...props} className={className ? `display-link ${className}` : 'display-link'}>
-      <DisplayLinkContent arrow={arrow}>{children}</DisplayLinkContent>
+      <DotLinkContent dot={dot}>{children}</DotLinkContent>
     </Link>
   )
 }

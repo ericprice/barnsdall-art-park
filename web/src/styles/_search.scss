@@ -21,47 +21,8 @@ html:has(.header-search :focus) {
     width: min(100%, 49%);
     margin: 0 auto;
   }
-  input {
-    &::-webkit-search-cancel-button {
-      display: none;
-    }
-    &::placeholder {
-      opacity: 0;
-    }
-  }
-  &__field {
-    display: flex;
-    position: relative;
-    flex: 1;
-    min-inline-size: 0;
-  }
-  &__placeholders {
-    position: absolute;
-    inset: 0;
+  input::-webkit-search-cancel-button {
     display: none;
-    grid-template-columns: minmax(0, 1fr);
-    align-content: center;
-    pointer-events: none;
-    user-select: none;
-    @include fade-rotating-items(1.5);
-
-    > span {
-      overflow: hidden;
-      text-overflow: ellipsis;
-      white-space: nowrap;
-    }
-  }
-  input:placeholder-shown + &__placeholders {
-    display: grid;
-  }
-  @media (forced-colors: active) {
-    input::placeholder {
-      color: GrayText;
-      opacity: 1;
-    }
-    input:placeholder-shown + &__placeholders {
-      display: none;
-    }
   }
   ul {
     list-style: none;

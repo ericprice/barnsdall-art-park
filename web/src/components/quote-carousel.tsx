@@ -1,15 +1,12 @@
 'use client'
 
-import {useLayoutEffect, useRef, useState, type CSSProperties} from 'react'
-import type {SiteSettings} from '@/lib/content'
-import {DotLink} from './action-links'
+import {useLayoutEffect, useRef, useState, type CSSProperties, type ReactNode} from 'react'
 import {CarouselChevron} from './carousel-chevron'
 import {useCarouselSwipe} from './use-carousel-swipe'
 
-type Quote = Pick<
-  NonNullable<SiteSettings['quotes']>[number],
-  'attribution' | 'link'
-> & {
+type Quote = {
+  attribution?: string
+  link: ReactNode
   text: string
   dotIndex: number
 }
@@ -17,26 +14,23 @@ export type QuoteColors = {light: string; dark: string}
 const quoteDots = [6, 13, 1, 9, 4, 12, 2, 7, 3, 11, 5, 10, 8, 14]
 
 function QuoteText({quote}: {quote: Quote}) {
-  const dot = (offset: number) =>
-    ({
-      '--olive-dot': `url('/identity/dots/${quoteDots[(quote.dotIndex * 2 + offset) % quoteDots.length]}.svg')`,
-    }) as CSSProperties
+  const dot = quoteDots[(quote.dotIndex * 2) % quoteDots.length]
   return (
     <>
       <p>“{quote.text}”</p>
-      {(quote.attribution || quote.link?.href) && (
+      {(quote.attribution || quote.link) && (
         <footer>
           {quote.attribution && (
             <span>
-              <i className="small-seed" style={dot(0)} aria-hidden="true" />
+              <i
+                className="small-seed"
+                style={{'--olive-dot': `url('/identity/dots/${dot}.svg')`} as CSSProperties}
+                aria-hidden="true"
+              />
               {quote.attribution}
             </span>
           )}
-          {quote.link?.href && (
-            <DotLink href={quote.link.href} style={dot(1)}>
-              {quote.link.label}
-            </DotLink>
-          )}
+          {quote.link}
         </footer>
       )}
     </>

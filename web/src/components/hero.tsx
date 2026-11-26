@@ -3,7 +3,7 @@
 import {useCallback, useEffect, useState} from 'react'
 import type {HomeContent} from '@/lib/content'
 import {themeForEntry, themeStyle} from '@/lib/image-theme'
-import {DisplayLinkContent} from './action-links'
+import {DisplayLinkContent} from './display-link'
 import {FeatureContent} from './feature-content'
 import Link from './route-link'
 import {ParkImage} from './park-image'

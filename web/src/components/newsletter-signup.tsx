@@ -1,6 +1,7 @@
 'use client'
 
 import {useRouteNavigation} from './route-link'
+import {RotatingPlaceholderInput} from './rotating-placeholder-input'
 import {newsletterPrefillKey} from '@/lib/newsletter-prefill'
 import {interfaceText as labels} from '../../../shared/interface'
 
@@ -29,10 +30,10 @@ export function NewsletterSignup() {
           navigate(signupHref)
         }}
       >
-        <input
+        <RotatingPlaceholderInput
           id="newsletter-email"
           type="email"
-          placeholder={labels.newsletterTitle}
+          phrases={[labels.newsletterTitle, labels.emailAddress]}
           autoComplete="email"
           aria-label={`${labels.newsletterTitle} — ${labels.emailAddress}`}
           required

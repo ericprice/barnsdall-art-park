@@ -39,20 +39,13 @@
   }
 }
 .rich-text__bullets {
-  --marker-indent: calc(var(--small-seed-width) + var(--small-seed-gap));
+  --marker-indent: calc(var(--small-seed-size) + var(--small-seed-gap));
   list-style: none;
   padding-inline-start: var(--marker-indent);
-  > li {
-    position: relative;
-    &::before {
-      @include olive-dot;
-      content: '';
-      position: absolute;
-      inset-inline-start: calc(-1 * var(--marker-indent));
-      inset-block-start: 0.36em;
-      width: var(--small-seed-width);
-      height: 0.64em;
-    }
+  > li::before {
+    @include text-dot;
+    content: '';
+    margin-inline-start: calc(-1 * var(--marker-indent));
   }
   @for $index from 1 through 14 {
     > li:nth-child(14n + #{$index})::before {

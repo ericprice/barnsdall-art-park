@@ -1,5 +1,6 @@
 export const interfaceText = {
   subscribeConsent: 'I agree to receive Barnsdall Art Park news and updates.',
+  requiredNote: '*required',
   home: 'Home',
   notFound: 'Page not found',
   error: 'Error',

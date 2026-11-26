@@ -83,7 +83,7 @@ export function ContactPage({entry}: Pick<Props, 'entry'>) {
   return (
     <EditorialPage entry={entry}>
       {entry.sections?.map((section) => (
-        <section key={section._key} id={section.anchor}>
+        <section className="page-section" key={section._key} id={section.anchor}>
           <SectionContent downloadPdf section={section} />
           {section === signup && <ContactSignup />}
         </section>

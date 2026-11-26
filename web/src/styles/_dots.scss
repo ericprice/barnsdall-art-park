@@ -5,6 +5,14 @@
   mask: var(--olive-dot, url('/identity/dots/#{$number}.svg')) center / contain no-repeat;
 }
 
+@mixin text-dot {
+  @include olive-dot;
+  inline-size: var(--small-seed-size);
+  block-size: var(--small-seed-size);
+  margin-inline-end: var(--small-seed-gap);
+  vertical-align: baseline;
+}
+
 @mixin active-nav-dot($mask, $color) {
   position: relative;
   isolation: isolate;

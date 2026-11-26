@@ -1,3 +1,7 @@
+:root {
+  --menu-fade: 150ms;
+}
+
 @mixin green-panel-fill {
   background-color: var(--green);
   isolation: isolate;

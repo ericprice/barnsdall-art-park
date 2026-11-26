@@ -1,7 +1,12 @@
 @use 'tokens' as *;
 @use 'dots' as *;
+@use 'panel' as *;
 
 :root {
+  // One Barnsdall Low display cap, shared by controls with different text sizes.
+  --inline-form-height: calc(0.7 * var(--type-display));
+  --inline-form-inset: calc(0.18 * var(--type-label));
+  --inline-form-text-padding: 0.29em;
   --inline-form-placeholder-color: color-mix(in srgb, var(--green) 50%, transparent);
   --inline-form-fill: color-mix(
     in srgb,
@@ -10,23 +15,25 @@
   );
 }
 
-.inline-form {
-  display: flex;
-  align-items: stretch;
-  width: 100%;
+.inline-form,
+.contact-subscription .field:is(.text, .email)::before {
   @include type-size(display);
   letter-spacing: inherit;
   color: var(--green);
-  block-size: 1cap;
-  padding: calc(0.18 * var(--type-label));
+  block-size: var(--inline-form-height);
+  padding: var(--inline-form-inset);
+  box-sizing: border-box;
   background: var(--inline-form-fill);
+}
 
+.inline-form,
+.contact-subscription .field:is(.text, .email) {
   input,
   button,
   .inline-form__placeholder {
     font: inherit;
     @include type-size(label);
-    padding: 0 0.29em;
+    padding: 0 var(--inline-form-text-padding);
     letter-spacing: inherit;
   }
   input,
@@ -41,8 +48,6 @@
   }
   input {
     min-width: 0;
-    width: 0;
-    flex: 1;
     background: transparent;
     border: 0;
     text-transform: uppercase;
@@ -52,6 +57,23 @@
       }
     }
   }
+  @media (max-width: 22rem) {
+    input,
+    button,
+    .inline-form__placeholder {
+      @include type-size(compact-label);
+    }
+  }
+}
+
+.inline-form {
+  display: flex;
+  align-items: stretch;
+  width: 100%;
+  input {
+    width: 0;
+    flex: 1;
+  }
   button {
     @include submit-button-mark;
     display: flex;
@@ -60,11 +82,76 @@
     gap: 0.15em;
     text-transform: uppercase;
   }
-  @media (max-width: 22rem) {
-    input,
-    button,
-    .inline-form__placeholder {
-      @include type-size(compact-label);
+}
+
+.inline-form__field {
+  display: flex;
+  position: relative;
+  flex: 1;
+  min-inline-size: 0;
+
+  input::placeholder {
+    opacity: 0;
+  }
+  .inline-form__placeholder {
+    position: absolute;
+    inset: 0;
+    display: none;
+    grid-template-columns: minmax(0, 1fr);
+    align-content: center;
+    pointer-events: none;
+    user-select: none;
+    @include fade-rotating-items(1.5);
+
+    > span {
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
     }
+  }
+  input:placeholder-shown + .inline-form__placeholder {
+    display: grid;
+  }
+  @media (forced-colors: active) {
+    input::placeholder {
+      color: GrayText;
+      opacity: 1;
+    }
+    input:placeholder-shown + .inline-form__placeholder {
+      display: none;
+    }
+  }
+}
+
+// The widget inserts validation messages beside the input. Keep them on a
+// separate row below the painted field, in the provider's original markup.
+.contact-subscription .field:is(.text, .email) {
+  @include display-type(label);
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  &::before {
+    content: '';
+    grid-area: 1 / 1;
+  }
+  > input {
+    grid-area: 1 / 1;
+    width: auto;
+    margin: var(--inline-form-inset);
+    color: var(--green);
+  }
+  > label.error {
+    @include publisher-type;
+    text-transform: none;
+    letter-spacing: normal;
+  }
+}
+
+.foundation-newsletter input:focus,
+.contact-subscription .field:is(.text, .email) input:focus {
+  background: transparent;
+  outline: none;
+  [data-keyboard-navigation] & {
+    outline: 0.16rem solid currentColor;
+    outline-offset: -0.16rem;
   }
 }
