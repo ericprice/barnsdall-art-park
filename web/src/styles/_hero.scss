@@ -86,34 +86,51 @@
 }
 .celebration {
   --hover-color: var(--paper);
-  position: fixed;
-  z-index: 2;
-  transition: opacity 360ms ease;
-  &[data-at-page-end='true'] {
-    opacity: 0;
+  position: absolute;
+
+  &::before,
+  &__content {
+    position: fixed;
+    z-index: 2;
+    inset-inline-end: max(
+      var(--gutter),
+      calc((100% - var(--site-width)) / 2 + var(--gutter)),
+      env(safe-area-inset-right)
+    );
+    inset-block-end: max(var(--gutter), env(safe-area-inset-bottom));
+    width: min(max(8rem, #{site-size(20.5)}), 38svh);
+    aspect-ratio: 0.95;
+    border-radius: 44% 56% 47% 53% / 43% 41% 59% 57%;
+    transition: opacity 360ms ease;
   }
-  inset-inline-end: max(
-    var(--gutter),
-    calc((100% - var(--site-width)) / 2 + var(--gutter)),
-    env(safe-area-inset-right)
-  );
-  inset-block-end: max(var(--gutter), env(safe-area-inset-bottom));
-  width: min(max(8rem, #{site-size(20.5)}), 38svh);
-  aspect-ratio: 0.95;
-  container-type: inline-size;
-  display: grid;
-  align-content: center;
-  justify-items: center;
-  gap: 0.45em;
-  background: color-mix(in srgb, var(--green) 96%, black);
-  color: var(--paper);
-  border-radius: 44% 56% 47% 53% / 43% 41% 59% 57%;
-  text-align: center;
-  text-decoration: none;
+
+  &[data-at-page-end='true'] {
+    &::before,
+    .celebration__content {
+      opacity: 0;
+    }
+  }
+  // Give the dot its own layer so only the background blends into the page.
+  &::before {
+    content: '';
+    pointer-events: none;
+    background-color: color-mix(in srgb, var(--green) 96%, black);
+    mix-blend-mode: multiply;
+  }
   @media (hover: hover) {
-    &:any-link:hover {
+    &:has(> a:hover)::before {
       background-color: var(--ink);
     }
+  }
+  &__content {
+    container-type: inline-size;
+    display: grid;
+    align-content: center;
+    justify-items: center;
+    gap: 0.45em;
+    color: var(--paper);
+    text-align: center;
+    text-decoration: none;
   }
   h2 {
     width: 90%;

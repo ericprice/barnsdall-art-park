@@ -146,11 +146,6 @@ export function CelebrationBadge({celebration}: Pick<HomeContent, 'celebration'>
     }
   }, [celebration?.title])
 
-  const badgeProps = {
-    className: 'celebration',
-    'data-at-page-end': atPageEnd,
-    inert: atPageEnd,
-  }
   if (!celebration?.title) return null
   const content = (
     <>
@@ -162,11 +157,15 @@ export function CelebrationBadge({celebration}: Pick<HomeContent, 'celebration'>
       )}
     </>
   )
-  return celebration.link?.href ? (
-    <Link {...badgeProps} href={celebration.link.href}>
-      {content}
-    </Link>
-  ) : (
-    <aside {...badgeProps}>{content}</aside>
+  return (
+    <div className="celebration" data-at-page-end={atPageEnd} inert={atPageEnd}>
+      {celebration.link?.href ? (
+        <Link className="celebration__content" href={celebration.link.href}>
+          {content}
+        </Link>
+      ) : (
+        <aside className="celebration__content">{content}</aside>
+      )}
+    </div>
   )
 }
