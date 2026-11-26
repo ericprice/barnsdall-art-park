@@ -182,6 +182,10 @@ $compact-nav-height: $compact-nav-start + $compact-mark-height + $compact-nav-en
   color: var(--paper) !important;
   border-radius: 48% 52% 57% 43% / 37% 42% 58% 63%;
 
+  .park-header[data-expanded='true'] & {
+    mix-blend-mode: multiply;
+  }
+
   @media (hover: hover) {
     .park-header[data-expanded='false'] &:hover {
       background-color: var(--hover-color, var(--green));
