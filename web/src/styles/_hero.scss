@@ -126,8 +126,8 @@
   }
   // Filter the page first, then paint the two colored layers above it.
   &::before {
-    -webkit-backdrop-filter: blur(0.4rem);
-    backdrop-filter: blur(0.4rem);
+    -webkit-backdrop-filter: blur(0.2rem);
+    backdrop-filter: blur(0.2rem);
   }
   &__dot {
     pointer-events: none;
