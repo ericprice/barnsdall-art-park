@@ -33,9 +33,13 @@ export function VisitPage({entry, settings}: Props) {
           {(entry.image || map) && (
             <div id={map?.anchor || 'map'} className="visitor-map">
               {entry.image && (
-                <div className="visitor-map__photo">
-                  <ParkImage image={entry.image} priority sizes="(max-width: 44rem) 95vw, 55vw" />
-                </div>
+                <ParkImage
+                  image={entry.image}
+                  className="visitor-map__image"
+                  intrinsicWidth={800}
+                  priority
+                  sizes="(max-width: 64rem) 100vw, 64rem"
+                />
               )}
               <RichText value={map?.body} />
               <ActionLinks links={map?.links} variant="display" downloadPdf />

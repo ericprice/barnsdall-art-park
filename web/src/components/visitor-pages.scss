@@ -17,15 +17,16 @@
     @include type-size(title);
   }
   .visitor-map {
-    width: min(57%, 50rem);
-    margin: 2.5rem auto;
-  }
-  .visitor-map__photo {
-    position: relative;
-    aspect-ratio: 0.92;
-    img {
-      @include cover-image;
+    margin-block: 2.5rem;
+
+    > :is(.rich-text, .action-links) {
+      margin-inline: var(--gutter);
     }
+  }
+  .visitor-map__image {
+    display: block;
+    width: 100%;
+    height: auto;
   }
   .visitor-map .action-links {
     display: flex;
@@ -85,8 +86,7 @@
 }
 @media (max-width: 44rem) {
   .visitor-arrival {
-    .visitor-prose,
-    .visitor-map {
+    .visitor-prose {
       width: calc(100% - 2 * var(--gutter));
     }
   }
