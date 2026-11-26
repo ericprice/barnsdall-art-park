@@ -45,14 +45,14 @@ export function ListingGrid({
 
 export function SearchResultCard({entry}: {entry: ContentEntry}) {
   // Keep the dot and palette stable when the same result appears in another search.
-  const [shape, color, direction] = createHash('sha256').update(entry.id).digest()
+  const [shape, background, foreground] = createHash('sha256').update(entry.id).digest()
   const dot = (shape % 14) + 1
-  const palette = organizationDocuments[color % organizationDocuments.length]
-  const baseTheme = !entry.image && !entry.organization ? palette : themeForEntry(entry)
-  const theme =
-    !entry.image && direction % 2 === 0
-      ? {...baseTheme, light: baseTheme.dark, dark: baseTheme.light}
-      : baseTheme
+  const baseTheme =
+    !entry.image && !entry.organization
+      ? organizationDocuments[background % organizationDocuments.length]
+      : themeForEntry(entry)
+  const dotColor = organizationDocuments[foreground % organizationDocuments.length].light
+  const theme = entry.image ? baseTheme : {...baseTheme, light: dotColor}
   const label = [categories[entry.type], entry.organization].filter(Boolean).join(' · ')
   return <ListingCard entry={entry} dot={dot} variant="search" theme={theme} label={label} />
 }
