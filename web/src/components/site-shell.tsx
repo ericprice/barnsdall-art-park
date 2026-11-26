@@ -13,6 +13,8 @@ import {
 import {usePathname} from 'next/navigation'
 import {RouteTransition} from './route-link'
 import {trackKeyboardNavigation} from '@/lib/keyboard-navigation'
+import type {NavItem} from '@/lib/content'
+import {isCurrentNavigationItem} from '@/lib/navigation'
 
 const colors = ['pink', 'lavender', 'yellow', 'pale-green', 'olive', 'green']
 const dotCount = 14
@@ -121,7 +123,22 @@ export function LoadingDot({active = true}: {active?: boolean}) {
   )
 }
 
-export function SiteShell({seed, children}: {seed: number; children: ReactNode}) {
+function nextIndex(count: number, hash: number, previous: number, reserved?: number) {
+  const choices = Array.from({length: count}, (_, i) => i).filter(
+    (i) => i !== previous && i !== reserved,
+  )
+  return choices[hash % choices.length]
+}
+
+export function SiteShell({
+  seed,
+  navigation,
+  children,
+}: {
+  seed: number
+  navigation: NavItem[]
+  children: ReactNode
+}) {
   useLayoutEffect(trackKeyboardNavigation, [])
   const pathname = usePathname()
   const [navigating, startNavigation] = useTransition()
@@ -148,20 +165,36 @@ export function SiteShell({seed, children}: {seed: number; children: ReactNode})
     },
     [startNavigation],
   )
-  const [highlight, setHighlight] = useState({
-    pathname,
-    dot: seed % dotCount,
-    color: Math.floor(seed / dotCount) % colors.length,
+  const section = navigation.findIndex((item) => isCurrentNavigationItem(item, pathname))
+  const [highlight, setHighlight] = useState(() => {
+    const dot = seed % dotCount
+    const color = Math.floor(seed / dotCount) % colors.length
+    return {
+      pathname,
+      section,
+      dot,
+      color,
+      subDot: (dot + 6) % dotCount,
+      subColor: (color + 3) % colors.length,
+    }
   })
   let active = highlight
   if (highlight.pathname !== pathname) {
     let hash = seed
     for (const char of pathname) hash = (Math.imul(hash, 31) + char.charCodeAt(0)) >>> 0
+    const colorHash = Math.floor(hash / dotCount)
+    const changedSection = section !== -1 && section !== highlight.section
+    const dot = changedSection ? nextIndex(dotCount, hash, highlight.dot) : highlight.dot
+    const color = changedSection
+      ? nextIndex(colors.length, colorHash, highlight.color)
+      : highlight.color
     active = {
       pathname,
-      dot: (highlight.dot + 1 + (hash % (dotCount - 1))) % dotCount,
-      color:
-        (highlight.color + 1 + (Math.floor(hash / dotCount) % (colors.length - 1))) % colors.length,
+      section: changedSection ? section : highlight.section,
+      dot,
+      color,
+      subDot: nextIndex(dotCount, hash, highlight.subDot, dot),
+      subColor: nextIndex(colors.length, colorHash, highlight.subColor, color),
     }
     setHighlight(active)
   }
@@ -227,8 +260,8 @@ export function SiteShell({seed, children}: {seed: number; children: ReactNode})
   const style = {
     '--nav-dot': `url('/identity/dots/${active.dot + 1}.svg')`,
     '--nav-color': `var(--${colors[active.color]})`,
-    '--section-nav-dot': `url('/identity/dots/${((active.dot + 6) % dotCount) + 1}.svg')`,
-    '--section-nav-color': `var(--${colors[(active.color + 3) % colors.length]})`,
+    '--section-nav-dot': `url('/identity/dots/${active.subDot + 1}.svg')`,
+    '--section-nav-color': `var(--${colors[active.subColor]})`,
   } as CSSProperties
 
   return (

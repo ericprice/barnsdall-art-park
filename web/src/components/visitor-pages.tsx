@@ -42,7 +42,7 @@ export function VisitPage({entry, settings}: Props) {
                 />
               )}
               <RichText value={map?.body} />
-              <ActionLinks links={map?.links} variant="display" downloadPdf />
+              <ActionLinks links={map?.links.filter((link) => !link.download)} variant="display" />
             </div>
           )}
         </>

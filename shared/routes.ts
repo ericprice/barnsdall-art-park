@@ -41,7 +41,6 @@ const reservedPaths = new Set([
   '/sitemap.xml',
   '/dev/loading',
   '/icon.svg',
-  '/barnsdall-park-map.pdf',
   ...legacyRedirects.map(({source}) => source),
 ])
 

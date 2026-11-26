@@ -8,6 +8,7 @@ import {imageAspectRatio} from '@/sanity/image'
 import {readContent} from '@/sanity/read'
 
 const pageSize = 12
+const resultTypeLabels = {page: 'Page', place: 'Location', event: 'Event', article: 'News'}
 const maxPage = Math.floor((Number.MAX_SAFE_INTEGER - 1) / pageSize)
 const organizations = organizationDocuments.flatMap(({_id, title}) => [
   {id: _id, title},
@@ -20,7 +21,9 @@ async function loadCatalog() {
 function indexCatalog(docs: Awaited<ReturnType<typeof loadCatalog>>) {
   return docs.flatMap((doc) => {
     const hit = routeSummary(doc)
-    return hit ? [{hit, fields: indexSearchFields(doc)}] : []
+    return hit
+      ? [{hit: {...hit, typeLabel: resultTypeLabels[doc._type]}, fields: indexSearchFields(doc)}]
+      : []
   })
 }
 
@@ -59,6 +62,8 @@ export async function searchContent(query: string, limit = 100) {
   }
   return hits
 }
+
+export type QuickSearchResult = Awaited<ReturnType<typeof searchContent>>[number]
 
 function excerpt(...candidates: (string | null)[]) {
   const text = candidates.map((candidate) => candidate?.trim().replace(/\s+/g, ' ')).find(Boolean)

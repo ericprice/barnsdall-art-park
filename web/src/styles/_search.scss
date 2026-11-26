@@ -73,11 +73,23 @@ html:has(.header-search :focus) {
     overflow-y: auto;
   }
   li a {
-    display: block;
+    display: flex;
+    align-items: baseline;
+    gap: 0.3em;
     padding: 0.32em 0.47em;
+    white-space: nowrap;
     &:focus-visible {
       text-decoration: underline;
     }
+  }
+  &__result-title {
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  &__result-type {
+    flex: none;
+    color: var(--inline-form-placeholder-color);
   }
   // Keep the list’s outer padding inside its first and last clickable links.
   li:first-child a {

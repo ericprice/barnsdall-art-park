@@ -1,5 +1,6 @@
 import {useRef, type KeyboardEvent as ReactKeyboardEvent} from 'react'
 import type {NavItem} from '@/lib/content'
+import {isCurrentNavigationItem} from '@/lib/navigation'
 import Link from './route-link'
 
 export function NavigationGroup({
@@ -22,12 +23,7 @@ export function NavigationGroup({
   const panel = useRef<HTMLDivElement>(null)
   const hasChildren = Boolean(item.children?.length)
   if (!item.href && !hasChildren) return null
-  const current = item.href
-    ? pathname === item.href || pathname.startsWith(item.href + '/')
-    : item.children?.some((child) => {
-        const target = child.href.split(/[?#]/)[0]
-        return pathname === target || pathname.startsWith(target + '/')
-      })
+  const current = isCurrentNavigationItem(item, pathname)
 
   function focusSubmenu(event: ReactKeyboardEvent<HTMLElement>) {
     if (event.key !== 'ArrowDown' || !hasChildren) return

@@ -1,12 +1,12 @@
 'use client'
 
 import type {InterfaceText} from '@/lib/content'
+import type {QuickSearchResult} from '@/lib/search'
 import {DisplayLink} from './action-links'
 import Link, {useRouteNavigation} from './route-link'
 import {useEffect, useRef, useState} from 'react'
 
-type Result = {id: string; title: string; href: string}
-type Preview = {term: string; matches: Result[] | null}
+type Preview = {term: string; matches: QuickSearchResult[] | null}
 
 export function HeaderSearch({
   labels,
@@ -61,7 +61,7 @@ export function HeaderSearch({
           signal: abort.signal,
         })
         if (!response.ok) throw new Error('Search failed')
-        const matches: Result[] = await response.json()
+        const matches: QuickSearchResult[] = await response.json()
         if (!abort.signal.aborted) setPreview({term, matches})
       } catch {
         if (!abort.signal.aborted) setPreview({term, matches: null})
@@ -133,7 +133,10 @@ export function HeaderSearch({
             {matches.map((result) => (
               <li key={result.id}>
                 <Link href={result.href} onClick={onNavigate}>
-                  {result.title}
+                  <span className="header-search__result-title">{result.title}</span>
+                  {result.typeLabel !== 'Page' && (
+                    <span className="header-search__result-type">{result.typeLabel}</span>
+                  )}
                 </Link>
               </li>
             ))}

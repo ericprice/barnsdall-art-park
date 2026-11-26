@@ -38,7 +38,7 @@ export default async function RootLayout({children}: {children: React.ReactNode}
         <a href="#main-content" className="skip-link">
           {interfaceText.skip}
         </a>
-        <SiteShell seed={randomInt(2 ** 32)}>
+        <SiteShell seed={randomInt(2 ** 32)} navigation={settings.navigation}>
           <SiteHeader
             settings={{
               title: settings.title,

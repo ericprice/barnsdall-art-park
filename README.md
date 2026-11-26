@@ -23,7 +23,7 @@ npm run dev
 ## Current page foundation
 
 - The homepage has a moving featured-story slideshow and an ordered selection of editorial features. Hovering, focusing, or tapping a park location changes its image and description.
-- Visit: source map, downloadable PDF, directions, transit, parking, and park policies.
+- Visit: map, directions, transit, parking, and park policies.
 - Park: overview and direct links to the existing City facility websites. The park landscape has its own Foundation page; separate duplicate facility pages are not generated.
 - Foundation: mission, vision, work, board, staff, and partner logos, with distinct destinations for initiatives, giving, supporters, and volunteering.
 - Initiative and story templates: lead, image, rich text with headings, and links.

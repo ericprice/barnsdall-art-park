@@ -71,6 +71,13 @@
   .feature-content__summary {
     max-width: 21em;
   }
+  .display-link {
+    @include type-size(title);
+  }
+  .feature-content__summary + .display-link {
+    // Match the visible space below the larger headline, including its line-box spacing.
+    margin-block-start: calc(0.15 * var(--type-display));
+  }
 }
 .hero__controls button {
   color: var(--org-dark);
