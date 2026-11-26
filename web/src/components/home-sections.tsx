@@ -44,7 +44,9 @@ export function HomeSections({home}: {home: HomeContent}) {
                 </h3>
                 <p>{item.summary}</p>
                 {item.link?.href && (
-                  <DisplayLink href={item.link.href}>{item.link.label}</DisplayLink>
+                  <DisplayLink href={item.link.href} size="body">
+                    {item.link.label}
+                  </DisplayLink>
                 )}
               </li>
             ))}

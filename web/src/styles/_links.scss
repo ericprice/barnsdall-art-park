@@ -5,6 +5,10 @@
   @include display-type(label);
   display: inline-block;
   text-decoration: none;
+  &[data-size='body'] {
+    @include type-size(body);
+    letter-spacing: 0;
+  }
 }
 .feature-link {
   display: grid;

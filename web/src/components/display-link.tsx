@@ -21,10 +21,15 @@ export function DisplayLink({
   children,
   className,
   arrow,
+  size,
   ...props
-}: LinkProps & {arrow?: '»' | '↗'}) {
+}: LinkProps & {arrow?: '»' | '↗'; size?: 'label' | 'body'}) {
   return (
-    <Link {...props} className={className ? `display-link ${className}` : 'display-link'}>
+    <Link
+      {...props}
+      className={className ? `display-link ${className}` : 'display-link'}
+      data-size={size}
+    >
       <DisplayLinkContent arrow={arrow}>{children}</DisplayLinkContent>
     </Link>
   )
