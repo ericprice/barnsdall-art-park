@@ -85,10 +85,12 @@
   transition: color var(--slide-fade) ease;
 }
 .celebration {
+  --celebration-background: color-mix(in srgb, var(--green) 96%, black);
   --hover-color: var(--paper);
   position: absolute;
 
   &::before,
+  &::after,
   &__content {
     position: fixed;
     z-index: 2;
@@ -106,23 +108,30 @@
 
   &[data-footer-visible='true'] {
     &::before,
+    &::after,
     .celebration__content {
       opacity: 0;
     }
   }
-  // Give the dot its own layer so only the background blends into the page.
-  &::before {
+  &::before,
+  &::after {
     content: '';
     pointer-events: none;
-    background-color: color-mix(in srgb, var(--green) 96%, black);
+    background-color: var(--celebration-background);
+  }
+  &::before {
     mix-blend-mode: multiply;
   }
+  &::after {
+    opacity: 0.6;
+  }
   @media (hover: hover) {
-    &:has(> a:hover)::before {
-      background-color: var(--ink);
+    &:has(> a:hover) {
+      --celebration-background: var(--ink);
     }
   }
   &__content {
+    z-index: 3;
     container-type: inline-size;
     display: grid;
     align-content: center;
